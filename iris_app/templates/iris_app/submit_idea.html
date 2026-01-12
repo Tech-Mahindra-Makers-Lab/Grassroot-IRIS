@@ -1,0 +1,187 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0 rounded-4 p-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold text-primary">Submit Your Idea</h2>
+                        <h5 class="text-secondary">Challenge: {{ challenge.title }}</h5>
+                    </div>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" id="ideaForm">
+                    {% csrf_token %}
+
+                    <!-- Section 1: Basic Info -->
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Basic Information</h5>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Idea Title</label>
+                            <input type="text" name="title" class="form-control form-control-lg"
+                                placeholder="A catchy and descriptive name for your idea" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Tagline / Short Description</label>
+                            <textarea name="description" class="form-control" rows="3"
+                                placeholder="Briefly summarize your idea in 2-3 sentences..." required></textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Keywords</label>
+                            <input type="text" name="keywords" class="form-control"
+                                placeholder="AI, Automation, Sustainability, etc.">
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Detailed Solution (IdeaDetail) -->
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Detailed Solution</h5>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Problem Statement</label>
+                            <div class="text-muted small mb-2">What specific problem or opportunity are you addressing?
+                            </div>
+                            <textarea name="problem_statement" class="form-control" rows="4" required></textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Proposed Solution</label>
+                            <div class="text-muted small mb-2">Describe your solution in detail. How does it work?</div>
+                            <textarea name="proposed_solution" class="form-control" rows="5" required></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Innovation Type</label>
+                            <select name="innovation_type" class="form-select" required>
+                                {% for val, label in innovation_types %}
+                                <option value="{{ val }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Sharing Scope</label>
+                            <select name="sharing_scope" class="form-select" required>
+                                {% for val, label in sharing_scopes %}
+                                <option value="{{ val }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Business Value (Monetary)</label>
+                            <textarea name="business_value_monetary" class="form-control" rows="2"
+                                placeholder="Expected cost savings or revenue growth..."></textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Business Value (Non-Monetary)</label>
+                            <textarea name="business_value_non_monetary" class="form-control" rows="2"
+                                placeholder="Efficiency improvements, brand value, etc..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Assumptions</label>
+                            <textarea name="assumptions" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Risks</label>
+                            <textarea name="risks" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="is_confidential"
+                                    id="confidentialSwitch">
+                                <label class="form-check-label fw-bold" for="confidentialSwitch">Mark as
+                                    Confidential</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Co-Ideators -->
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Collaborators (Co-Ideators)</h5>
+                    <div class="bg-light p-4 rounded-4 mb-5">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <input type="email" id="coIdeatorEmail" class="form-control"
+                                    placeholder="Enter collaborator's email (e.g. colleague@techm.com)">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" id="addCoIdeatorBtn"
+                                    class="btn btn-outline-primary w-100 fw-bold">Add Collaborator</button>
+                            </div>
+                        </div>
+                        <div id="coIdeatorList" class="mt-3 d-flex flex-wrap gap-2">
+                            <!-- Co-ideators will appear here -->
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Supporting Documents -->
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Supporting Documents</h5>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Upload Evidences / Documents</label>
+                            <input type="file" name="idea_documents" class="form-control" multiple>
+                            <div class="text-muted small mt-1">You can upload multiple files (PDF, PPT, DOCX, Images).
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle-fill me-2"></i> Submitting this idea will award you **5 IRIS
+                        Points**!
+                    </div>
+
+                    <div class="d-grid mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">Submit Idea</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const coIdeatorEmail = document.getElementById('coIdeatorEmail');
+        const addBtn = document.getElementById('addCoIdeatorBtn');
+        const listContainer = document.getElementById('coIdeatorList');
+        const form = document.getElementById('ideaForm');
+
+        addBtn.addEventListener('click', function () {
+            const email = coIdeatorEmail.value.trim();
+            if (email && validateEmail(email)) {
+                addCoIdeatorBadge(email);
+                coIdeatorEmail.value = '';
+            } else {
+                alert('Please enter a valid email address.');
+            }
+        });
+
+        function addCoIdeatorBadge(email) {
+            // Check if already added
+            const existing = document.querySelector(`input[value="${email}"]`);
+            if (existing) return;
+
+            const badge = document.createElement('div');
+            badge.className = 'badge bg-primary p-2 d-flex align-items-center';
+            badge.innerHTML = `
+                <span>${email}</span>
+                <input type="hidden" name="co_ideators" value="${email}">
+                <button type="button" class="btn-close btn-close-white ms-2 remove-btn" style="font-size: 0.5rem;"></button>
+            `;
+            listContainer.appendChild(badge);
+
+            badge.querySelector('.remove-btn').addEventListener('click', function () {
+                badge.remove();
+            });
+        }
+
+        function validateEmail(email) {
+            return String(email)
+                .toLowerCase()
+                .match(
+                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0:9]{1,3}\.[0:9]{1,3}\.[0:9]{1,3}\.[0:9]{1,3}\])|(([a-zA-Z\-0:9]+\.)+[a-zA-Z]{2,}))$/
+                );
+        }
+    });
+</script>
+{% endblock %}

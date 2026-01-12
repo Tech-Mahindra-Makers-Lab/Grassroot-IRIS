@@ -1,0 +1,130 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0 rounded-4 p-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold text-primary">Manage Panels</h2>
+                        <h5 class="text-secondary">{{ challenge.title }}</h5>
+                    </div>
+                    <span class="badge bg-primary text-white p-2">Step 2: Add Panels</span>
+                </div>
+
+                <!-- Add Panel Form -->
+                <div class="bg-light p-4 rounded-4 mb-5">
+                    <h5 class="fw-bold mb-3">Add New Panel</h5>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Review Round</label>
+                                <select name="round_number" id="roundSelect" class="form-select" required>
+                                    <option value="" disabled selected>Select Round</option>
+                                    <option value="1">Round 1</option>
+                                    <option value="2">Round 2</option>
+                                </select>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold">Panel Name</label>
+                                <input type="text" name="panel_name" id="panelName" class="form-control"
+                                    placeholder="Auto-populated..." required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Panel Description</label>
+                                <textarea name="description" class="form-control" rows="2"
+                                    placeholder="e.g. Technical assessment panel for cloud architecture..."></textarea>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="submit" name="add_panel" class="btn btn-outline-primary fw-bold px-4">Add
+                                    Panel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Existing Panels List -->
+                <div class="row">
+                    <!-- Round 1 Panels -->
+                    <div class="col-md-6">
+                        <h5 class="fw-bold mb-3 text-primary border-bottom pb-2">Round 1 Panels (Target: 2-3)</h5>
+                        {% for panel in round1_panels %}
+                        <div class="card mb-2 border-0 shadow-sm bg-white p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-bold">{{ panel.panel_name }}</div>
+                                    <div class="small text-muted">{{ panel.description|truncatewords:10 }}</div>
+                                </div>
+                                <form method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="panel_id" value="{{ panel.panel_id }}">
+                                    <button type="submit" name="delete_panel" class="btn btn-sm btn-link text-danger"><i
+                                            class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-muted small italic">No panels added for Round 1.</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Round 2 Panels -->
+                    <div class="col-md-6">
+                        <h5 class="fw-bold mb-3 text-success border-bottom pb-2">Round 2 Panels (Target: 1-2)</h5>
+                        {% for panel in round2_panels %}
+                        <div class="card mb-2 border-0 shadow-sm bg-white p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-bold">{{ panel.panel_name }}</div>
+                                    <div class="small text-muted">{{ panel.description|truncatewords:10 }}</div>
+                                </div>
+                                <form method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="panel_id" value="{{ panel.panel_id }}">
+                                    <button type="submit" name="delete_panel" class="btn btn-sm btn-link text-danger"><i
+                                            class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-muted small italic">No panels added for Round 2.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-5">
+                    <a href="{% url 'post_challenge' %}" class="btn btn-outline-secondary rounded-pill px-4">Back</a>
+                    <a href="{% url 'manage_mentors' challenge.challenge_id %}"
+                        class="btn btn-primary rounded-pill px-5 fw-bold {% if round1_panels|length < 2 or round2_panels|length < 1 %}disabled{% endif %}">Next:
+                        Add Mentors</a>
+                </div>
+                {% if round1_panels|length < 2 or round2_panels|length < 1 %} <div class="text-center mt-2">
+                    <small class="text-danger">Please add at least 2 panels for Round 1 and 1 panel for Round 2 to
+                        proceed.</small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const roundSelect = document.getElementById('roundSelect');
+        const panelNameInput = document.getElementById('panelName');
+        const challengeTitle = "{{ challenge.title|escapejs }}";
+
+        roundSelect.addEventListener('change', function () {
+            const round = this.value;
+            if (round) {
+                panelNameInput.value = `${challengeTitle} - Panel Round ${round}`;
+            }
+        });
+    });
+</script>
+{% endblock %}

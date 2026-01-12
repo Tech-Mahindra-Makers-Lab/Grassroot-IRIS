@@ -1,0 +1,103 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block title %}Reports - Grassroot IRIS{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 mb-0 text-gray-800">Customized Reports</h2>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-6 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Export Report</h6>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'export_report_csv' %}" method="GET">
+                        <div class="mb-3">
+                            <label for="report_type" class="form-label">Report Type</label>
+                            <select class="form-select" id="report_type" name="report_type" required>
+                                <option value="" selected disabled>Choose Report Type...</option>
+                                <option value="ideas">Ideas Report</option>
+                                <option value="challenges">Challenges Report</option>
+                                <option value="grassroot">Grassroot Ideas Report</option>
+                            </select>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="from_date" class="form-label">From Date</label>
+                                <input type="date" class="form-control" id="from_date" name="from_date" required>
+                            </div>
+                            <div class="col">
+                                <label for="to_date" class="form-label">To Date</label>
+                                <input type="date" class="form-control" id="to_date" name="to_date" required>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-download me-2"></i> Export to CSV
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Report Instructions</h6>
+                </div>
+                <div class="card-body">
+                    <p>Select the type of data you wish to export and specify the date range based on when the records
+                        were created.</p>
+                    <ul class="small text-muted">
+                        <li><strong>Ideas Report:</strong> Exports all ideas submitted through challenges.</li>
+                        <li><strong>Challenges Report:</strong> Exports details of all innovation challenges.</li>
+                        <li><strong>Grassroot Ideas Report:</strong> Exports ideas submitted via the Grassroot flow.
+                        </li>
+                    </ul>
+                    <div class="alert alert-info small" role="alert">
+                        The exported file will be in CSV format, compatible with Excel and Google Sheets.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+        border-top-left-radius: 15px !important;
+        border-top-right-radius: 15px !important;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+    }
+</style>
+{% endblock %}

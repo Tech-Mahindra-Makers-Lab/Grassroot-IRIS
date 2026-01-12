@@ -1,0 +1,121 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar/Stats -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm border-0 rounded-4 p-4 text-center">
+                <div class="display-4 fw-bold text-primary mb-2">{{ total_points }}</div>
+                <div class="text-uppercase text-muted small fw-bold mb-4">Total IRIS Points</div>
+                <hr>
+                <div class="text-start mt-3">
+                    <h6 class="fw-bold"><i class="bi bi-trophy-fill text-warning me-2"></i>My Gamification</h6>
+                    <ul class="list-unstyled small mt-2">
+                        <li class="mb-2">● 5 points awarded per idea submission</li>
+                        <li class="mb-2">● 500 points awarded for shortlisted/implemented ideas</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <h2 class="fw-bold text-primary mb-4">My IRIS Portal</h2>
+
+            <ul class="nav nav-tabs border-0 mb-4" id="ideaTabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active border-0 rounded-pill px-4 me-2 fw-bold" id="my-ideas-tab"
+                        data-bs-toggle="tab" data-bs-target="#my-ideas" type="button">My Submissions</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link border-0 rounded-pill px-4 fw-bold" id="shared-ideas-tab"
+                        data-bs-toggle="tab" data-bs-target="#shared-ideas" type="button">Shared with Me</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- My Submissions Tab -->
+                <div class="tab-pane fade show active" id="my-ideas">
+                    {% for idea in ideas %}
+                    <div class="card shadow-sm border-0 rounded-4 mb-3 p-4 idea-card transition-hover">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <span class="badge bg-light text-primary mb-2">ID: {{ idea.idea_id|stringformat:".8s"
+                                    }}</span>
+                                <h5 class="fw-bold mb-1">{{ idea.title }}</h5>
+                                <div class="text-muted small mb-2"><i class="bi bi-flag-fill me-1"></i>Challenge: {{
+                                    idea.challenge.title }}</div>
+                                <p class="text-secondary small mb-3">{{ idea.description|truncatewords:20 }}</p>
+                            </div>
+                            <div class="text-end">
+                                <span
+                                    class="badge {% if idea.status == 'SUBMITTED' %}bg-info{% elif idea.status == 'APPROVED' %}bg-success{% else %}bg-secondary{% endif %} rounded-pill px-3">
+                                    {{ idea.get_status_display }}
+                                </span>
+                                <div class="mt-2 small text-muted">Submitted on: {{ idea.submission_date|date:"M d, Y"
+                                    }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-5 bg-light rounded-4">
+                        <div class="display-1 text-muted mb-3"><i class="bi bi-lightbulb"></i></div>
+                        <h5>You haven't submitted any ideas yet.</h5>
+                        <p class="text-muted">Start by exploring <a href="{% url 'challenge_list' %}"
+                                class="text-primary fw-bold">Active Challenges</a>.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Shared with Me Tab -->
+                <div class="tab-pane fade" id="shared-ideas">
+                    {% for idea in shared_ideas %}
+                    <div class="card shadow-sm border-0 rounded-4 mb-3 p-4 idea-card transition-hover">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <span class="badge bg-light text-primary mb-2">ID: {{ idea.idea_id|stringformat:".8s"
+                                    }}</span>
+                                <h5 class="fw-bold mb-1">{{ idea.title }}</h5>
+                                <div class="text-muted small mb-2"><i class="bi bi-person-fill me-1"></i>Owner: {{
+                                    idea.submitter.full_name }}</div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-info rounded-pill px-3">{{ idea.get_status_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-5 bg-light rounded-4">
+                        <p class="text-muted">No shared ideas found.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .idea-card {
+        border-left: 4px solid #0d6efd !important;
+    }
+
+    .transition-hover:hover {
+        transform: translateY(-3px);
+        transition: transform 0.2s ease;
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1) !important;
+    }
+
+    .nav-tabs .nav-link {
+        color: #6c757d;
+        background: #f8f9fa;
+    }
+
+    .nav-tabs .nav-link.active {
+        background: #0d6efd !important;
+        color: white !important;
+    }
+</style>
+{% endblock %}

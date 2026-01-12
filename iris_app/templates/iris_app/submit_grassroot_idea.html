@@ -1,0 +1,203 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block title %}Submit Grassroot Idea{% endblock %}
+
+{% block content %}
+<div class="container-fluid pb-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold section-title">Submit New Grassroot Idea</h2>
+            <p class="text-muted">Fields marked with * are mandatory</p>
+        </div>
+    </div>
+
+    <form method="POST" id="grassrootForm">
+        {% csrf_token %}
+
+        <!-- Employee Details (Auto-populated) -->
+        <div class="card mb-4 shadow-sm border-0 rounded-4">
+            <div class="card-header bg-primary bg-gradient text-white rounded-top-4 py-3">
+                <h5 class="card-title mb-0">Employee Details</h5>
+            </div>
+            <div class="card-body bg-light">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Employee ID</label>
+                        <input type="text" class="form-control bg-white"
+                            value="{{ employee_detail.user.employee_id|default:'' }}" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Employee Name</label>
+                        <input type="text" class="form-control bg-white"
+                            value="{{ employee_detail.user.full_name|default:'' }}" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Current Project Code</label>
+                        <input type="text" class="form-control bg-white"
+                            value="{{ employee_detail.current_project_code|default:'' }}" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Current Project Name</label>
+                        <input type="text" class="form-control bg-white"
+                            value="{{ employee_detail.current_project_name|default:'' }}" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Current Customer</label>
+                        <input type="text" class="form-control bg-white"
+                            value="{{ employee_detail.current_customer|default:'' }}" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">PM/DM Name</label>
+                        <input type="text" class="form-control bg-white"
+                            value="{{ employee_detail.pm_dm_name|default:'' }}" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Service Line</label>
+                        <input type="text" class="form-control bg-white"
+                            value="{{ employee_detail.service_line|default:'' }}" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Idea Details -->
+        <div class="card mb-4 shadow-sm border-0 rounded-4">
+            <div class="card-header bg-primary bg-gradient text-white rounded-top-4 py-3">
+                <h5 class="card-title mb-0">Idea Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Improvement Category*</label>
+                        <select class="form-select" id="id_improvement_category" name="improvement_category" required>
+                            <option value="">Select Category</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.id }}">{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Sub Category*</label>
+                        <select class="form-select" id="id_improvement_sub_category" name="improvement_sub_category"
+                            required disabled>
+                            <option value="">Select Sub Category</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Proposed Idea*</label>
+                        <textarea class="form-control" name="proposed_idea" rows="4"
+                            placeholder="Describe your idea in detail..." required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Business Value*</label>
+                        <textarea class="form-control" name="business_value" rows="3"
+                            placeholder="What is the business value?" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Monetary Value*</label>
+                        <textarea class="form-control" name="monetary_value" rows="3"
+                            placeholder="Expected monetary impact..." required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Non-Monetary Value*</label>
+                        <textarea class="form-control" name="non_monetary_value" rows="3"
+                            placeholder="Other benefits..." required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Additional Information (Optional)</label>
+                        <textarea class="form-control" name="additional_info" rows="3"
+                            placeholder="Any extra details..."></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Assumptions*</label>
+                        <textarea class="form-control" name="assumptions" rows="3"
+                            placeholder="List your assumptions..." required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Key Risks*</label>
+                        <textarea class="form-control" name="key_risks" rows="3" placeholder="Potential risks..."
+                            required></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-3 mb-5">
+            <button type="button" class="btn btn-secondary px-4 rounded-pill">Cancel</button>
+            <button type="submit" class="btn btn-primary px-4 rounded-pill shadow-sm">Submit Idea</button>
+        </div>
+    </form>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4">
+            <div class="modal-body text-center p-5">
+                <div class="mb-4">
+                    <img src="{% static 'iris_app/icon/check-circle.svg' %}" alt="Success" width="80"
+                        class="text-success">
+                </div>
+                <h3 class="fw-bold mb-3">Submission Successful!</h3>
+                <p class="text-muted mb-4">Your idea has been submitted successfully!</p>
+                <button type="button" class="btn btn-primary px-5 rounded-pill shadow-sm" id="btnRedirectDashboard">Go
+                    to Dashboard</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#id_improvement_category').change(function () {
+            var categoryId = $(this).val();
+            var subcategorySelect = $('#id_improvement_sub_category');
+
+            if (categoryId) {
+                $.ajax({
+                    url: "{% url 'get_subcategories' %}",
+                    data: { 'category_id': categoryId },
+                    success: function (data) {
+                        subcategorySelect.empty();
+                        subcategorySelect.append('<option value="">Select Sub Category</option>');
+                        $.each(data, function (index, item) {
+                            subcategorySelect.append('<option value="' + item.id + '">' + item.name + '</option>');
+                        });
+                        subcategorySelect.prop('disabled', false);
+                    }
+                });
+            } else {
+                subcategorySelect.empty();
+                subcategorySelect.append('<option value="">Select Sub Category</option>');
+                subcategorySelect.prop('disabled', true);
+            }
+        });
+
+        $('#grassrootForm').on('submit', function (e) {
+            e.preventDefault();
+            var form = $(this);
+            $.ajax({
+                type: "POST",
+                url: form.attr('action') || window.location.href,
+                data: form.serialize(),
+                success: function (response) {
+                    var modal = new bootstrap.Modal(document.getElementById('successModal'));
+                    modal.show();
+                },
+                error: function () {
+                    alert("An error occurred. Please try again.");
+                }
+            });
+        });
+
+        $('#btnRedirectDashboard').click(function () {
+            window.location.href = "{% url 'grassroot_dashboard' %}";
+        });
+    });
+</script>
+{% endblock %}

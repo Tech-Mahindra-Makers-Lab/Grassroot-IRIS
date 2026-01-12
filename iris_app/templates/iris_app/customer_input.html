@@ -1,0 +1,90 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block title %}Customer Input{% endblock %}
+
+{% block content %}
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-4">
+                <a href="{% url 'ibu_dashboard' %}" class="btn btn-sm btn-link text-decoration-none p-0 mb-3">← Back to
+                    IBU Dashboard</a>
+                <h2 class="fw-bold section-title">Customer Input & Feedback</h2>
+                <p class="text-muted">Idea: {{ idea.proposed_idea|truncatewords:10 }}</p>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <!-- Confidentiality -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Confidentiality*</label>
+                            <select class="form-select rounded-3" name="confidentiality" required>
+                                <option value="">Select Option</option>
+                                <option value="Idea can be shared with Customer name">Idea can be shared with Customer
+                                    name</option>
+                                <option value="Idea can be shared without the customer name">Idea can be shared without
+                                    the customer name</option>
+                                <option value="Idea can be shared only within the customer's ecosystem">Idea can be
+                                    shared only within the customer's ecosystem</option>
+                                <option value="Idea be shared outside of the customer's ecosystem">Idea be shared
+                                    outside of the customer's ecosystem</option>
+                                <option value="Do not share the idea at all">Do not share the idea at all</option>
+                            </select>
+                        </div>
+
+                        <!-- Customer Feedback -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Customer Feedback</label>
+                            <textarea class="form-control rounded-3" name="customer_feedback" rows="4"
+                                placeholder="Enter customer feedback or inputs here..."></textarea>
+                        </div>
+
+                        <!-- Innovation Context -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Innovation Context*</label>
+                            <div class="space-y-2">
+                                <div class="form-check p-3 border rounded-3 mb-2">
+                                    <input class="form-check-input ms-0 me-3" type="radio" name="innovation_context"
+                                        id="ic1" value="Incremental Innovation" required>
+                                    <label class="form-check-label fw-bold" for="ic1">
+                                        Incremental Innovation
+                                        <div class="small fw-normal text-muted">Small improvements to existing
+                                            products/services.</div>
+                                    </label>
+                                </div>
+                                <div class="form-check p-3 border rounded-3 mb-2">
+                                    <input class="form-check-input ms-0 me-3" type="radio" name="innovation_context"
+                                        id="ic2" value="Adjacent Innovation">
+                                    <label class="form-check-label fw-bold" for="ic2">
+                                        Adjacent Innovation
+                                        <div class="small fw-normal text-muted">Expanding into new markets or
+                                            technologies related to current ones.</div>
+                                    </label>
+                                </div>
+                                <div class="form-check p-3 border rounded-3 mb-2">
+                                    <input class="form-check-input ms-0 me-3" type="radio" name="innovation_context"
+                                        id="ic3" value="Disruptive Innovation">
+                                    <label class="form-check-label fw-bold" for="ic3">
+                                        Disruptive Innovation
+                                        <div class="small fw-normal text-muted">Revolutionary changes that create new
+                                            markets.</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-5">
+                            <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold shadow-sm">Complete
+                                Idea Submission</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

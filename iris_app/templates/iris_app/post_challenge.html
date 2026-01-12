@@ -1,0 +1,261 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0 rounded-4 p-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="fw-bold text-primary">Post a New Challenge</h2>
+                    <span class="badge bg-primary text-white p-2">Step 1: Challenge Details</span>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" id="challengeForm">
+                    {% csrf_token %}
+
+                    <!-- Section 1: Basic Info -->
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Challenge Name</label>
+                            <div class="text-muted small mb-2">Add a unique innovative name to make your challenge stand
+                                out.</div>
+                            <input type="text" name="title" class="form-control form-control-lg"
+                                placeholder="e.g. Project Aurora: The Next Gen Cloud Frontier" required>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Description</label>
+                            <div class="text-muted small mb-2">Add complete description like detailed summary on the
+                                challenge, objective for running the initiative, key focus areas, expectation from the
+                                ideator, rewards etc.</div>
+                            <textarea name="description" class="form-control" rows="6"
+                                placeholder="Provide a deep dive into the challenge objectives..." required></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Keywords</label>
+                            <div class="text-muted small mb-2">Enter specific words on the topic ex: automation, AI etc.
+                            </div>
+                            <input type="text" name="keywords" class="form-control"
+                                placeholder="AI, Automation, Sustainability">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Challenge Icon</label>
+                            <div class="text-muted small mb-2">Upload a JPEG/PNG file to make your challenge stand out.
+                            </div>
+                            <input type="file" name="challenge_icon" class="form-control" accept="image/*">
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Audience & Duration -->
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Audience & Duration</h5>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Target Audience</label>
+                            <div class="text-muted small mb-2">Select the audience to which the communication will be
+                                sent.</div>
+                            <select name="target_audience" class="form-select">
+                                <option value="INTERNAL">Internal Only</option>
+                                <option value="EXTERNAL">External Only</option>
+                                <option value="BOTH">Both (Internal & External)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">View Mode</label>
+                            <div class="text-muted small mb-2">Define who can see this challenge on the platform.</div>
+                            <select name="visibility" class="form-select">
+                                <option value="PUBLIC">Public</option>
+                                <option value="PRIVATE">Private</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Challenge Start Date</label>
+                            <input type="date" name="start_date" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Challenge End Date</label>
+                            <div class="text-muted small mb-2">Initial launch is usually 2 weeks.</div>
+                            <input type="date" name="end_date" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Round 1 Start Date</label>
+                            <input type="date" name="round1_eval_start" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Round 1 End Date</label>
+                            <input type="date" name="round1_eval_end" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Round 2 Start Date</label>
+                            <input type="date" name="round2_eval_start" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Round 2 End Date</label>
+                            <input type="date" name="round2_eval_end" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Business & Insights -->
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Insights & Outcomes</h5>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Expected Business Outcome</label>
+                            <div class="text-muted small mb-2">Specify the business gains expected from the ideas.</div>
+                            <textarea name="expected_outcome" class="form-control" rows="3"
+                                placeholder="e.g. 20% reduction in cloud costs..." required></textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Key Insights (Optional)</label>
+                            <div class="text-muted small mb-2">Insights from different backgrounds to guide ideators.
+                            </div>
+                            <textarea name="key_insights" class="form-control" rows="3"
+                                placeholder="Additional context for ideators..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Review Parameters -->
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Review Parameters</h5>
+                    <div class="text-muted small mb-3">Select the evaluation criteria. The total weightage must equal
+                        **100**. Preferred weights: 5, 10, 15, 20.</div>
+
+                    <div class="row g-3 mb-2 fw-bold bg-light p-2 rounded">
+                        <div class="col-8">Parameter</div>
+                        <div class="col-4 text-center">Weightage (%)</div>
+                    </div>
+
+                    <div id="parameters-container">
+                        {% for param in review_parameters %}
+                        <div class="row g-3 align-items-center mb-3 p-2 border-bottom">
+                            <div class="col-8">
+                                <div class="form-check">
+                                    <input class="form-check-input param-checkbox" type="checkbox"
+                                        name="selected_params" value="{{ param.parameter_id }}"
+                                        id="param{{ param.parameter_id }}">
+                                    <label class="form-check-label" for="param{{ param.parameter_id }}">
+                                        <strong>{{ param.parameter_name }}</strong>
+                                        <p class="small text-muted mb-0">{{ param.description }}</p>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <input type="number" name="weightage_{{ param.parameter_id }}"
+                                    class="form-control weight-input text-center" placeholder="0" min="0" max="100"
+                                    data-pid="{{ param.parameter_id }}" disabled>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="alert alert-info d-flex justify-content-between align-items-center mt-3">
+                        <span class="fw-bold">Total Weightage:</span>
+                        <span id="total-weightage" class="fs-4 fw-bold">0%</span>
+                    </div>
+
+                    <!-- Section 5: Documents -->
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Idea & Support Documents</h5>
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Idea Template Required?</label>
+                            <select name="has_idea_template" id="id_has_idea_template" class="form-select mb-2">
+                                <option value="NO">No</option>
+                                <option value="YES">Yes</option>
+                            </select>
+                            <input type="file" name="idea_template_file" id="id_template_file"
+                                class="form-control d-none">
+                            <div class="text-muted small">If yes, upload the format in which ideas should be submitted.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Challenge Support Document</label>
+                            <input type="file" name="challenge_document" class="form-control">
+                            <div class="text-muted small">Upload if any document contains more details about the
+                                challenge.</div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-5">
+                        <button type="submit" id="submitBtn" class="btn btn-primary btn-lg rounded-pill fw-bold"
+                            disabled>Next: Add Panels</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.param-checkbox');
+        const weightInputs = document.querySelectorAll('.weight-input');
+        const totalDisplay = document.getElementById('total-weightage');
+        const submitBtn = document.getElementById('submitBtn');
+        const hasTemplateSelect = document.getElementById('id_has_idea_template');
+        const templateFile = document.getElementById('id_template_file');
+
+        // Toggle template file input
+        hasTemplateSelect.addEventListener('change', function () {
+            if (this.value === 'YES') {
+                templateFile.classList.remove('d-none');
+            } else {
+                templateFile.classList.add('d-none');
+                templateFile.value = '';
+            }
+        });
+
+        function calculateTotal() {
+            let total = 0;
+            weightInputs.forEach(input => {
+                if (!input.disabled) {
+                    total += parseInt(input.value || 0);
+                }
+            });
+            totalDisplay.textContent = total + '%';
+
+            if (total === 100) {
+                totalDisplay.classList.remove('text-danger');
+                totalDisplay.classList.add('text-success');
+                submitBtn.disabled = false;
+            } else {
+                totalDisplay.classList.remove('text-success');
+                totalDisplay.classList.add('text-danger');
+                submitBtn.disabled = true;
+            }
+        }
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const pid = this.value;
+                const weightInput = document.querySelector(`.weight-input[data-pid="${pid}"]`);
+                weightInput.disabled = !this.checked;
+                if (!this.checked) {
+                    weightInput.value = '';
+                }
+                calculateTotal();
+            });
+        });
+
+        weightInputs.forEach(input => {
+            input.addEventListener('input', calculateTotal);
+        });
+
+        // Form level validation before submit
+        document.getElementById('challengeForm').addEventListener('submit', function (e) {
+            let total = 0;
+            weightInputs.forEach(input => {
+                if (!input.disabled) {
+                    total += parseInt(input.value || 0);
+                }
+            });
+
+            if (total !== 100) {
+                e.preventDefault();
+                alert('The total weightage of selected parameters must be exactly 100%.');
+            }
+        });
+    });
+</script>
+{% endblock %}

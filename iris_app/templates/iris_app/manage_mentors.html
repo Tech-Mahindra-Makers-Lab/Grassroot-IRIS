@@ -1,0 +1,127 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0 rounded-4 p-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold text-primary">Assign Mentors</h2>
+                        <h5 class="text-secondary">{{ challenge.title }}</h5>
+                    </div>
+                    <span class="badge bg-primary text-white p-2">Step 3: Add Mentors</span>
+                </div>
+
+                <!-- Add Mentor Form -->
+                <div class="bg-light p-4 rounded-4 mb-5">
+                    <h5 class="fw-bold mb-3">Find & Add Mentor</h5>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold">Select Panel</label>
+                                <select name="panel_id" class="form-select" required>
+                                    <option value="" disabled selected>Select a panel</option>
+                                    {% for panel in panels %}
+                                    <option value="{{ panel.panel_id }}">Round {{ panel.round_number }}: {{
+                                        panel.panel_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold">Mentor Email</label>
+                                <input type="email" name="mentor_email" class="form-control"
+                                    placeholder="e.g. mentor@techm.com" required>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" name="add_mentor"
+                                    class="btn btn-primary fw-bold w-100">Add</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Panels and Mentors Review -->
+                <div class="row g-4">
+                    {% for panel in panels %}
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-header bg-white border-0 pt-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="fw-bold mb-0">Round {{ panel.round_number }}: {{ panel.panel_name }}</h6>
+                                    <span
+                                        class="badge {% if panel.round_number == 1 %}bg-info{% else %}bg-success{% endif %} bg-opacity-10 text-dark">
+                                        {{ panel.mentors.count }} Mentors
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    {% for pm in panel.mentors %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <div>
+                                            <div class="fw-bold small">{{ pm.mentor.full_name }}</div>
+                                            <div class="text-muted" style="font-size: 0.75rem;">{{ pm.mentor.email }}
+                                            </div>
+                                        </div>
+                                        <form method="POST" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="panel_id" value="{{ panel.panel_id }}">
+                                            <input type="hidden" name="mentor_id" value="{{ pm.mentor.user_id }}">
+                                            <button type="submit" name="delete_mentor"
+                                                class="btn btn-sm btn-link text-danger p-0">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </form>
+                                    </li>
+                                    {% empty %}
+                                    <li class="list-group-item text-center py-3 text-muted small italic">No mentors
+                                        assigned yet.</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-flex justify-content-between mt-5">
+                    <a href="{% url 'manage_panels' challenge.challenge_id %}"
+                        class="btn btn-outline-secondary rounded-pill px-4">Back to Panels</a>
+                    <button type="button" class="btn btn-success rounded-pill px-5 fw-bold" data-bs-toggle="modal"
+                        data-bs-target="#confirmSubmitModal">Submit Challenge</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Submit Modal -->
+<div class="modal fade" id="confirmSubmitModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">Ready to Launch?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="display-1 text-success mb-3"><i class="bi bi-rocket-takeoff"></i></div>
+                <p>Once submitted, the challenge will be visible to your target audience, and evaluation rounds will
+                    commence according to your schedule.</p>
+                <p class="text-muted small">An automated internal mail will be triggered to: **{{
+                    challenge.get_target_audience_display }}**</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-secondary rounded-pill px-4"
+                    data-bs-dismiss="modal">Cancel</button>
+                <form action="{% url 'submit_challenge' challenge.challenge_id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold">Launch Challenge</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
