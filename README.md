@@ -52,7 +52,7 @@ Grassroot IRIS is a Django-based innovation management platform designed to faci
     - Host: `localhost`
     - Port: `1521`
     - Service: `orcl`
-    - User/Pass: `iris_test` / `Advik@2020`
+    - User/Pass: `****` / `****`
 
 5.  **Run Migrations:**
     ```bash
