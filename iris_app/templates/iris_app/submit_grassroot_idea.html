@@ -3,71 +3,230 @@
 
 {% block title %}Submit Grassroot Idea{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Reusing styles from post_challenge for consistency */
+    .form-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        url('{% static "iris_app/images/innovation_header.jpg" %}') center/cover;
+        padding: 50px 0;
+        color: white;
+        margin-bottom: -80px;
+        position: relative;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+
+    .wizard-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        position: relative;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .wizard-container::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 10%;
+        right: 10%;
+        height: 1px;
+        background: #CBD5E1;
+        z-index: 1;
+    }
+
+    .wizard-step {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        width: 25%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #475569;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .wizard-step.active .step-number {
+        background: #E31837;
+        box-shadow: 0 0 0 5px rgba(227, 24, 55, 0.1);
+    }
+
+    .wizard-step.completed .step-number {
+        background: #10B981;
+    }
+
+    .step-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748B;
+    }
+
+    .wizard-step.active .step-label {
+        color: #E31837;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        padding: 40px;
+        margin-bottom: 30px;
+        display: none;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .form-card.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card-title-custom {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1E293B;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #F1F5F9;
+        padding-bottom: 10px;
+    }
+
+    .footer-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #E2E8F0;
+    }
+
+    .btn-next {
+        background: #1E293B;
+        color: white;
+        padding: 10px 30px;
+        border-radius: 50px;
+        border: none;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .btn-next:hover {
+        background: #0F172A;
+        transform: translateY(-1px);
+    }
+
+    .btn-prev {
+        background: transparent;
+        color: #64748B;
+        border: 1px solid #CBD5E1;
+        padding: 10px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .btn-prev:hover {
+        background: #F8FAFC;
+        color: #1E293B;
+    }
+
+    .summary-group {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+
+    .summary-group:last-child {
+        border-bottom: none;
+    }
+
+    .summary-label {
+        font-weight: 600;
+        color: #64748B;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+    }
+
+    .summary-value {
+        font-size: 1rem;
+        color: #1E293B;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid pb-5">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="fw-bold section-title">Submit New Grassroot Idea</h2>
-            <p class="text-muted">Fields marked with * are mandatory</p>
-        </div>
-    </div>
-
-    <form method="POST" id="grassrootForm">
-        {% csrf_token %}
-
-        <!-- Employee Details (Auto-populated) -->
-        <div class="card mb-4 shadow-sm border-0 rounded-4">
-            <div class="card-header bg-primary bg-gradient text-white rounded-top-4 py-3">
-                <h5 class="card-title mb-0">Employee Details</h5>
+<div class="post-challenge-page">
+    <section class="form-header">
+        <div class="header-content">
+            <div class="header-text">
+                <h1 class="fw-bold mb-1" style="font-size: 32px;">Submit Grassroot Idea</h1>
+                <p class="mb-0 opacity-90" style="font-size: 14px;">Share your innovative ideas to improve processes</p>
             </div>
-            <div class="card-body bg-light">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Employee ID</label>
-                        <input type="text" class="form-control bg-white"
-                            value="{{ employee_detail.user.employee_id|default:'' }}" readonly>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Employee Name</label>
-                        <input type="text" class="form-control bg-white"
-                            value="{{ employee_detail.user.full_name|default:'' }}" readonly>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Current Project Code</label>
-                        <input type="text" class="form-control bg-white"
-                            value="{{ employee_detail.current_project_code|default:'' }}" readonly>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Current Project Name</label>
-                        <input type="text" class="form-control bg-white"
-                            value="{{ employee_detail.current_project_name|default:'' }}" readonly>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Current Customer</label>
-                        <input type="text" class="form-control bg-white"
-                            value="{{ employee_detail.current_customer|default:'' }}" readonly>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">PM/DM Name</label>
-                        <input type="text" class="form-control bg-white"
-                            value="{{ employee_detail.pm_dm_name|default:'' }}" readonly>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Service Line</label>
-                        <input type="text" class="form-control bg-white"
-                            value="{{ employee_detail.service_line|default:'' }}" readonly>
-                    </div>
-                </div>
+        </div>
+    </section>
+
+    <div class="container" style="position: relative; z-index: 10; margin-top: 30px;">
+        <!-- Wizard Progress Bar -->
+        <div class="wizard-container">
+            <div class="wizard-step active" id="wizard-step-1">
+                <div class="step-number">1</div>
+                <div class="step-label">Context</div>
+            </div>
+            <div class="wizard-step" id="wizard-step-2">
+                <div class="step-number">2</div>
+                <div class="step-label">Value Prop</div>
+            </div>
+            <div class="wizard-step" id="wizard-step-3">
+                <div class="step-number">3</div>
+                <div class="step-label">Details</div>
+            </div>
+            <div class="wizard-step" id="wizard-step-4">
+                <div class="step-number">4</div>
+                <div class="step-label">Review</div>
             </div>
         </div>
 
-        <!-- Idea Details -->
-        <div class="card mb-4 shadow-sm border-0 rounded-4">
-            <div class="card-header bg-primary bg-gradient text-white rounded-top-4 py-3">
-                <h5 class="card-title mb-0">Idea Details</h5>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
+        <form method="POST" id="grassrootForm">
+            {% csrf_token %}
+
+            <!-- Step 1: Context -->
+            <div class="form-card step-content active" id="step-1">
+                <h3 class="card-title-custom">Provide Context</h3>
+                <div class="row g-4">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Improvement Category*</label>
                         <select class="form-select" id="id_improvement_category" name="improvement_category" required>
@@ -84,30 +243,37 @@
                             <option value="">Select Sub Category</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="footer-actions justify-content-end">
+                    <button type="button" class="btn btn-next" onclick="goToStep(2)">Next Step <i
+                            class="fa-solid fa-chevron-right ms-2"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 2: Value Proposition -->
+            <div class="form-card step-content" id="step-2">
+                <h3 class="card-title-custom">Idea & Value Proposition</h3>
+                <div class="row g-4">
                     <div class="col-12">
                         <label class="form-label fw-bold">Proposed Idea*</label>
                         <textarea class="form-control" name="proposed_idea" rows="4"
                             placeholder="Describe your idea in detail..." required></textarea>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label fw-bold">Business Value*</label>
                         <textarea class="form-control" name="business_value" rows="3"
                             placeholder="What is the business value?" required></textarea>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label fw-bold">Monetary Value*</label>
                         <textarea class="form-control" name="monetary_value" rows="3"
                             placeholder="Expected monetary impact..." required></textarea>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label fw-bold">Non-Monetary Value*</label>
                         <textarea class="form-control" name="non_monetary_value" rows="3"
                             placeholder="Other benefits..." required></textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Additional Information (Optional)</label>
-                        <textarea class="form-control" name="additional_info" rows="3"
-                            placeholder="Any extra details..."></textarea>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Assumptions*</label>
@@ -120,40 +286,159 @@
                             required></textarea>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="d-flex justify-content-end gap-3 mb-5">
-            <button type="button" class="btn btn-secondary px-4 rounded-pill">Cancel</button>
-            <button type="submit" class="btn btn-primary px-4 rounded-pill shadow-sm">Submit Idea</button>
-        </div>
-    </form>
+                <div class="footer-actions">
+                    <button type="button" class="btn btn-prev" onclick="goToStep(1)"><i
+                            class="fa-solid fa-chevron-left me-2"></i> Prev</button>
+                    <button type="button" class="btn btn-next" onclick="goToStep(3)">Next Step <i
+                            class="fa-solid fa-chevron-right ms-2"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 3: Employee Details & Additional Info -->
+            <div class="form-card step-content" id="step-3">
+                <h3 class="card-title-custom">Your Details</h3>
+                <div class="alert alert-light border mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-4"><label class="small text-muted d-block">Employee ID</label><strong>{{
+                                employee_detail.user.employee_id|default:'N/A' }}</strong></div>
+                        <div class="col-md-4"><label class="small text-muted d-block">Name</label><strong>{{
+                                employee_detail.user.full_name|default:'N/A' }}</strong></div>
+                        <div class="col-md-4"><label class="small text-muted d-block">Project</label><strong>{{
+                                employee_detail.current_project_name|default:'N/A' }}</strong></div>
+                        <div class="col-md-4"><label class="small text-muted d-block">Customer</label><strong>{{
+                                employee_detail.current_customer|default:'N/A' }}</strong></div>
+                        <div class="col-md-4"><label class="small text-muted d-block">PM/DM</label><strong>{{
+                                employee_detail.pm_dm_name|default:'N/A' }}</strong></div>
+                        <div class="col-md-4"><label class="small text-muted d-block">Service Line</label><strong>{{
+                                employee_detail.service_line|default:'N/A' }}</strong></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Additional Information (Optional)</label>
+                    <textarea class="form-control" name="additional_info" rows="3"
+                        placeholder="Any extra details..."></textarea>
+                </div>
+
+                <div class="footer-actions">
+                    <button type="button" class="btn btn-prev" onclick="goToStep(2)"><i
+                            class="fa-solid fa-chevron-left me-2"></i> Prev</button>
+                    <button type="button" class="btn btn-next" onclick="goToStep(4)">Review <i
+                            class="fa-solid fa-chevron-right ms-2"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 4: Review & Submit -->
+            <div class="form-card step-content" id="step-4">
+                <h3 class="card-title-custom">Review Submission</h3>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="bg-light p-4 rounded-4 mb-3">
+                            <div class="summary-group">
+                                <div class="summary-label">Category</div>
+                                <div class="summary-value" id="sum-category">-</div>
+                            </div>
+                            <div class="summary-group">
+                                <div class="summary-label">Proposed Idea</div>
+                                <div class="summary-value" id="sum-idea">-</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="summary-group">
+                                        <div class="summary-label">Business Value</div>
+                                        <div class="summary-value" id="sum-business">-</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-group">
+                                        <div class="summary-label">Monetary</div>
+                                        <div class="summary-value" id="sum-monetary">-</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="summary-group">
+                                        <div class="summary-label">Non-Monetary</div>
+                                        <div class="summary-value" id="sum-nonmonetary">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-actions">
+                    <button type="button" class="btn btn-prev" onclick="goToStep(3)"><i
+                            class="fa-solid fa-chevron-left me-2"></i> Prev</button>
+                    <button type="submit" class="btn btn-danger px-5 fw-bold" id="mainSubmitBtn">Submit Idea</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Success Modal -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+<div class="modal fade success-modal" id="successModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 rounded-4">
+        <div class="modal-content">
             <div class="modal-body text-center p-5">
-                <div class="mb-4">
-                    <img src="{% static 'iris_app/icon/check-circle.svg' %}" alt="Success" width="80"
-                        class="text-success">
-                </div>
-                <h3 class="fw-bold mb-3">Submission Successful!</h3>
-                <p class="text-muted mb-4">Your idea has been submitted successfully!</p>
-                <button type="button" class="btn btn-primary px-5 rounded-pill shadow-sm" id="btnRedirectDashboard">Go
-                    to Dashboard</button>
+                <div class="rocket-container">🚀</div>
+                <h3 class="fw-bold mb-3">Idea <span class="text-success">submitted</span> successfully!</h3>
+                <p class="text-muted mb-4">Your contribution helps us innovate better.</p>
+                <div class="mt-4"><a href="{% url 'grassroot_dashboard' %}"
+                        class="btn btn-success px-4 rounded-pill">Back to Dashboard</a></div>
             </div>
         </div>
     </div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    let currentStep = 1;
+
+    function goToStep(step) {
+        if (step > currentStep && !validateStep(currentStep)) return;
+        $('.step-content').removeClass('active');
+        $(`#step-${step}`).addClass('active');
+
+        $('.wizard-step').each((i, el) => {
+            const s = i + 1;
+            $(el).removeClass('active completed');
+            if (s < step) $(el).addClass('completed');
+            else if (s === step) $(el).addClass('active');
+        });
+
+        currentStep = step;
+        if (step === 4) updateSummary();
+        window.scrollTo(0, 0);
+    }
+
+    function validateStep(step) {
+        let valid = true;
+        const container = $(`#step-${step}`);
+        container.find('[required]').each(function () {
+            if (!$(this).val()) {
+                $(this).addClass('is-invalid');
+                valid = false;
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+        return valid;
+    }
+
+    function updateSummary() {
+        $('#sum-category').text($('#id_improvement_category option:selected').text() + ' > ' + $('#id_improvement_sub_category option:selected').text());
+        $('#sum-idea').text($('[name="proposed_idea"]').val());
+        $('#sum-business').text($('[name="business_value"]').val());
+        $('#sum-monetary').text($('[name="monetary_value"]').val());
+        $('#sum-nonmonetary').text($('[name="non_monetary_value"]').val());
+    }
+
     $(document).ready(function () {
+        // Category change handler
         $('#id_improvement_category').change(function () {
             var categoryId = $(this).val();
             var subcategorySelect = $('#id_improvement_sub_category');
@@ -172,31 +457,27 @@
                     }
                 });
             } else {
-                subcategorySelect.empty();
-                subcategorySelect.append('<option value="">Select Sub Category</option>');
-                subcategorySelect.prop('disabled', true);
+                subcategorySelect.empty().append('<option value="">Select Sub Category</option>').prop('disabled', true);
             }
         });
 
         $('#grassrootForm').on('submit', function (e) {
             e.preventDefault();
             var form = $(this);
+            $('#mainSubmitBtn').prop('disabled', true).text('Submitting...');
+
             $.ajax({
                 type: "POST",
                 url: form.attr('action') || window.location.href,
                 data: form.serialize(),
                 success: function (response) {
-                    var modal = new bootstrap.Modal(document.getElementById('successModal'));
-                    modal.show();
+                    new bootstrap.Modal(document.getElementById('successModal')).show();
                 },
                 error: function () {
                     alert("An error occurred. Please try again.");
+                    $('#mainSubmitBtn').prop('disabled', false).text('Submit Idea');
                 }
             });
-        });
-
-        $('#btnRedirectDashboard').click(function () {
-            window.location.href = "{% url 'grassroot_dashboard' %}";
         });
     });
 </script>

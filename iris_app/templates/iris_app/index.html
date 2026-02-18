@@ -2,128 +2,173 @@
 {% load static %}
 
 {% block content %}
-<!-- Page Header -->
-<header class="page-header">
-    <div>
-        <h1 class="page-title">Innovation Challenges</h1>
-        <p class="text-secondary mb-0">Explore opportunities to innovate and collaborate</p>
-    </div>
-    <div class="d-flex align-items-center gap-3">
-        {% if request.iris_user.is_challenge_owner %}
-        <a href="{% url 'post_challenge' %}" class="btn btn-primary rounded-pill px-4 fw-bold">+ Post Challenge</a>
-        {% endif %}
-        <div class="search-bar-container position-relative">
-            <form action="{% url 'challenge_list' %}" method="GET" id="searchForm">
-                <input type="hidden" name="filter" value="{{ current_filter }}">
-                <input type="text" name="q" class="form-control search-input" placeholder="Search challenges..."
-                    value="{{ query }}" autocomplete="off" id="searchInput">
-                <div id="searchSuggestions" class="dropdown-menu shadow-sm w-100 mt-1 overflow-hidden"
-                    style="display: none; position: absolute; top: 100%; z-index: 1000; border-radius: 12px; border: none;">
+<!-- Innovation Dashboard -->
+<div class="innovation-page p-0">
+    <section class="innovation-header">
+        <div class="container py-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="innovation-header-content">
+                    <h1 class="innovation-title m-0" style="font-size: 32px; font-weight: 700;">Innovation Challenges
+                    </h1>
+                    <p class="innovation-subtitle text-muted m-0">Explore opportunities to innovate and collaborate</p>
                 </div>
-            </form>
-        </div>
-    </div>
-</header>
-
-<!-- Filters -->
-<div class="filter-nav">
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link {% if current_filter == 'active' %}active{% endif %}"
-                href="?filter=active{% if query %}&q={{ query }}{% endif %}">Active Challenges</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if current_filter == 'draft' %}active{% endif %}"
-                href="?filter=draft{% if query %}&q={{ query }}{% endif %}">Drafts</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if current_filter == 'past' %}active{% endif %}"
-                href="?filter=past{% if query %}&q={{ query }}{% endif %}">Past</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if current_filter == 'all' %}active{% endif %}"
-                href="?filter=all{% if query %}&q={{ query }}{% endif %}">All Challenges</a>
-        </li>
-    </ul>
-</div>
-
-<!-- Featured Challenge (Hero) -->
-{% if featured_challenge and not query %}
-<div class="featured-card">
-    {% if featured_challenge.challenge_icon %}
-    <img src="{{ featured_challenge.challenge_icon.url }}" class="featured-img-model"
-        alt="{{ featured_challenge.title }}">
-    {% else %}
-    <img src="{% static 'iris_app/img/Rectangle 79.png' %}" class="featured-img-model" alt="Default Featured">
-    {% endif %}
-    <div class="featured-content">
-        <div class="d-flex justify-content-between align-items-start mb-3">
-            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">{{
-                featured_challenge.keywords|default:"General" }}</span>
-            <span class="fw-bold text-primary">🏆 Featured Challenge</span>
-        </div>
-        <h2>{{ featured_challenge.title }}</h2>
-        <p class="text-secondary mb-4">
-            {{ featured_challenge.description|truncatewords:40 }}
-        </p>
-        <div class="d-flex align-items-center gap-3">
-            <a href="{% url 'submit_idea' featured_challenge.challenge_id %}"
-                class="btn btn-primary px-4 py-2 rounded-pill fw-medium">View & Participate</a>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-<!-- Challenge Grid -->
-<div class="row g-4 mb-5">
-    {% for challenge in challenges %}
-    {% if query or challenge != featured_challenge %}
-    <div class="col-md-6 col-lg-4">
-        <div class="card challenge-card">
-            <div class="position-relative">
-                {% if challenge.challenge_icon %}
-                <img src="{{ challenge.challenge_icon.url }}" class="card-img-top" alt="{{ challenge.title }}">
-                {% else %}
-                <img src="{% static 'iris_app/img/Container-1.png' %}" class="card-img-top" alt="Default">
+                {% if request.iris_user.is_challenge_owner %}
+                <a href="{% url 'post_challenge' %}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">📝 Post
+                    New Challenge</a>
                 {% endif %}
             </div>
-            <div class="card-body">
-                <span class="badge-category">{{ challenge.keywords|default:"Innovation" }}</span>
-                <h5 class="card-title">{{ challenge.title }}</h5>
-                <p class="text-muted small mb-3">{{ challenge.description|truncatewords:15 }}</p>
-                <div class="d-flex justify-content-between align-items-center pt-2">
-                    {% if challenge.status == 'LIVE' %}
-                    <span class="status-badge status-active">● Active</span>
-                    {% elif challenge.status == 'DRAFT' %}
-                    <span class="status-badge status-upcoming">● Draft</span>
-                    {% else %}
-                    <span class="status-badge status-closed">● Closed</span>
-                    {% endif %}
+        </div>
+    </section>
 
-                    {% if request.iris_user.is_challenge_owner and challenge.created_by == request.iris_user %}
-                    <a href="{% url 'manage_panels' challenge.challenge_id %}"
-                        class="btn btn-sm btn-outline-secondary rounded-pill">Manage</a>
+    <div class="container">
+        <!-- Tabs & Search -->
+        <div class="d-flex justify-content-between align-items-center border-bottom mb-4">
+            <ul class="nav nav-tabs border-0" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link border-0 text-dark px-4 py-3 {% if current_filter == 'active' %}active fw-bold border-bottom border-primary border-3{% endif %}"
+                        href="?filter=active">Active Challenges</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link border-0 text-dark px-4 py-3 {% if current_filter == 'draft' %}active fw-bold border-bottom border-primary border-3{% endif %}"
+                        href="?filter=draft">Drafts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link border-0 text-dark px-4 py-3 {% if current_filter == 'past' %}active fw-bold border-bottom border-primary border-3{% endif %}"
+                        href="?filter=past">Past</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link border-0 text-dark px-4 py-3 {% if current_filter == 'all' %}active fw-bold border-bottom border-primary border-3{% endif %}"
+                        href="?filter=all">All</a>
+                </li>
+            </ul>
+            <div class="search-bar position-relative search-bar-container" style="width: 300px;">
+                <form action="{% url 'challenge_list' %}" method="GET">
+                    <input type="hidden" name="filter" value="{{ current_filter }}">
+                    <input type="text" name="q" id="searchInput"
+                        class="form-control rounded-pill bg-light border-0 px-4" placeholder="🔍 Search challenges..."
+                        value="{{ query }}">
+                </form>
+                <div id="searchSuggestions" class="dropdown-menu w-100 shadow-sm border-0 mt-1"
+                    style="display: none; max-height: 200px; overflow-y: auto;"></div>
+            </div>
+        </div>
+
+        {% if featured_challenge and not query and current_filter == 'active' %}
+        <!-- Featured Challenge -->
+        <div class="card border-0 rounded-4 overflow-hidden mb-5 shadow-sm featured-challenge"
+            style="background: #fff;">
+            <div class="row g-0">
+                <div class="col-md-5 position-relative">
+                    {% if featured_challenge.challenge_icon %}
+                    <img src="{{ featured_challenge.challenge_icon.url }}" class="img-fluid h-100 w-100"
+                        style="object-fit: cover;" alt="{{ featured_challenge.title }}">
                     {% else %}
-                    <a href="{% url 'submit_idea' challenge.challenge_id %}"
-                        class="btn btn-sm btn-outline-primary rounded-pill">Participate</a>
+                    <img src="{% static 'iris_app/img/Rectangle 79.png' %}" class="img-fluid h-100 w-100"
+                        style="object-fit: cover;" alt="Default">
                     {% endif %}
+                    <span
+                        class="badge bg-success position-absolute top-0 start-0 m-3 rounded-pill px-3 py-2">Active</span>
+                </div>
+                <div class="col-md-7 p-5 d-flex flex-column justify-content-center">
+                    <div class="text-primary fw-bold mb-2 text-uppercase small">
+                        {% if featured_challenge and featured_challenge.keywords %}
+    {{ featured_challenge.keywords }}
+{% else %}
+    Sustainability
+{% endif %}
+                    </div>
+                    <h2 class="fw-bold mb-3">{{ featured_challenge.title }}</h2>
+                    <p class="text-secondary mb-4">{{ featured_challenge.description|truncatewords:40 }}</p>
+
+                    <div class="d-flex gap-5 mb-4">
+                        <div>
+                            <div class="fs-4 fw-bold">{% with days=featured_challenge.end_date|timeuntil %}{{ days|slice:":2" }}{% endwith %}</div>
+                            <div class="small text-muted text-uppercase">Days Left</div>
+                        </div>
+                        <div>
+                            <div class="fs-4 fw-bold">{{ featured_challenge.idea_set.count }}</div>
+                            <div class="small text-muted text-uppercase">Submissions</div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'challenge_detail' featured_challenge.challenge_id %}"
+                        class="btn btn-dark rounded-pill px-5 py-2 fw-bold align-self-start">View Challenge Details</a>
                 </div>
             </div>
         </div>
-    </div>
-    {% endif %}
-    {% empty %}
-    <div class="col-12 text-center py-5">
-        <p class="text-muted">No challenges found matching your criteria.</p>
-    </div>
-    {% endfor %}
-</div>
+        {% endif %}
 
-{% if challenges.count > 6 %}
-<div class="text-center pb-5">
-    <button class="btn btn-outline-secondary rounded-pill px-5 py-2 fw-medium">Load More</button>
+        <!-- Challenges Grid -->
+        <div class="row g-4 mb-5">
+            {% for challenge in challenges %}
+            {% if query or challenge != featured_challenge %}
+            <div class="col-md-4">
+                <div
+                    class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden challenge-card position-relative group">
+                    <div class="position-relative" style="height: 220px;">
+                        {% if challenge.challenge_icon %}
+                        <img src="{{ challenge.challenge_icon.url }}" class="card-img-top h-100 w-100"
+                            style="object-fit: cover;" alt="{{ challenge.title }}">
+                        {% else %}
+                        <img src="{% static 'iris_app/img/Container-1.png' %}" class="card-img-top h-100 w-100"
+                            style="object-fit: cover;" alt="Default">
+                        {% endif %}
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge bg-white text-dark rounded-pill shadow-sm px-3 py-2 border fw-bold"
+                                style="font-size: 12px;">{{ challenge.get_status_display }}</span>
+                        </div>
+                        <div class="position-absolute bottom-0 start-0 m-3">
+                            <span class="badge bg-primary rounded-pill shadow-sm px-3 py-2">{{ challenge.keywords|default:"Innovation"|truncatechars:20 }}</span>
+                        </div>
+
+                        <!-- Hover Overlay -->
+                        <div class="card-overlay d-flex flex-column justify-content-center align-items-center gap-3">
+                            <a href="{% url 'challenge_detail' challenge.challenge_id %}"
+                                class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">View Details</a>
+                            {% if challenge.status == 'LIVE' %}
+                            <a href="{% url 'submit_idea' challenge.challenge_id %}"
+                                class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Submit Idea</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h5 class="card-title fw-bold text-dark mb-3" style="font-size: 18px; line-height: 1.4;">{{ challenge.title }}</h5>
+                        <p class="text-muted small mb-4 flex-grow-1">{{ challenge.description|truncatewords:20 }}</p>
+
+                        <div class="d-flex justify-content-between align-items-center mt-auto border-top pt-3">
+                            <div class="small text-muted d-flex align-items-center">
+                                <i class="far fa-clock me-2 text-primary"></i>
+                                <span class="fw-bold text-dark">{{ challenge.end_date|timeuntil }}</span>&nbsp;left
+                            </div>
+                            <div class="small text-muted d-flex align-items-center">
+                                <i class="far fa-lightbulb me-2 text-warning"></i>
+                                <span class="fw-bold text-dark">{{ challenge.idea_set.count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="py-5">
+                    <i class="fas fa-search fa-4x text-light mb-4"></i>
+                    <h4 class="text-muted fw-bold">No challenges found</h4>
+                    <p class="text-muted">Try adjusting your search or filters to find what you're looking for.</p>
+                    <a href="{% url 'challenge_list' %}" class="btn btn-outline-primary rounded-pill px-4 mt-3">Clear
+                        Filters</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if challenges.count > 9 %}
+        <div class="text-center pb-5">
+            <button class="btn btn-outline-dark rounded-pill px-5 py-2 fw-bold">Load More</button>
+        </div>
+        {% endif %}
+    </div>
 </div>
-{% endif %}
 {% endblock %}
 
 {% block extra_js %}
@@ -133,6 +178,7 @@
         const searchInput = $('#searchInput');
         const suggestionsBox = $('#searchSuggestions');
 
+        // Search Auto-suggest
         searchInput.on('input', function () {
             const query = $(this).val();
             if (query.length >= 2) {
@@ -140,14 +186,24 @@
                     url: "{% url 'challenge_suggestions' %}",
                     data: { 'q': query },
                     success: function (data) {
+                        suggestionsBox.empty();
                         if (data.length > 0) {
-                            suggestionsBox.empty();
                             $.each(data, function (index, item) {
-                                suggestionsBox.append(`<a class="dropdown-item px-3 py-2 border-bottom-light" href="?q=${encodeURIComponent(item.title)}&filter={{ current_filter }}">${item.title}</a>`);
+                                // Highlight matching text
+                                const regex = new RegExp(`(${query})`, 'gi');
+                                const highlighted = item.title.replace(regex, '<span class="fw-bold text-primary">$1</span>');
+
+                                suggestionsBox.append(`
+                                    <a class="dropdown-item px-3 py-2 border-bottom-light d-flex align-items-center" href="?q=${encodeURIComponent(item.title)}&filter={{ current_filter }}">
+                                        <i class="fas fa-search text-muted me-2 small"></i>
+                                        <span>${highlighted}</span>
+                                    </a>
+                                `);
                             });
                             suggestionsBox.show();
                         } else {
-                            suggestionsBox.hide();
+                            suggestionsBox.append('<div class="dropdown-item px-3 py-2 text-muted small">No results found</div>');
+                            suggestionsBox.show();
                         }
                     }
                 });
@@ -156,9 +212,18 @@
             }
         });
 
+        // Hide suggestions when clicking outside
         $(document).click(function (e) {
             if (!$(e.target).closest('.search-bar-container').length) {
                 suggestionsBox.hide();
+            }
+        });
+
+        // Optional: Add card click to navigate (exluding buttons)
+        $('.challenge-card').click(function (e) {
+            if (!$(e.target).closest('.btn').length) {
+                // Find method to get URL from parent anchor or data attribute if we removed the anchor wrap
+                // constructing url from python variable in template loop is cleaner, but JS here for robustness
             }
         });
     });
@@ -166,7 +231,7 @@
 <style>
     .dropdown-item:hover {
         background-color: #f0f7ff;
-        color: #0d6efd;
+        color: #E31837;
     }
 
     .border-bottom-light {
@@ -175,6 +240,61 @@
 
     .border-bottom-light:last-child {
         border-bottom: none;
+    }
+
+    /* Card Hover Effects */
+    .challenge-card {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .challenge-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .challenge-card .card-img-top {
+        transition: all 0.5s ease;
+    }
+
+    .challenge-card:hover .card-img-top {
+        transform: scale(1.05);
+        filter: brightness(0.7);
+    }
+
+    /* Overlay Styling */
+    .card-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 10;
+        pointer-events: none;
+        /* Allow click through initially */
+    }
+
+    .challenge-card:hover .card-overlay {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .card-overlay .btn {
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        opacity: 0;
+    }
+
+    .challenge-card:hover .card-overlay .btn {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .challenge-card:hover .card-overlay .btn:nth-child(2) {
+        transition-delay: 0.1s;
     }
 </style>
 {% endblock %}

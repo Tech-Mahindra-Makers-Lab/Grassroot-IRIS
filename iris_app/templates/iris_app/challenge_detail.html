@@ -1,0 +1,162 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block title %}{{ challenge.title }} | Challenge Details{% endblock %}
+
+{% block content %}
+<div class="challenge-details-page">
+    <!-- Challenge Hero Section -->
+    <section class="challenge-hero-banner position-relative overflow-hidden" style="height: 400px; background: #000;">
+        {% if challenge.challenge_icon %}
+        <img src="{{ challenge.challenge_icon.url }}" alt="{{ challenge.title }}" class="hero-banner-image w-100 h-100"
+            style="object-fit: cover; opacity: 0.6;">
+        {% else %}
+        <img src="{% static 'iris_app/img/Rectangle 79.png' %}" alt="Default" class="hero-banner-image w-100 h-100"
+            style="object-fit: cover; opacity: 0.6;">
+        {% endif %}
+
+        <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
+            <div class="container py-5">
+                <div class="hero-content text-white" style="max-width: 800px;">
+                    <button onclick="history.back()" class="btn btn-link text-white text-decoration-none p-0 mb-4">←
+                        Back</button>
+                    <h1 class="display-5 fw-bold mb-3">{{ challenge.title }}</h1>
+                    <p class="lead mb-4">{{ challenge.description|truncatewords:30 }}</p>
+                    <span class="badge bg-primary rounded-pill px-4 py-2">{{ challenge.keywords|default:"Sustainable
+                        Engineering" }}</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container py-5">
+        <div class="row g-5">
+            <!-- Left Column: Content -->
+            <div class="col-lg-8">
+                <!-- Overview Section -->
+                <section class="mb-5">
+                    <h2 class="fw-bold mb-4">Overview</h2>
+                    <div class="text-secondary" style="line-height: 1.8;">
+                        {{ challenge.description|linebreaks }}
+                    </div>
+                </section>
+
+                <!-- Key Objectives Section -->
+                {% if challenge.expected_outcome %}
+                <section class="mb-5">
+                    <h2 class="fw-bold mb-4">Key Objectives</h2>
+                    <div class="text-secondary">
+                        {{ challenge.expected_outcome|linebreaks }}
+                    </div>
+                </section>
+                {% endif %}
+
+                <!-- Review Parameters Section -->
+                {% if review_params %}
+                <section class="mb-5">
+                    <h2 class="fw-bold mb-4">Review Parameters</h2>
+                    <div class="row g-4">
+                        {% for param in review_params %}
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-medium">{{ param.parameter.name }}</span>
+                                <span class="text-primary fw-bold">{{ param.weightage }}%</span>
+                            </div>
+                            <div class="progress" style="height: 8px; border-radius: 4px;">
+                                <div class="progress-bar" role="progressbar"
+                                    style="width: {{ param.weightage }}%; background-color: var(--primary-color);">
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+
+                <!-- Additional Info Section -->
+                {% if challenge.key_insights %}
+                <section class="p-4 bg-light rounded-4 mb-5">
+                    <h3 class="fw-bold mb-3">Key Insights</h3>
+                    <div class="text-secondary">
+                        {{ challenge.key_insights|linebreaks }}
+                    </div>
+                </section>
+                {% endif %}
+
+                <!-- CTA Section -->
+                {% if challenge.status == 'LIVE' %}
+                <section class="p-5 rounded-4 text-white text-center shadow-lg mb-5"
+                    style="background: linear-gradient(135deg, #29251D 0%, #000 100%);">
+                    <h2 class="fw-bold mb-3">Ready to Submit Your Idea?</h2>
+                    <p class="mb-4 opacity-75">Share your innovative solution and contribute to a sustainable future.
+                    </p>
+                    <a href="{% url 'submit_idea' challenge.challenge_id %}"
+                        class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow">Share Your Idea</a>
+                </section>
+                {% endif %}
+            </div>
+
+            <!-- Right Column: Sidebar -->
+            <div class="col-lg-4">
+                <div class="position-sticky" style="top: 100px;">
+                    <!-- Timeline Card -->
+                    <div class="card border-0 shadow-sm rounded-4 mb-4 p-4">
+                        <h3 class="fw-bold mb-4 h5">Timeline</h3>
+                        <div class="d-flex flex-column gap-3">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Start Date</span>
+                                <span class="fw-semibold">{{ challenge.start_date|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">End Date</span>
+                                <span class="fw-semibold text-danger">{{ challenge.end_date|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documents Card -->
+                    {% if challenge.challenge_document or challenge.idea_template_file %}
+                    <div class="card border-0 shadow-sm rounded-4 mb-4 p-4">
+                        <h3 class="fw-bold mb-4 h5">Documents</h3>
+                        {% if challenge.challenge_document %}
+                        <div class="d-flex align-items-center justify-content-between mb-3 p-3 bg-light rounded-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="fs-4">📄</span>
+                                <span class="small fw-medium">Challenge Doc</span>
+                            </div>
+                            <a href="{{ challenge.challenge_document.url }}"
+                                class="btn btn-sm btn-white rounded-circle shadow-sm">⬇</a>
+                        </div>
+                        {% endif %}
+                        {% if challenge.idea_template_file %}
+                        <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="fs-4">📝</span>
+                                <span class="small fw-medium">Idea Template</span>
+                            </div>
+                            <a href="{{ challenge.idea_template_file.url }}"
+                                class="btn btn-sm btn-white rounded-circle shadow-sm">⬇</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Management Actions -->
+                    {% if is_owner %}
+                    <div class="card border-0 shadow-sm rounded-4 mb-4 p-4 bg-primary bg-opacity-10">
+                        <h3 class="fw-bold mb-3 h5">Management</h3>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'manage_panels' challenge.challenge_id %}"
+                                class="btn btn-outline-primary rounded-pill btn-sm">Manage Panels</a>
+                            <a href="{% url 'manage_mentors' challenge.challenge_id %}"
+                                class="btn btn-outline-primary rounded-pill btn-sm">Manage Mentors</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

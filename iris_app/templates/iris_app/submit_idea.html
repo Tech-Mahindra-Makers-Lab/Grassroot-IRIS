@@ -1,137 +1,365 @@
 {% extends 'iris_app/base.html' %}
 {% load static %}
 
+{% block title %}Submit Idea{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Reuse consistent styles */
+    .form-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        url('{% static "iris_app/images/innovation_header.jpg" %}') center/cover;
+        padding: 50px 0;
+        color: white;
+        margin-bottom: -80px;
+        position: relative;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+
+    .wizard-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        position: relative;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .wizard-container::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 10%;
+        right: 10%;
+        height: 1px;
+        background: #CBD5E1;
+        z-index: 1;
+    }
+
+    .wizard-step {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        width: 25%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #475569;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .wizard-step.active .step-number {
+        background: #E31837;
+        box-shadow: 0 0 0 5px rgba(227, 24, 55, 0.1);
+    }
+
+    .wizard-step.completed .step-number {
+        background: #10B981;
+    }
+
+    .step-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748B;
+    }
+
+    .wizard-step.active .step-label {
+        color: #E31837;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        padding: 40px;
+        margin-bottom: 30px;
+        display: none;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .form-card.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-title-custom {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1E293B;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #F1F5F9;
+        padding-bottom: 10px;
+    }
+
+    .footer-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #E2E8F0;
+    }
+
+    .btn-next {
+        background: #1E293B;
+        color: white;
+        padding: 10px 30px;
+        border-radius: 50px;
+        border: none;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    
+    .btn-next:hover {
+        background: #0F172A;
+        transform: translateY(-1px);
+    }
+
+    .btn-prev {
+        background: transparent;
+        color: #64748B;
+        border: 1px solid #CBD5E1;
+        padding: 10px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    
+    .btn-prev:hover {
+        background: #F8FAFC;
+        color: #1E293B;
+    }
+
+    .summary-group {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+    .summary-label {
+        font-weight: 600;
+        color: #64748B;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow-sm border-0 rounded-4 p-5">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 class="fw-bold text-primary">Submit Your Idea</h2>
-                        <h5 class="text-secondary">Challenge: {{ challenge.title }}</h5>
+<div class="post-challenge-page">
+    <section class="form-header">
+        <div class="header-content">
+            <div class="header-text">
+                <h1 class="fw-bold mb-1" style="font-size: 32px;">Submit Your Idea</h1>
+                <p class="mb-0 opacity-90" style="font-size: 14px;">Challenge: {{ challenge.title }}</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="container" style="position: relative; z-index: 10; margin-top: 30px;">
+        <!-- Wizard Progress Bar -->
+        <div class="wizard-container">
+            <div class="wizard-step active" id="wizard-step-1">
+                <div class="step-number">1</div>
+                <div class="step-label">Basics</div>
+            </div>
+            <div class="wizard-step" id="wizard-step-2">
+                <div class="step-number">2</div>
+                <div class="step-label">Solution</div>
+            </div>
+            <div class="wizard-step" id="wizard-step-3">
+                <div class="step-number">3</div>
+                <div class="step-label">Collab</div>
+            </div>
+            <div class="wizard-step" id="wizard-step-4">
+                <div class="step-number">4</div>
+                <div class="step-label">Review</div>
+            </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" id="ideaForm">
+            {% csrf_token %}
+
+            <!-- Step 1: Basic Info -->
+            <div class="form-card step-content active" id="step-1">
+                <h3 class="card-title-custom">Basic Information</h3>
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Idea Title*</label>
+                        <input type="text" name="title" class="form-control form-control-lg"
+                                placeholder="A catchy name for your idea" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Tagline / Short Description*</label>
+                        <textarea name="description" class="form-control" rows="3"
+                                placeholder="Briefly summarize your idea in 2-3 sentences..." required></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Keywords</label>
+                        <input type="text" name="keywords" class="form-control"
+                                placeholder="AI, Automation, Sustainability, etc.">
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check form-switch p-3 bg-light rounded-3">
+                            <input class="form-check-input ms-0 me-3" type="checkbox" name="is_confidential" id="confidentialSwitch">
+                            <label class="form-check-label fw-bold" for="confidentialSwitch">Mark as Confidential</label>
+                            <small class="d-block text-muted mt-1">If enabled, only authorized reviewers can see this idea.</small>
+                        </div>
                     </div>
                 </div>
 
-                <form method="POST" enctype="multipart/form-data" id="ideaForm">
-                    {% csrf_token %}
+                <div class="footer-actions justify-content-end">
+                    <button type="button" class="btn btn-next" onclick="goToStep(2)">Next Step <i class="fa-solid fa-chevron-right ms-2"></i></button>
+                </div>
+            </div>
 
-                    <!-- Section 1: Basic Info -->
-                    <h5 class="fw-bold mb-3 border-bottom pb-2">Basic Information</h5>
-                    <div class="row g-4 mb-5">
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Idea Title</label>
-                            <input type="text" name="title" class="form-control form-control-lg"
-                                placeholder="A catchy and descriptive name for your idea" required>
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Tagline / Short Description</label>
-                            <textarea name="description" class="form-control" rows="3"
-                                placeholder="Briefly summarize your idea in 2-3 sentences..." required></textarea>
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Keywords</label>
-                            <input type="text" name="keywords" class="form-control"
-                                placeholder="AI, Automation, Sustainability, etc.">
-                        </div>
+            <!-- Step 2: Solution & Value -->
+            <div class="form-card step-content" id="step-2">
+                <h3 class="card-title-custom">Detailed Solution</h3>
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Problem Statement*</label>
+                        <textarea name="problem_statement" class="form-control" rows="4" required></textarea>
                     </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Proposed Solution*</label>
+                        <textarea name="proposed_solution" class="form-control" rows="5" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Innovation Type*</label>
+                        <select name="innovation_type" class="form-select" required>
+                            {% for val, label in innovation_types %}
+                            <option value="{{ val }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Sharing Scope*</label>
+                        <select name="sharing_scope" class="form-select" required>
+                            {% for val, label in sharing_scopes %}
+                            <option value="{{ val }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Business Value (Monetary)</label>
+                        <textarea name="business_value_monetary" class="form-control" rows="2" placeholder="Expected revenue/savings..."></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Business Value (Non-Monetary)</label>
+                        <textarea name="business_value_non_monetary" class="form-control" rows="2" placeholder="Brand value, efficiency..."></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Assumptions</label>
+                        <textarea name="assumptions" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Risks</label>
+                        <textarea name="risks" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
 
-                    <!-- Section 2: Detailed Solution (IdeaDetail) -->
-                    <h5 class="fw-bold mb-3 border-bottom pb-2">Detailed Solution</h5>
-                    <div class="row g-4 mb-5">
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Problem Statement</label>
-                            <div class="text-muted small mb-2">What specific problem or opportunity are you addressing?
-                            </div>
-                            <textarea name="problem_statement" class="form-control" rows="4" required></textarea>
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Proposed Solution</label>
-                            <div class="text-muted small mb-2">Describe your solution in detail. How does it work?</div>
-                            <textarea name="proposed_solution" class="form-control" rows="5" required></textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Innovation Type</label>
-                            <select name="innovation_type" class="form-select" required>
-                                {% for val, label in innovation_types %}
-                                <option value="{{ val }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Sharing Scope</label>
-                            <select name="sharing_scope" class="form-select" required>
-                                {% for val, label in sharing_scopes %}
-                                <option value="{{ val }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Business Value (Monetary)</label>
-                            <textarea name="business_value_monetary" class="form-control" rows="2"
-                                placeholder="Expected cost savings or revenue growth..."></textarea>
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Business Value (Non-Monetary)</label>
-                            <textarea name="business_value_non_monetary" class="form-control" rows="2"
-                                placeholder="Efficiency improvements, brand value, etc..."></textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Assumptions</label>
-                            <textarea name="assumptions" class="form-control" rows="2"></textarea>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Risks</label>
-                            <textarea name="risks" class="form-control" rows="2"></textarea>
-                        </div>
-                        <div class="col-12 mt-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="is_confidential"
-                                    id="confidentialSwitch">
-                                <label class="form-check-label fw-bold" for="confidentialSwitch">Mark as
-                                    Confidential</label>
-                            </div>
-                        </div>
-                    </div>
+                <div class="footer-actions">
+                    <button type="button" class="btn btn-prev" onclick="goToStep(1)"><i class="fa-solid fa-chevron-left me-2"></i> Prev</button>
+                    <button type="button" class="btn btn-next" onclick="goToStep(3)">Next Step <i class="fa-solid fa-chevron-right ms-2"></i></button>
+                </div>
+            </div>
 
-                    <!-- Section 3: Co-Ideators -->
-                    <h5 class="fw-bold mb-3 border-bottom pb-2">Collaborators (Co-Ideators)</h5>
-                    <div class="bg-light p-4 rounded-4 mb-5">
-                        <div class="row g-3">
-                            <div class="col-md-8">
-                                <input type="email" id="coIdeatorEmail" class="form-control"
-                                    placeholder="Enter collaborator's email (e.g. colleague@techm.com)">
-                            </div>
-                            <div class="col-md-4">
-                                <button type="button" id="addCoIdeatorBtn"
-                                    class="btn btn-outline-primary w-100 fw-bold">Add Collaborator</button>
-                            </div>
+            <!-- Step 3: Collaboration & Documents -->
+            <div class="form-card step-content" id="step-3">
+                <h3 class="card-title-custom">Collaboration & Attachments</h3>
+                
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Co-Ideators (Collaborators)</label>
+                    <div class="bg-light p-4 rounded-4">
+                        <div class="input-group mb-3">
+                            <input type="email" id="coIdeatorEmail" class="form-control" placeholder="Enter collaborator's email...">
+                            <button type="button" id="addCoIdeatorBtn" class="btn btn-primary">Add</button>
                         </div>
-                        <div id="coIdeatorList" class="mt-3 d-flex flex-wrap gap-2">
-                            <!-- Co-ideators will appear here -->
-                        </div>
+                        <div id="coIdeatorList" class="d-flex flex-wrap gap-2"></div>
                     </div>
+                </div>
 
-                    <!-- Section 4: Supporting Documents -->
-                    <h5 class="fw-bold mb-3 border-bottom pb-2">Supporting Documents</h5>
-                    <div class="row g-4 mb-5">
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Upload Evidences / Documents</label>
-                            <input type="file" name="idea_documents" class="form-control" multiple>
-                            <div class="text-muted small mt-1">You can upload multiple files (PDF, PPT, DOCX, Images).
-                            </div>
-                        </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Supporting Documents</label>
+                    <div class="bg-light p-4 rounded-4 text-center border-dashed">
+                         <i class="fa-solid fa-cloud-arrow-up fa-2x text-muted mb-3"></i>
+                         <input type="file" name="idea_documents" class="form-control" multiple>
+                         <div class="small text-muted mt-2">Upload multiple files (PDF, PPT, Images)</div>
                     </div>
+                </div>
 
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle-fill me-2"></i> Submitting this idea will award you **5 IRIS
-                        Points**!
-                    </div>
+                <div class="footer-actions">
+                    <button type="button" class="btn btn-prev" onclick="goToStep(2)"><i class="fa-solid fa-chevron-left me-2"></i> Prev</button>
+                    <button type="button" class="btn btn-next" onclick="goToStep(4)">Review <i class="fa-solid fa-chevron-right ms-2"></i></button>
+                </div>
+            </div>
 
-                    <div class="d-grid mt-5">
-                        <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">Submit Idea</button>
+            <!-- Step 4: Review -->
+            <div class="form-card step-content" id="step-4">
+                <h3 class="card-title-custom">Review Submission</h3>
+                <div class="alert alert-info border-0 bg-info-subtle text-info-emphasis">
+                    <i class="fa-solid fa-award me-2"></i> Submitting this idea will award you <strong>5 IRIS Points</strong>!
+                </div>
+                
+                <div class="bg-light p-4 rounded-4 mb-4">
+                    <div class="summary-group">
+                        <div class="summary-label">Title</div>
+                        <div class="summary-value" id="sum-title">-</div>
                     </div>
-                </form>
+                     <div class="summary-group">
+                        <div class="summary-label">Description</div>
+                        <div class="summary-value" id="sum-desc">-</div>
+                    </div>
+                    <div class="summary-group">
+                        <div class="summary-label">Innovation Type</div>
+                        <div class="summary-value" id="sum-type">-</div>
+                    </div>
+                </div>
+
+                <div class="footer-actions">
+                     <button type="button" class="btn btn-prev" onclick="goToStep(3)"><i class="fa-solid fa-chevron-left me-2"></i> Prev</button>
+                     <button type="submit" class="btn btn-danger px-5 fw-bold" id="mainSubmitBtn">Submit Idea</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade success-modal" id="successModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-5">
+                <div class="rocket-container">🚀</div>
+                <h3 class="fw-bold mb-3">Idea <span class="text-success">submitted</span> successfully!</h3>
+                <p class="text-muted mb-4">Good luck with the challenge!</p>
+                <div class="mt-4"><a href="{% url 'my_ideas' %}" class="btn btn-success px-4 rounded-pill">View My Ideas</a></div>
             </div>
         </div>
     </div>
@@ -139,12 +367,47 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    let currentStep = 1;
+
+    function goToStep(step) {
+        if (step > currentStep && !validateStep(currentStep)) return;
+        $('.step-content').removeClass('active');
+        $(`#step-${step}`).addClass('active');
+        
+        $('.wizard-step').each((i, el) => {
+            const s = i + 1;
+            $(el).removeClass('active completed');
+            if (s < step) $(el).addClass('completed');
+            else if (s === step) $(el).addClass('active');
+        });
+        
+        currentStep = step;
+        if (step === 4) updateSummary();
+        window.scrollTo(0, 0);
+    }
+
+    function validateStep(step) {
+        let valid = true;
+        $(`#step-${step}`).find('[required]').each((i, el) => {
+            if (!$(el).val()) { $(el).addClass('is-invalid'); valid = false; }
+            else $(el).removeClass('is-invalid');
+        });
+        return valid;
+    }
+
+    function updateSummary() {
+        $('#sum-title').text($('[name="title"]').val());
+        $('#sum-desc').text($('[name="description"]').val());
+        $('#sum-type').text($('[name="innovation_type"] option:selected').text());
+    }
+
+    // Co-Ideator Logic
     document.addEventListener('DOMContentLoaded', function () {
         const coIdeatorEmail = document.getElementById('coIdeatorEmail');
         const addBtn = document.getElementById('addCoIdeatorBtn');
         const listContainer = document.getElementById('coIdeatorList');
-        const form = document.getElementById('ideaForm');
 
         addBtn.addEventListener('click', function () {
             const email = coIdeatorEmail.value.trim();
@@ -157,31 +420,58 @@
         });
 
         function addCoIdeatorBadge(email) {
-            // Check if already added
-            const existing = document.querySelector(`input[value="${email}"]`);
-            if (existing) return;
-
+            if (document.querySelector(`input[value="${email}"]`)) return;
             const badge = document.createElement('div');
             badge.className = 'badge bg-primary p-2 d-flex align-items-center';
-            badge.innerHTML = `
-                <span>${email}</span>
-                <input type="hidden" name="co_ideators" value="${email}">
-                <button type="button" class="btn-close btn-close-white ms-2 remove-btn" style="font-size: 0.5rem;"></button>
-            `;
+            badge.innerHTML = `<span>${email}</span><input type="hidden" name="co_ideators" value="${email}"><button type="button" class="btn-close btn-close-white ms-2 remove-btn" style="font-size: 0.5rem;"></button>`;
             listContainer.appendChild(badge);
-
-            badge.querySelector('.remove-btn').addEventListener('click', function () {
-                badge.remove();
-            });
+            badge.querySelector('.remove-btn').addEventListener('click', () => badge.remove());
         }
 
         function validateEmail(email) {
-            return String(email)
-                .toLowerCase()
-                .match(
-                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0:9]{1,3}\.[0:9]{1,3}\.[0:9]{1,3}\.[0:9]{1,3}\])|(([a-zA-Z\-0:9]+\.)+[a-zA-Z]{2,}))$/
-                );
+            return String(email).toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0:9]{1,3}\.[0:9]{1,3}\.[0:9]{1,3}\.[0:9]{1,3}\])|(([a-zA-Z\-0:9]+\.)+[a-zA-Z]{2,}))$/);
         }
     });
+
+    // Form Submit
+    /* NOTE: Not using AJAX here because file uploads + redirects are handled by standard form submission usually, 
+       but standard form submit won't show the modal nicely without page reload.
+       We'll intercept, show modal on success logic? 
+       Actually, standard Submit is safer for file uploads unless we use FormData. 
+       Let's use standard POST for now to ensure robustness, or if we want the modal, we need AJAX.
+    */
+   
+    // Let's use standard submit for now to let Django handle the redirect/messages naturally
+    // OR if user really wants the modal, we can use AJAX. 
+    // The previous implementation utilized AJAX for Grassroot. Let's use standard for this one to be safe with files 
+    // BUT user asked for design. Design implies modal. I'll stick to standard submit unless I see errors, as file handling is tricky with simple AJAX.
+    // Actually, I can use FormData for AJAX file upload.
+    
+    /* Using AJAX for seamless experience */
+    /*
+    $('#ideaForm').on('submit', function(e) {
+        e.preventDefault();
+        $('#mainSubmitBtn').prop('disabled', true).text('Submitting...');
+        var formData = new FormData(this);
+        $.ajax({
+            url: window.location.href,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(resp) {
+                // If view redirects, we might just follow specific logic or show modal.
+                // NOTE: The view returns a redirect. AJAX will follow the redirect URL in response headers transparently usually or get the HTML of the new page.
+                // Ideally backend should return JSON.
+                // Since I didn't change backend, I will stick to standard submit to avoid breaking "Redirect" logic.
+            },
+            error: function() {
+                alert('Submission failed.');
+                $('#mainSubmitBtn').prop('disabled', false).text('Submit Idea');
+            }
+        });
+    });
+    */
+   /* sticking to standard submit for now to ensure backend compatibility */
 </script>
 {% endblock %}

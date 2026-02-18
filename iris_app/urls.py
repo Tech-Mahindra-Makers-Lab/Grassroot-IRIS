@@ -5,12 +5,14 @@ urlpatterns = [
     path('', views.home_landing, name='home'),
     path('login/', views.login_view, name='login'),
     path('challenges/', views.challenge_list, name='challenge_list'),
+    path('challenges/<uuid:challenge_id>/', views.challenge_detail, name='challenge_detail'),
     path('logout/', views.logout_view, name='logout'),
     path('post-challenge/', views.post_challenge, name='post_challenge'),
     path('manage-panels/<uuid:challenge_id>/', views.manage_panels, name='manage_panels'),
     path('manage-mentors/<uuid:challenge_id>/', views.manage_mentors, name='manage_mentors'),
     path('submit-challenge/<uuid:challenge_id>/', views.submit_challenge, name='submit_challenge'),
     path('my-ideas/', views.my_ideas, name='my_ideas'),
+    path('dashboard/', views.user_dashboard, name='user_dashboard'),
     path('submit-idea/<uuid:challenge_id>/', views.submit_idea, name='submit_idea'),
     
     # Grassroot Idea Flow
@@ -23,6 +25,7 @@ urlpatterns = [
     path('rework-grassroot/<uuid:idea_id>/', views.rework_grassroot, name='rework_grassroot'),
     path('customer-input/<uuid:idea_id>/', views.customer_input, name='customer_input'),
     path('challenge-suggestions/', views.challenge_suggestions, name='challenge_suggestions'),
+    path('ibu-search/', views.ibu_search, name='ibu_search'),
     path('notifications/', views.notification_list, name='notification_list'),
     path('notifications/mark-read/<uuid:notification_id>/', views.mark_notification_as_read, name='mark_notification_as_read'),
     path('reports/', views.reports_view, name='reports_view'),

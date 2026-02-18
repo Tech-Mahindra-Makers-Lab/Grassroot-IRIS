@@ -1,185 +1,602 @@
 {% extends 'iris_app/base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<style>
+    .post-challenge-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        url('{% static "iris_app/images/innovation_header.jpg" %}') center/cover;
+        padding: 50px 0;
+        color: white;
+        margin-bottom: -80px;
+        position: relative;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+
+    .btn-save-draft {
+        background: white;
+        color: #1E293B;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #E2E8F0;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-save-draft:hover {
+        background: #F8FAFC;
+    }
+
+    .wizard-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        position: relative;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .wizard-container::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 10%;
+        right: 10%;
+        height: 1px;
+        background: #CBD5E1;
+        z-index: 1;
+    }
+
+    .wizard-step {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        width: 25%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #475569;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .wizard-step.active .step-number {
+        background: #E31837;
+        box-shadow: 0 0 0 5px rgba(227, 24, 55, 0.1);
+    }
+
+    .wizard-step.completed .step-number {
+        background: #10B981;
+    }
+
+    .step-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748B;
+        margin-bottom: 2px;
+    }
+
+    .step-sublabel {
+        font-size: 11px;
+        color: #94A3B8;
+    }
+
+    .wizard-step.active .step-label {
+        color: #1E293B;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        padding: 40px;
+        border: 1px solid #F1F5F9;
+        max-width: 900px;
+        margin: 0 auto 50px;
+    }
+
+    .step-content {
+        display: none;
+    }
+
+    .step-content.active {
+        display: block;
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #1E293B;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .form-label.required::after {
+        content: '*';
+        color: #E31837;
+        margin-left: 4px;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 6px;
+        padding: 10px 14px;
+        border: 1px solid #E2E8F0;
+        color: #475569;
+        background-color: #FAFBFC;
+        transition: all 0.2s;
+    }
+
+    .form-control:focus {
+        border-color: #E31837;
+        box-shadow: 0 0 0 3px rgba(227, 24, 55, 0.1);
+        background-color: white;
+        outline: none;
+    }
+
+    .audience-card,
+    .rounds-card {
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        height: 100%;
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        background: #FAFBFC;
+    }
+
+    .audience-card:hover,
+    .rounds-card:hover {
+        border-color: #E31837;
+        background: white;
+    }
+
+    .audience-card.selected,
+    .rounds-card.selected {
+        border-color: #E31837;
+        background: white;
+        box-shadow: 0 0 0 1px #E31837;
+    }
+
+    .footer-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 40px;
+    }
+
+    .btn-next {
+        background: #E31837;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .btn-next:hover {
+        background: #C11430;
+    }
+
+    .btn-prev {
+        background: white;
+        color: #64748B;
+        border: 1px solid #E2E8F0;
+        padding: 10px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+
+    .success-modal .modal-content {
+        border-radius: 20px;
+        border: none;
+    }
+
+    .rocket-container {
+        font-size: 80px;
+        margin-bottom: 20px;
+        animation: rocketLaunch 2s infinite ease-in-out;
+    }
+
+    @keyframes rocketLaunch {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #F1F5F9;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow-sm border-0 rounded-4 p-5">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="fw-bold text-primary">Post a New Challenge</h2>
-                    <span class="badge bg-primary text-white p-2">Step 1: Challenge Details</span>
+<div class="post-challenge-page">
+    <section class="post-challenge-header">
+        <div class="header-content">
+            <div class="header-text">
+                <h1 class="fw-bold mb-1" style="font-size: 32px;">Post New Challenges</h1>
+                <p class="mb-0 opacity-90" style="font-size: 14px;">Create and configure your innovation challenge</p>
+            </div>
+            <button type="button" class="btn-save-draft">
+                <i class="fa-regular fa-floppy-disk"></i> Save Draft
+            </button>
+        </div>
+    </section>
+
+    <div class="container" style="position: relative; z-index: 10; margin-top: 30px;">
+        <!-- Wizard Progress Bar -->
+        <div class="wizard-container">
+            <div class="wizard-step active" id="wizard-step-1">
+                <div class="step-number">1</div>
+                <div class="text-center">
+                    <div class="step-label">Basic Info</div>
+                    <div class="step-sublabel d-none d-md-block">Challenge details</div>
+                </div>
+            </div>
+            <div class="wizard-step" id="wizard-step-2">
+                <div class="step-number">2</div>
+                <div class="text-center">
+                    <div class="step-label">Configuration</div>
+                    <div class="step-sublabel d-none d-md-block">Duration & setup</div>
+                </div>
+            </div>
+            <div class="wizard-step" id="wizard-step-3">
+                <div class="step-number">3</div>
+                <div class="text-center">
+                    <div class="step-label">Review Setup</div>
+                    <div class="step-sublabel d-none d-md-block">Parameters & panels</div>
+                </div>
+            </div>
+            <div class="wizard-step" id="wizard-step-4">
+                <div class="step-number">4</div>
+                <div class="text-center">
+                    <div class="step-label">Finalize</div>
+                    <div class="step-sublabel d-none d-md-block">Review & publish</div>
+                </div>
+            </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" id="multiStepForm">
+            {% csrf_token %}
+
+            <!-- Step 1: Basic Information -->
+            <div class="form-card step-content active" id="step-1">
+                <div class="mb-4">
+                    <label class="form-label required">IBU Name</label>
+                    <select name="ibu_name" class="form-select select2-ibu" required>
+                        <option value="" disabled selected>Search for an IBU...</option>
+                    </select>
                 </div>
 
-                <form method="POST" enctype="multipart/form-data" id="challengeForm">
-                    {% csrf_token %}
+                <div class="mb-4">
+                    <label class="form-label required">Challenge Name</label>
+                    <input type="text" name="title" class="form-control" placeholder="Enter a name for your Challenge"
+                        required>
+                </div>
 
-                    <!-- Section 1: Basic Info -->
-                    <div class="row g-4 mb-5">
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Challenge Name</label>
-                            <div class="text-muted small mb-2">Add a unique innovative name to make your challenge stand
-                                out.</div>
-                            <input type="text" name="title" class="form-control form-control-lg"
-                                placeholder="e.g. Project Aurora: The Next Gen Cloud Frontier" required>
-                        </div>
+                <div class="mb-4">
+                    <label class="form-label required">Description</label>
+                    <textarea name="description" class="form-control" rows="5"
+                        placeholder="Describe your Challenge in detail..." id="description" required></textarea>
+                    <div class="d-flex justify-content-between mt-1">
+                        <small class="text-warning" id="char-warning"><i
+                                class="fa-solid fa-circle-exclamation me-1"></i> Minimum 1000 characters (1000 more
+                            needed)</small>
+                        <small class="text-muted"><span id="char-count">0</span>/1000</small>
+                    </div>
+                </div>
 
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Description</label>
-                            <div class="text-muted small mb-2">Add complete description like detailed summary on the
-                                challenge, objective for running the initiative, key focus areas, expectation from the
-                                ideator, rewards etc.</div>
-                            <textarea name="description" class="form-control" rows="6"
-                                placeholder="Provide a deep dive into the challenge objectives..." required></textarea>
-                        </div>
+                <div class="mb-4">
+                    <label class="form-label required">Keywords</label>
+                    <input type="text" name="keywords" class="form-control"
+                        placeholder="e.g., AI, Cloud, Innovation, 5G" required>
+                </div>
 
+                <div class="mb-4">
+                    <label class="form-label">Challenge Icon</label>
+                    <input type="file" name="challenge_icon" class="form-control" accept="image/*">
+                </div>
+
+                <div class="footer-actions">
+                    <div></div>
+                    <button type="button" class="btn btn-next" onclick="goToStep(2)">Next Step <i
+                            class="fa-solid fa-chevron-right ms-2"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 2: Configuration -->
+            <div class="form-card step-content" id="step-2">
+                <div class="mb-4">
+                    <label class="form-label required">Target Audience</label>
+                    <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Keywords</label>
-                            <div class="text-muted small mb-2">Enter specific words on the topic ex: automation, AI etc.
-                            </div>
-                            <input type="text" name="keywords" class="form-control"
-                                placeholder="AI, Automation, Sustainability">
+                            <input type="radio" name="target_audience" value="INTERNAL" id="audience-internal"
+                                class="d-none" checked>
+                            <label for="audience-internal" class="audience-card selected"
+                                onclick="selectCard(this, 'audience')">
+                                <div class="bg-light p-2 rounded-circle">
+                                    <i class="fa-solid fa-users text-muted"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Internal</div>
+                                    <small class="text-muted">Only for organization members</small>
+                                </div>
+                                <i class="fa-solid fa-circle-check ms-auto text-success check-icon"></i>
+                            </label>
                         </div>
-
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Challenge Icon</label>
-                            <div class="text-muted small mb-2">Upload a JPEG/PNG file to make your challenge stand out.
-                            </div>
-                            <input type="file" name="challenge_icon" class="form-control" accept="image/*">
+                            <input type="radio" name="target_audience" value="EXTERNAL" id="audience-external"
+                                class="d-none">
+                            <label for="audience-external" class="audience-card" onclick="selectCard(this, 'audience')">
+                                <div class="bg-light p-2 rounded-circle">
+                                    <i class="fa-solid fa-globe text-muted"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">External</div>
+                                    <small class="text-muted">Open to external participants</small>
+                                </div>
+                                <i class="fa-solid fa-circle-check ms-auto text-success check-icon d-none"></i>
+                            </label>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Section 2: Audience & Duration -->
-                    <h5 class="fw-bold mb-3 border-bottom pb-2">Audience & Duration</h5>
-                    <div class="row g-4 mb-5">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label required">Start Date</label>
+                        <input type="date" name="start_date" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required">End Date</label>
+                        <input type="date" name="end_date" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label required">Number of Evaluation Rounds</label>
+                    <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Target Audience</label>
-                            <div class="text-muted small mb-2">Select the audience to which the communication will be
-                                sent.</div>
-                            <select name="target_audience" class="form-select">
-                                <option value="INTERNAL">Internal Only</option>
-                                <option value="EXTERNAL">External Only</option>
-                                <option value="BOTH">Both (Internal & External)</option>
-                            </select>
+                            <input type="radio" name="num_rounds" value="1" id="rounds-1" class="d-none" checked>
+                            <label for="rounds-1" class="rounds-card selected" onclick="selectCard(this, 'rounds')">
+                                <div>
+                                    <div class="fw-bold">Single Round</div>
+                                    <small class="text-muted">One evaluation round</small>
+                                </div>
+                                <i class="fa-solid fa-circle-check ms-auto text-success check-icon"></i>
+                            </label>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">View Mode</label>
-                            <div class="text-muted small mb-2">Define who can see this challenge on the platform.</div>
-                            <select name="visibility" class="form-select">
-                                <option value="PUBLIC">Public</option>
-                                <option value="PRIVATE">Private</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Challenge Start Date</label>
-                            <input type="date" name="start_date" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Challenge End Date</label>
-                            <div class="text-muted small mb-2">Initial launch is usually 2 weeks.</div>
-                            <input type="date" name="end_date" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Round 1 Start Date</label>
-                            <input type="date" name="round1_eval_start" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Round 1 End Date</label>
-                            <input type="date" name="round1_eval_end" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Round 2 Start Date</label>
-                            <input type="date" name="round2_eval_start" class="form-control" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Round 2 End Date</label>
-                            <input type="date" name="round2_eval_end" class="form-control" required>
+                            <input type="radio" name="num_rounds" value="2" id="rounds-2" class="d-none">
+                            <label for="rounds-2" class="rounds-card" onclick="selectCard(this, 'rounds')">
+                                <div>
+                                    <div class="fw-bold">Two Rounds</div>
+                                    <small class="text-muted">Two evaluation rounds</small>
+                                </div>
+                                <i class="fa-solid fa-circle-check ms-auto text-success check-icon d-none"></i>
+                            </label>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Section 3: Business & Insights -->
-                    <h5 class="fw-bold mb-3 border-bottom pb-2">Insights & Outcomes</h5>
-                    <div class="row g-4 mb-5">
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Expected Business Outcome</label>
-                            <div class="text-muted small mb-2">Specify the business gains expected from the ideas.</div>
-                            <textarea name="expected_outcome" class="form-control" rows="3"
-                                placeholder="e.g. 20% reduction in cloud costs..." required></textarea>
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold">Key Insights (Optional)</label>
-                            <div class="text-muted small mb-2">Insights from different backgrounds to guide ideators.
-                            </div>
-                            <textarea name="key_insights" class="form-control" rows="3"
-                                placeholder="Additional context for ideators..."></textarea>
-                        </div>
+                <div class="mb-4">
+                    <label class="form-label required">Round 01 Evaluation Criteria</label>
+                    <textarea name="round1_eval_criteria" class="form-control" rows="3" required></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label required">Expected Business Outcome</label>
+                    <textarea name="expected_outcome" class="form-control" rows="3" required></textarea>
+                </div>
+
+                <div class="footer-actions">
+                    <button type="button" class="btn btn-prev" onclick="goToStep(1)"><i
+                            class="fa-solid fa-chevron-left me-2"></i> Prev</button>
+                    <button type="button" class="btn btn-next" onclick="goToStep(3)">Next Step <i
+                            class="fa-solid fa-chevron-right ms-2"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 3: Review Setup -->
+            <div class="form-card step-content" id="step-3">
+                <div class="mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <label class="form-label required">Review Parameters (Total weight must be 100)</label>
+                        <button type="button" class="btn btn-sm btn-outline-danger px-3 rounded-pill"
+                            onclick="addParameter()"><i class="fa-solid fa-plus me-1"></i> Add Parameter</button>
                     </div>
 
-                    <!-- Section 4: Review Parameters -->
-                    <h5 class="fw-bold mb-3 border-bottom pb-2">Review Parameters</h5>
-                    <div class="text-muted small mb-3">Select the evaluation criteria. The total weightage must equal
-                        **100**. Preferred weights: 5, 10, 15, 20.</div>
-
-                    <div class="row g-3 mb-2 fw-bold bg-light p-2 rounded">
-                        <div class="col-8">Parameter</div>
-                        <div class="col-4 text-center">Weightage (%)</div>
-                    </div>
-
-                    <div id="parameters-container">
-                        {% for param in review_parameters %}
-                        <div class="row g-3 align-items-center mb-3 p-2 border-bottom">
-                            <div class="col-8">
-                                <div class="form-check">
-                                    <input class="form-check-input param-checkbox" type="checkbox"
-                                        name="selected_params" value="{{ param.parameter_id }}"
-                                        id="param{{ param.parameter_id }}">
-                                    <label class="form-check-label" for="param{{ param.parameter_id }}">
-                                        <strong>{{ param.parameter_name }}</strong>
-                                        <p class="small text-muted mb-0">{{ param.description }}</p>
-                                    </label>
+                    <div id="parameters-dynamic-container">
+                        <div class="row align-items-center mb-3 parameter-row">
+                            <div class="col-8"><input type="text" name="param_names[]" class="form-control"
+                                    value="Innovation"></div>
+                            <div class="col-3">
+                                <div class="input-group">
+                                    <input type="number" name="param_weights[]" class="form-control weight-input"
+                                        value="25" oninput="calculateTotalWeight()">
+                                    <span class="input-group-text bg-white border-start-0">%</span>
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <input type="number" name="weightage_{{ param.parameter_id }}"
-                                    class="form-control weight-input text-center" placeholder="0" min="0" max="100"
-                                    data-pid="{{ param.parameter_id }}" disabled>
+                            <div class="col-1"><button type="button" class="btn btn-link text-danger p-0"
+                                    onclick="removeRow(this)"><i class="fa-solid fa-circle-minus"></i></button></div>
+                        </div>
+                        <div class="row align-items-center mb-3 parameter-row">
+                            <div class="col-8"><input type="text" name="param_names[]" class="form-control"
+                                    value="Feasibility"></div>
+                            <div class="col-3">
+                                <div class="input-group">
+                                    <input type="number" name="param_weights[]" class="form-control weight-input"
+                                        value="25" oninput="calculateTotalWeight()">
+                                    <span class="input-group-text bg-white border-start-0">%</span>
+                                </div>
+                            </div>
+                            <div class="col-1"><button type="button" class="btn btn-link text-danger p-0"
+                                    onclick="removeRow(this)"><i class="fa-solid fa-circle-minus"></i></button></div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center mt-3">
+                        <span class="fw-bold">Total Weight: <span id="weight-total-display">50</span>%</span>
+                        <span id="weight-status" class="text-danger"><i class="fa-solid fa-circle-exclamation me-1"></i>
+                            Must be 100%</span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Review Panels & Mentors</h5>
+                        <button type="button" class="btn btn-sm btn-outline-danger px-3 rounded-pill"
+                            onclick="addPanel()"><i class="fa-solid fa-plus me-1"></i> Add Panel</button>
+                    </div>
+
+                    <div id="panels-container">
+                        <div class="border rounded-4 p-4 mb-3 panel-item position-relative">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label required">Panel Name</label>
+                                    <input type="text" name="panel_names[]" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label required">Review Round</label>
+                                    <select name="panel_rounds[]" class="form-select" required>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label required">Select Mentors</label>
+                                    <select name="panel_mentors[0][]" class="form-select select2-mentors" multiple
+                                        required>
+                                        {% for owner in challenge_owners %}
+                                        <option value="{{ owner.user_id }}">{{ owner.full_name }} ({{ owner.email }})
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        {% endfor %}
                     </div>
+                </div>
 
-                    <div class="alert alert-info d-flex justify-content-between align-items-center mt-3">
-                        <span class="fw-bold">Total Weightage:</span>
-                        <span id="total-weightage" class="fs-4 fw-bold">0%</span>
-                    </div>
+                <div class="footer-actions">
+                    <button type="button" class="btn btn-prev" onclick="goToStep(2)"><i
+                            class="fa-solid fa-chevron-left me-2"></i> Prev</button>
+                    <button type="button" class="btn btn-next" onclick="goToStep(4)">Next Step <i
+                            class="fa-solid fa-chevron-right ms-2"></i></button>
+                </div>
+            </div>
 
-                    <!-- Section 5: Documents -->
-                    <h5 class="fw-bold mb-3 border-bottom pb-2">Idea & Support Documents</h5>
-                    <div class="row g-4 mb-5">
+            <!-- Step 4: Finalize & Publish -->
+            <div class="form-card step-content" id="step-4">
+                <div class="mb-4">
+                    <label class="form-label required">View Mode</label>
+                    <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Idea Template Required?</label>
-                            <select name="has_idea_template" id="id_has_idea_template" class="form-select mb-2">
-                                <option value="NO">No</option>
-                                <option value="YES">Yes</option>
-                            </select>
-                            <input type="file" name="idea_template_file" id="id_template_file"
-                                class="form-control d-none">
-                            <div class="text-muted small">If yes, upload the format in which ideas should be submitted.
-                            </div>
+                            <input type="radio" name="visibility" value="PUBLIC" id="view-public" class="d-none"
+                                checked>
+                            <label for="view-public" class="audience-card selected"
+                                onclick="selectCard(this, 'visibility')">
+                                <div class="bg-light p-2 rounded-circle"><i class="fa-solid fa-eye text-muted"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Public</div><small class="text-muted">Visible to all</small>
+                                </div>
+                                <i class="fa-solid fa-circle-check ms-auto text-success check-icon"></i>
+                            </label>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Challenge Support Document</label>
-                            <input type="file" name="challenge_document" class="form-control">
-                            <div class="text-muted small">Upload if any document contains more details about the
-                                challenge.</div>
+                            <input type="radio" name="visibility" value="PRIVATE" id="view-private" class="d-none">
+                            <label for="view-private" class="audience-card" onclick="selectCard(this, 'visibility')">
+                                <div class="bg-light p-2 rounded-circle"><i class="fa-solid fa-lock text-muted"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Private</div><small class="text-muted">Invited only</small>
+                                </div>
+                                <i class="fa-solid fa-circle-check ms-auto text-success check-icon d-none"></i>
+                            </label>
                         </div>
                     </div>
+                </div>
 
-                    <div class="d-grid mt-5">
-                        <button type="submit" id="submitBtn" class="btn btn-primary btn-lg rounded-pill fw-bold"
-                            disabled>Next: Add Panels</button>
-                    </div>
-                </form>
+                <div class="bg-light rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4">Summary</h5>
+                    <div class="summary-item"><span class="text-muted">Challenge Name:</span><span id="summary-title"
+                            class="fw-bold">-</span></div>
+                    <div class="summary-item"><span class="text-muted">Duration:</span><span id="summary-duration"
+                            class="fw-bold">-</span></div>
+                </div>
+
+                <div class="footer-actions">
+                    <button type="button" class="btn btn-prev" onclick="goToStep(3)"><i
+                            class="fa-solid fa-chevron-left me-2"></i> Prev</button>
+                    <button type="submit" class="btn btn-danger px-5 fw-bold" id="mainSubmitBtn">Challenge Live</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade success-modal" id="successModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-5">
+                <div class="rocket-container">🚀</div>
+                <h3 class="fw-bold mb-3">Your <span class="text-danger">challenge</span> has been posted successfully!
+                </h3>
+                <div class="mt-4"><a href="{% url 'challenge_list' %}" class="btn btn-danger px-4 rounded-pill">Done</a>
+                </div>
             </div>
         </div>
     </div>
@@ -187,74 +604,122 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const checkboxes = document.querySelectorAll('.param-checkbox');
-        const weightInputs = document.querySelectorAll('.weight-input');
-        const totalDisplay = document.getElementById('total-weightage');
-        const submitBtn = document.getElementById('submitBtn');
-        const hasTemplateSelect = document.getElementById('id_has_idea_template');
-        const templateFile = document.getElementById('id_template_file');
+    let currentStep = 1;
+    let panelCount = 1;
 
-        // Toggle template file input
-        hasTemplateSelect.addEventListener('change', function () {
-            if (this.value === 'YES') {
-                templateFile.classList.remove('d-none');
-            } else {
-                templateFile.classList.add('d-none');
-                templateFile.value = '';
+    function goToStep(step) {
+        if (step > currentStep && !validateStep(currentStep)) return;
+        $('.step-content').removeClass('active');
+        $(`#step-${step}`).addClass('active');
+        $('.wizard-step').each((i, el) => {
+            const s = i + 1;
+            $(el).removeClass('active completed');
+            if (s < step) $(el).addClass('completed');
+            else if (s === step) $(el).addClass('active');
+        });
+        currentStep = step;
+        if (step === 4) updateSummary();
+        window.scrollTo(0, 0);
+    }
+
+    function validateStep(step) {
+        let valid = true;
+        $(`#step-${step} [required]`).each((i, el) => {
+            if (!$(el).val()) { $(el).addClass('is-invalid'); valid = false; }
+            else $(el).removeClass('is-invalid');
+        });
+        if (step === 3 && calculateTotalWeight() !== 100) { alert('Total weightage must be 100%.'); valid = false; }
+        return valid;
+    }
+
+    function selectCard(el, type) {
+        $(`.${type}-card`).removeClass('selected').find('.check-icon').addClass('d-none');
+        $(el).addClass('selected').find('.check-icon').removeClass('d-none');
+    }
+
+    function calculateTotalWeight() {
+        let total = 0;
+        $('.weight-input').each((i, el) => total += parseInt($(el).val() || 0));
+        $('#weight-total-display').text(total);
+        const status = $('#weight-status');
+        if (total === 100) status.html('<i class="fa-solid fa-check-circle"></i> Valid').attr('class', 'text-success');
+        else status.html('<i class="fa-solid fa-circle-exclamation"></i> Must be 100%').attr('class', 'text-danger');
+        return total;
+    }
+
+    function addParameter() {
+        $('#parameters-dynamic-container').append(`
+            <div class="row align-items-center mb-3 parameter-row">
+                <div class="col-8"><input type="text" name="param_names[]" class="form-control" placeholder="New Parameter"></div>
+                <div class="col-3"><div class="input-group"><input type="number" name="param_weights[]" class="form-control weight-input" value="0" oninput="calculateTotalWeight()"><span class="input-group-text bg-white border-start-0">%</span></div></div>
+                <div class="col-1"><button type="button" class="btn btn-link text-danger p-0" onclick="removeRow(this)"><i class="fa-solid fa-circle-minus"></i></button></div>
+            </div>`);
+    }
+
+    function removeRow(btn) { $(btn).closest('.row').remove(); calculateTotalWeight(); }
+
+    function addPanel() {
+        const index = panelCount++;
+        $('#panels-container').append(`
+            <div class="border rounded-4 p-4 mb-3 panel-item position-relative">
+                <div class="row g-3">
+                    <div class="col-md-6"><label class="form-label required">Panel Name</label><input type="text" name="panel_names[]" class="form-control" required></div>
+                    <div class="col-md-6"><label class="form-label required">Review Round</label><select name="panel_rounds[]" class="form-select" required><option value="1">1</option><option value="2">2</option></select></div>
+                    <div class="col-md-12"><label class="form-label required">Select Mentors</label><select name="panel_mentors[${index}][]" class="form-select select2-mentors" multiple required>{% for owner in challenge_owners %}<option value="{{ owner.user_id }}">{{ owner.full_name }} ({{ owner.email }})</option>{% endfor %}</select></div>
+                </div>
+                <button type="button" class="btn btn-link text-danger position-absolute top-0 end-0 m-3" onclick="$(this).closest('.panel-item').remove()"><i class="fa-solid fa-trash"></i></button>
+            </div>`);
+        $('.select2-mentors').select2({ width: '100%', placeholder: 'Select mentors...' });
+    }
+
+    function updateSummary() {
+        $('#summary-title').text($('[name="title"]').val() || '-');
+        $('#summary-duration').text(`${$('[name="start_date"]').val()} to ${$('[name="end_date"]').val()}`);
+    }
+
+    $(document).ready(function () {
+        $('.select2-mentors').select2({ width: '100%', placeholder: 'Select mentors...' });
+
+        $('.select2-ibu').select2({
+            width: '100%',
+            placeholder: 'Search for an IBU...',
+            minimumInputLength: 2,
+            ajax: {
+                url: '/ibu-search/',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { q: params.term };
+                },
+                processResults: function (data) {
+                    return { results: data.results };
+                },
+                cache: true
             }
         });
 
-        function calculateTotal() {
-            let total = 0;
-            weightInputs.forEach(input => {
-                if (!input.disabled) {
-                    total += parseInt(input.value || 0);
-                }
-            });
-            totalDisplay.textContent = total + '%';
-
-            if (total === 100) {
-                totalDisplay.classList.remove('text-danger');
-                totalDisplay.classList.add('text-success');
-                submitBtn.disabled = false;
-            } else {
-                totalDisplay.classList.remove('text-success');
-                totalDisplay.classList.add('text-danger');
-                submitBtn.disabled = true;
-            }
-        }
-
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-                const pid = this.value;
-                const weightInput = document.querySelector(`.weight-input[data-pid="${pid}"]`);
-                weightInput.disabled = !this.checked;
-                if (!this.checked) {
-                    weightInput.value = '';
-                }
-                calculateTotal();
-            });
+        $('#description').on('input', function () {
+            const len = $(this).val().length; $('#char-count').text(len);
+            if (len < 1000) $('#char-warning').html(`<i class="fa-solid fa-circle-exclamation"></i> ${1000 - len} more needed`).attr('class', 'text-warning');
+            else $('#char-warning').html('<i class="fa-solid fa-circle-check"></i> Valid').attr('class', 'text-success');
         });
-
-        weightInputs.forEach(input => {
-            input.addEventListener('input', calculateTotal);
-        });
-
-        // Form level validation before submit
-        document.getElementById('challengeForm').addEventListener('submit', function (e) {
-            let total = 0;
-            weightInputs.forEach(input => {
-                if (!input.disabled) {
-                    total += parseInt(input.value || 0);
-                }
+        $('#multiStepForm').on('submit', function (e) {
+            e.preventDefault();
+            const btn = $('#mainSubmitBtn');
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Publishing...');
+            $.ajax({
+                url: window.location.href, type: 'POST', data: new FormData(this), processData: false, contentType: false,
+                success: function (resp) {
+                    if (resp.status === 'success') new bootstrap.Modal(document.getElementById('successModal')).show();
+                    else { alert(resp.message); btn.prop('disabled', false).text('Challenge Live'); }
+                },
+                error: function () { alert('Registration failed.'); btn.prop('disabled', false).text('Challenge Live'); }
             });
-
-            if (total !== 100) {
-                e.preventDefault();
-                alert('The total weightage of selected parameters must be exactly 100%.');
-            }
         });
     });
 </script>

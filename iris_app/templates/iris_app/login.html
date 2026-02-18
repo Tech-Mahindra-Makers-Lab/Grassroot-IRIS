@@ -1,19 +1,120 @@
+{% extends 'iris_app/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Grassroot IRIS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'iris_app/css/style.css' %}">
-</head>
+{% block title %}Login{% endblock %}
 
-<body class="login-body">
+{% block extra_css %}
+<style>
+    .login-body {
+        background: #f8f9fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 150px);
+        padding: 40px 20px;
+    }
+
+    .login-card {
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 440px;
+        text-align: center;
+    }
+
+    .logos-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .techm-logo {
+        height: 30px;
+    }
+
+    .divider {
+        width: 1px;
+        height: 25px;
+        background: #ddd;
+    }
+
+    .iris-brand {
+        font-weight: 800;
+        font-size: 24px;
+        color: #E31837;
+    }
+
+    .subtitle {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 15px;
+    }
+
+    .form-group {
+        text-align: left;
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: border-color 0.2s;
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 13px;
+        background: #E31837;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-login:hover {
+        background: #c1142d;
+    }
+
+    .messages-list {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+
+    .messages-list li {
+        padding: 10px;
+        background: #fff5f5;
+        color: #e31837;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-body">
     <div class="login-card">
         <div class="logos-container">
-            <img src="{% static 'iris_app/img/logo.png' %}" alt="Tech Mahindra" class="techm-logo">
+            <img src="{% static 'iris_app/images/TechMlogo.png' %}" alt="Tech Mahindra" class="techm-logo">
             <div class="divider"></div>
             <div class="iris-brand">IRIS</div>
         </div>
@@ -42,10 +143,9 @@
             <button type="submit" class="btn-login">Login to Dashboard</button>
         </form>
 
-        <div class="footer-text">
-            © 2025 Grassroot Innovation Platform
+        <div class="footer-text mt-4" style="color: #999; font-size: 12px;">
+            © 2026 Grassroot Innovation Platform
         </div>
     </div>
-</body>
-
-</html>
+</div>
+{% endblock %}

@@ -5,180 +5,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Grassroot IRIS{% endblock %}</title>
-    <!-- Bootstrap 5 CSS -->
+    <meta name="description"
+        content="{% block meta_description %}IRIS - Innovation Platform for Global Collaboration{% endblock %}">
+    <title>{% block title %}Every Idea Matters{% endblock %} | IRIS</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'iris_app/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'iris_app/css/styles.css' %}">
     {% block extra_css %}{% endblock %}
+    <style>
+        .sidebar {
+            background-color: #ffffff !important;
+            border-right: 1px solid #dee2e6;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            width: 70px;
+            /* Reduced width */
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 20px;
+            overflow-y: auto;
+            scrollbar-width: none;
+            /* Hide scrollbar Firefox */
+        }
+
+        .sidebar::-webkit-scrollbar {
+            display: none;
+            /* Hide scrollbar Chrome/Safari */
+        }
+
+        .sidebar-item {
+            color: #6c757d !important;
+            font-size: 18px;
+            /* Smaller icon */
+            padding: 12px 0;
+            /* Compact padding */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            width: 100%;
+            transition: all 0.2s ease;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            color: var(--primary-color) !important;
+        }
+
+        .sidebar-item.active {
+            background-color: rgba(227, 24, 55, 0.05) !important;
+            border-right: 3px solid var(--primary-color);
+        }
+
+        .main-wrapper {
+            min-height: calc(100vh - 70px);
+        }
+
+        /* Sidebar Margin Replacement */
+        .wrapper-with-sidebar {
+            margin-left: 70px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .wrapper-no-sidebar {
+            margin-left: 0;
+        }
+
+        #mobileToggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1050;
+            background: white;
+            border: 1px solid #dee2e6;
+            color: var(--primary-color);
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1090;
+            backdrop-filter: blur(2px);
+        }
+
+        @media (max-width: 991.98px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 1100;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                display: flex !important;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .wrapper-with-sidebar {
+                margin-left: 0;
+            }
+
+            #mobileToggle {
+                display: block;
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+
+        .sidebar-brand {
+            padding: 10px 0;
+            /* Reduced padding */
+            margin-bottom: 10px;
+            /* Reduced margin */
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-user-mini {
+            padding: 5px 0;
+            /* Reduced padding */
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 10px;
+            /* Reduced margin */
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 32px;
+            margin-left: 40px;
+            margin-right: auto;
+        }
+
+        .nav-link-item {
+            text-decoration: none;
+            color: #4A5565;
+            font-weight: 500;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .nav-link-item:hover {
+            color: var(--primary-color);
+        }
+
+        .profile-logout {
+            color: #666;
+            margin-left: 10px;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .profile-logout:hover {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 575.98px) {
+            .nav-container {
+                padding: 10px 15px !important;
+            }
+
+            .nav-menu {
+                display: none !important;
+            }
+
+            .logo img {
+                height: 20px !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="app-container {% if is_landing %}landing-mode{% endif %}">
-        {% if not is_landing %}
-        <!-- Mobile Toggle Button -->
-        <button class="sidebar-toggle d-lg-none" id="sidebarToggle">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <!-- Overlay for mobile sidebar -->
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
-        {% endif %}
+    {% if not hide_sidebar %}
+    <button id="mobileToggle">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        <!-- Sidebar -->
-        {% if not is_landing %}
-        <aside class="sidebar">
-            <div class="sidebar-logo">
-                <a href="{% url 'home' %}"><img src="{% static 'iris_app/img/logo.png' %}" alt="Tech Mahindra Logo"
-                        class="img-fluid"></a>
-            </div>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="mainSidebar">
+        <div class="sidebar-brand">
+            <img src="{% static 'iris_app/images/IRIS.png' %}" alt="IRIS" style="width: 40px;">
+        </div>
 
-            <ul class="sidebar-menu">
-                <li class="sidebar-item">
-                    <a href="{% url 'home' %}"
-                        class="sidebar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-                        <img src="{% static 'iris_app/icon/Icon.svg' %}" class="sidebar-icon" alt="Home">
-                        <span>Home</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="{% url 'challenge_list' %}"
-                        class="sidebar-link {% if request.resolver_match.url_name == 'challenge_list' %}active{% endif %}">
-                        <img src="{% static 'iris_app/icon/Icon-1.svg' %}" class="sidebar-icon" alt="Dashboard">
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="{% url 'notification_list' %}"
-                        class="sidebar-link {% if request.resolver_match.url_name == 'notification_list' %}active{% endif %}">
-                        <img src="{% static 'iris_app/icon/Icon.svg' %}" class="sidebar-icon" alt="Notifications">
-                        <span>Notifications</span>
-                        {% if unread_notifications_count > 0 %}
-                        <span class="badge rounded-pill bg-danger ms-auto">{{ unread_notifications_count }}</span>
-                        {% endif %}
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="{% url 'my_ideas' %}"
-                        class="sidebar-link {% if request.resolver_match.url_name == 'my_ideas' %}active{% endif %}">
-                        <img src="{% static 'iris_app/icon/Icon-2.svg' %}" class="sidebar-icon" alt="My Ideas">
-                        <span>My Ideas</span>
-                    </a>
-                </li>
-                {% if request.iris_user.is_challenge_owner %}
-                <li class="sidebar-item">
-                    <a href="{% url 'post_challenge' %}"
-                        class="sidebar-link {% if request.resolver_match.url_name == 'post_challenge' %}active{% endif %}">
-                        <img src="{% static 'iris_app/icon/Icon-3.svg' %}" class="sidebar-icon" alt="Post Challenge">
-                        <span>Post Challenge</span>
-                    </a>
-                </li>
-                {% endif %}
-                <li class="sidebar-item">
-                    <a href="{% url 'submit_grassroot_idea' %}"
-                        class="sidebar-link {% if request.resolver_match.url_name == 'submit_grassroot_idea' %}active{% endif %}">
-                        <img src="{% static 'iris_app/icon/Icon-3.svg' %}" class="sidebar-icon" alt="Submit Grassroot">
-                        <span>Submit Grassroot Idea</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="{% url 'grassroot_dashboard' %}"
-                        class="sidebar-link {% if request.resolver_match.url_name == 'grassroot_dashboard' %}active{% endif %}">
-                        <img src="{% static 'iris_app/icon/Icon-2.svg' %}" class="sidebar-icon"
-                            alt="Grassroot Dashboard">
-                        <span>Grassroot Dashboard</span>
-                    </a>
-                </li>
-                {% if request.iris_user.is_rm %}
-                <li class="sidebar-item">
-                    <a href="{% url 'rm_dashboard' %}"
-                        class="sidebar-link {% if request.resolver_match.url_name == 'rm_dashboard' %}active{% endif %}">
-                        <img src="{% static 'iris_app/icon/Icon-4.svg' %}" class="sidebar-icon" alt="RM Dashboard">
-                        <span>RM Dashboard</span>
-                    </a>
-                </li>
-                {% endif %}
-                {% if request.iris_user.is_ibu_head %}
-                <li class="sidebar-item">
-                    <a href="{% url 'ibu_dashboard' %}"
-                        class="sidebar-link {% if request.resolver_match.url_name == 'ibu_dashboard' %}active{% endif %}">
-                        <img src="{% static 'iris_app/icon/Icon-4.svg' %}" class="sidebar-icon" alt="IBU Dashboard">
-                        <span>IBU Dashboard</span>
-                    </a>
-                </li>
-                {% endif %}
-                <li class="sidebar-item">
-                    <a href="{% url 'reports_view' %}"
-                        class="sidebar-link {% if request.resolver_match.url_name == 'reports_view' %}active{% endif %}">
-                        <img src="{% static 'iris_app/icon/Icon-5.svg' %}" class="sidebar-icon" alt="Reports">
-                        <span>Reports</span>
-                    </a>
-                </li>
-            </ul>
+        <div class="sidebar-nav">
+            <a href="{% url 'home' %}"
+                class="sidebar-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}" title="Home">
+                <i class="fa-solid fa-house icon"></i>
+            </a>
+            <a href="{% url 'user_dashboard' %}"
+                class="sidebar-item {% if request.resolver_match.url_name == 'user_dashboard' %}active{% endif %}"
+                title="My Dashboard">
+                <i class="fa-solid fa-gauge-high icon"></i>
+            </a>
+            <a href="{% url 'challenge_list' %}"
+                class="sidebar-item {% if request.resolver_match.url_name == 'challenge_list' or request.resolver_match.url_name == 'challenge_detail' %}active{% endif %}"
+                title="Challenges">
+                <i class="fa-solid fa-table-cells icon"></i>
+            </a>
+            <a href="{% url 'grassroot_dashboard' %}"
+                class="sidebar-item {% if 'grassroot' in request.path %}active{% endif %}" title="Grassroot Innovation">
+                <i class="fa-solid fa-seedling icon"></i>
+            </a>
+            <a href="{% url 'my_ideas' %}"
+                class="sidebar-item {% if request.resolver_match.url_name == 'my_ideas' %}active{% endif %}"
+                title="My Ideas">
+                <i class="fa-solid fa-lightbulb icon"></i>
+            </a>
+            <a href="{% url 'reports_view' %}"
+                class="sidebar-item {% if request.resolver_match.url_name == 'reports_view' %}active{% endif %}"
+                title="Reports">
+                <i class="fa-solid fa-chart-column icon"></i>
+            </a>
+        </div>
 
-            <div class="mt-auto">
-                <div class="user-info p-3 text-center">
-                    <div class="fw-bold text-primary">{{ request.session.iris_user_name|default:"Guest" }}</div>
-                    {% if request.iris_user.is_challenge_owner %}
-                    <div class="small text-success mb-2">Challenge Owner</div>
-                    {% else %}
-                    <div class="small text-muted mb-2">Member</div>
-                    {% endif %}
-                    <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-danger w-100 rounded-pill">Logout</a>
-                </div>
-                <ul class="sidebar-menu">
-                    <li class="sidebar-item">
-                        <a href="#" class="sidebar-link">
-                            <img src="{% static 'iris_app/icon/Icon-5.svg' %}" class="sidebar-icon" alt="Settings">
-                            <span>Settings</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </aside>
-        {% endif %}
-
-        <!-- Main Content -->
-        <main class="main-content">
-            {% if messages %}
-            <div class="row">
-                <div class="col-12">
-                    {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    {% endfor %}
-                </div>
+        <div class="sidebar-nav" style="margin-top: auto;">
+            {% if request.iris_user and not hide_sidebar %}
+            <div class="sidebar-user-mini" title="{{ request.iris_user.full_name }}">
+                <img src="{% static 'iris_app/images/shiv.png' %}" alt="User" class="profile-img"
+                    style="width: 40px; height: 40px; border-radius: 50%;">
             </div>
             {% endif %}
 
-            {% block content %}{% endblock %}
+            <a href="{% url 'notification_list' %}"
+                class="sidebar-item {% if request.resolver_match.url_name == 'notification_list' %}active{% endif %}"
+                title="Notifications">
+                <i class="fa-solid fa-bell icon"></i>
+                {% if unread_notifications_count %}
+                <span class="sidebar-badge"
+                    style="position: absolute; top: 10px; right: 10px; background: var(--primary-color); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center;">{{
+                    unread_notifications_count }}</span>
+                {% endif %}
+            </a>
+            <a href="{% url 'logout' %}" class="sidebar-item" title="Logout">
+                <i class="fa-solid fa-right-from-bracket icon"></i>
+            </a>
+        </div>
+    </aside>
+    {% endif %}
+
+    <div class="main-wrapper {% if hide_sidebar %}wrapper-no-sidebar{% else %}wrapper-with-sidebar{% endif %}">
+        {% if hide_sidebar %}
+        <!-- Navigation Header -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <img src="{% static 'iris_app/images/IRIS.png' %}" alt="IRIS Logo" style="height: 30px;">
+                    <div style="width: 1px; height: 24px; background: rgba(0,0,0,0.1); margin: 0 10px;"></div>
+                    <img src="{% static 'iris_app/images/TechMlogo.png' %}" alt="Tech Mahindra Logo"
+                        style="height: 20px;">
+                </div>
+
+                <div class="nav-menu">
+                    <a href="#about" class="nav-link-item">About Us</a>
+                    <a href="#community" class="nav-link-item">Community</a>
+                    <a href="#challenges" class="nav-link-item">Challenges</a>
+                    <a href="{% url 'challenge_list' %}" class="nav-link-item">Dashboard</a>
+                    <a href="#faq" class="nav-link-item">FAQ</a>
+                </div>
+
+                <div class="user-profile d-flex align-items-center">
+                    {% if request.iris_user %}
+                    <div class="text-end me-2">
+                        <div style="font-size: 14px; font-weight: 600;">{{ request.iris_user.full_name }}</div>
+                        <div style="font-size: 11px; color: #666;">{{ request.iris_user.user_type }}</div>
+                    </div>
+                    <img src="{% static 'iris_app/images/shiv.png' %}" alt="User" class="profile-img">
+                    <a href="{% url 'logout' %}" class="profile-logout" title="Logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-sm btn-outline-primary">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+        {% endif %}
+
+        <!-- Main Content Block -->
+        <main>
+            {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
         </main>
     </div>
 
-    <!-- Bootstrap Bundle with Popper -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'iris_app/js/main.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const toggleBtn = document.getElementById('sidebarToggle');
-            const sidebar = document.querySelector('.sidebar');
+            const toggle = document.getElementById('mobileToggle');
             const overlay = document.getElementById('sidebarOverlay');
+            const sidebarEl = document.getElementById('mainSidebar');
 
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', function () {
-                    sidebar.classList.toggle('active');
-                    overlay.classList.toggle('active');
-                    this.classList.toggle('active');
+            if (toggle && sidebarEl) {
+                toggle.addEventListener('click', function () {
+                    sidebarEl.classList.toggle('show');
+                    overlay.classList.toggle('show');
                 });
-            }
 
-            if (overlay) {
                 overlay.addEventListener('click', function () {
-                    sidebar.classList.remove('active');
-                    overlay.classList.remove('active');
-                    toggleBtn.classList.remove('active');
+                    sidebarEl.classList.remove('show');
+                    overlay.classList.remove('show');
                 });
             }
         });

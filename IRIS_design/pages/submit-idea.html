@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Your Idea - IRIS Innovation Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="submit-idea-wrapper">
+        <!-- Hero Banner -->
+        <div class="submit-idea-hero">
+            <img class="submit-idea-hero-image" src="../images/reward.png" alt="Submit Idea Banner">
+            <div class="submit-idea-hero-overlay"></div>
+            <div class="submit-idea-hero-content">
+                <p class="submit-idea-hero-subtitle">Share your innovative solution with the team</p>
+                <h1 class="submit-idea-hero-title">Submit Your Idea</h1>
+            </div>
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-nav">
+            <a href="#" class="sidebar-item " title="Home">
+                <img src="../images/btn1.png" alt="Home" class="sidebar-icon">
+            </a>
+            <a href="#" class="sidebar-item" title="Challenges">
+                <img src="../images/btn2.png" alt="Challenges" class="sidebar-icon">
+            </a>
+            <a href="#" class="sidebar-item" title="Community">
+                <img src="../images/btn3.png" alt="Community" class="sidebar-icon">
+            </a>
+            <a href="#" class="sidebar-item" title="Leaderboard">
+                <img src="../images/btn4.png" alt="Leaderboard" class="sidebar-icon">
+            </a>
+            <a href="#" class="sidebar-item" title="Rewards">
+                <img src="../images/btn5.png" alt="Rewards" class="sidebar-icon">
+            </a>
+        </div>
+    </aside>
+
+
+        <!-- Main Content -->
+        <main class="submit-idea-main">
+            <div class="submit-idea-form-wrapper">
+                <!-- Template Alert -->
+                <div class="template-alert">
+                    <div class="alert-content">
+                        <i class="fas fa-file-alt"></i>
+                        <div class="alert-text">
+                            <p class="alert-label">Template required for upload</p>
+                            <a href="#" class="alert-link">Download template <i class="fas fa-download"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form class="submit-idea-form">
+                    <!-- Challenge Field -->
+                    <div class="form-field">
+                        <label for="challenge" class="form-label">
+                            Challenge
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        <select id="challenge" class="form-select" required>
+                            <option selected disabled>ENS_unified Test Automation Across Domains</option>
+                        </select>
+                    </div>
+
+                    <!-- Idea Name Field -->
+                    <div class="form-field">
+                        <label for="ideaName" class="form-label">
+                            Idea Name
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        <input type="text" id="ideaName" class="form-input" placeholder="Enter a descriptive name for your idea" maxlength="200" required>
+                        <div class="form-helper-text">
+                            <span>Only Characters, Digits and special characters.;@!?€*EÇ$%'&/#*+4?^~•—=]</span>
+                            <span class="char-count">5/200</span>
+                        </div>
+                    </div>
+
+                    <!-- Description Field -->
+                    <div class="form-field">
+                        <label for="description" class="form-label">
+                            Description
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        <textarea id="description" class="form-textarea" placeholder="Describe your idea in detail..." maxlength="2000" required></textarea>
+                        <div class="form-helper-text">
+                            <span>Provide comprehensive details about your solution</span>
+                            <span class="char-count">0/2000</span>
+                        </div>
+                    </div>
+
+                    <!-- Keywords Field -->
+                    <div class="form-field">
+                        <label for="keywords" class="form-label">
+                            Keywords
+                            <span class="required-asterisk">*</span>
+                        </label>
+                        <input type="text" id="keywords" class="form-input keywords-input" placeholder="Type keywords and press Enter or comma">
+                        <div id="keywordsContainer" class="keywords-container"></div>
+                        <div class="form-helper-text">
+                            <span>Enter or comma to add keywords</span>
+                        </div>
+                    </div>
+
+                    <!-- Co-Ideators Field -->
+                    <div class="form-field">
+                        <label for="coideators" class="form-label">Add Co-Ideators</label>
+                        <input type="text" id="coideators" class="form-input coideators-input" placeholder="Enter name, email, or employee ID and press Enter">
+                        <div id="coideratorsContainer" class="coideators-container"></div>
+                        <div class="form-helper-text">
+                            <span>Add collaborators by name, email, or employee ID</span>
+                        </div>
+                    </div>
+
+                    <!-- Document Upload -->
+                    <div class="document-upload">
+                        <div class="upload-icon">
+                            <i class="fas fa-file-arrow-up"></i>
+                        </div>
+                        <div class="upload-content">
+                            <p class="upload-label">Upload Idea Document</p>
+                            <a href="#" class="upload-link">Click to upload <i class="fas fa-download"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Submit Idea</button>
+                        <button type="reset" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="success-modal">
+        <div class="success-modal-overlay"></div>
+        <div class="success-modal-content">
+            <div class="success-modal-illustration">
+                <div class="stars">
+                    <span class="star"></span>
+                    <span class="star"></span>
+                    <span class="star"></span>
+                    <span class="star"></span>
+                    <span class="star"></span>
+                    <span class="star"></span>
+                    <span class="star"></span>
+                    <span class="star"></span>
+                </div>
+                <div class="rocket-container">
+                    <div class="rocket">
+                        <div class="rocket-body"></div>
+                        <div class="rocket-nose"></div>
+                        <div class="rocket-window"></div>
+                        <div class="rocket-fins"></div>
+                    </div>
+                </div>
+                <div class="clouds">
+                    <div class="cloud"></div>
+                    <div class="cloud"></div>
+                </div>
+            </div>
+            <div class="success-modal-text">
+                <h2>Your <span class="highlight">idea</span> has been submitted successfully!</h2>
+            </div>
+            <div class="success-modal-actions">
+                <button type="button" class="btn btn-outline" id="exploreBtn">Explore more Challenges</button>
+                <button type="button" class="btn btn-primary" id="dashboardBtn">Go to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const keywordsInput = document.getElementById('keywords');
+        const keywordsContainer = document.getElementById('keywordsContainer');
+
+        keywordsInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                addKeyword();
+            }
+        });
+
+        keywordsInput.addEventListener('blur', function() {
+            if (this.value.trim()) {
+                addKeyword();
+            }
+        });
+
+        function addKeyword() {
+            const value = keywordsInput.value.trim().replace(/,+$/, '');
+            if (!value) return;
+
+            // Check for duplicates
+            const existingKeywords = Array.from(keywordsContainer.querySelectorAll('.keyword-tag')).map(tag => tag.dataset.keyword);
+            if (existingKeywords.includes(value.toLowerCase())) {
+                keywordsInput.value = '';
+                return;
+            }
+
+            // Create tag
+            const tag = document.createElement('span');
+            tag.className = 'keyword-tag';
+            tag.dataset.keyword = value.toLowerCase();
+            tag.innerHTML = `${value}<button type="button" class="tag-remove">×</button>`;
+            keywordsContainer.appendChild(tag);
+
+            // Remove button handler
+            tag.querySelector('.tag-remove').addEventListener('click', removeKeyword);
+            keywordsInput.value = '';
+        }
+
+        function removeKeyword(e) {
+            e.preventDefault();
+            e.target.closest('.keyword-tag').remove();
+        }
+
+        // Co-Ideators functionality
+        const coideratorsInput = document.getElementById('coideators');
+        const coideratorsContainer = document.getElementById('coideratorsContainer');
+
+        coideratorsInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addCoIdeator();
+            }
+        });
+
+        coideratorsInput.addEventListener('blur', function() {
+            if (this.value.trim()) {
+                addCoIdeator();
+            }
+        });
+
+        function addCoIdeator() {
+            const value = coideratorsInput.value.trim();
+            if (!value) return;
+
+            // Check for duplicates
+            const existingCoiderators = Array.from(coideratorsContainer.querySelectorAll('.coideator-tag')).map(tag => tag.dataset.coideator);
+            if (existingCoiderators.includes(value.toLowerCase())) {
+                coideratorsInput.value = '';
+                return;
+            }
+
+            // Create tag
+            const tag = document.createElement('span');
+            tag.className = 'coideator-tag';
+            tag.dataset.coideator = value.toLowerCase();
+            tag.innerHTML = `${value}<button type="button" class="tag-remove">×</button>`;
+            coideratorsContainer.appendChild(tag);
+
+            // Remove button handler
+            tag.querySelector('.tag-remove').addEventListener('click', removeCoIdeator);
+            coideratorsInput.value = '';
+        }
+
+        function removeCoIdeator(e) {
+            e.preventDefault();
+            e.target.closest('.coideator-tag').remove();
+        }
+
+        // Character counters
+        const ideaNameInput = document.getElementById('ideaName');
+        const descriptionInput = document.getElementById('description');
+
+        ideaNameInput.addEventListener('input', function() {
+            const charCount = this.parentElement.querySelector('.char-count');
+            charCount.textContent = `${this.value.length}/200`;
+        });
+
+        descriptionInput.addEventListener('input', function() {
+            const charCount = this.parentElement.querySelector('.char-count');
+            charCount.textContent = `${this.value.length}/2000`;
+        });
+
+        // Form submission
+        document.querySelector('.submit-idea-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const keywords = Array.from(keywordsContainer.querySelectorAll('.keyword-tag')).map(tag => tag.dataset.keyword);
+            const coideators = Array.from(coideratorsContainer.querySelectorAll('.coideator-tag')).map(tag => tag.dataset.coideator);
+
+            if (keywords.length === 0) {
+                alert('Please add at least one keyword');
+                return;
+            }
+
+            const formData = {
+                challenge: document.getElementById('challenge').value,
+                ideaName: document.getElementById('ideaName').value,
+                description: document.getElementById('description').value,
+                keywords: keywords,
+                coideators: coideators
+            };
+
+            console.log('Form Data:', formData);
+
+            // Show success modal
+            showSuccessModal();
+        });
+
+        // Success Modal Functions
+        function showSuccessModal() {
+            const modal = document.getElementById('successModal');
+            modal.style.display = 'flex';
+        }
+
+        function closeSuccessModal() {
+            const modal = document.getElementById('successModal');
+            modal.style.display = 'none';
+        }
+
+        // Modal button handlers
+        document.getElementById('exploreBtn').addEventListener('click', function() {
+            closeSuccessModal();
+            // Navigate to challenges page
+            window.location.href = 'innovation-challenges.html';
+        });
+
+        document.getElementById('dashboardBtn').addEventListener('click', function() {
+            closeSuccessModal();
+            // Navigate to dashboard
+            window.location.href = '../index.html';
+        });
+
+        // Close modal when clicking overlay
+        document.querySelector('.success-modal-overlay').addEventListener('click', closeSuccessModal);
+    </script>
+</body>
+</html>

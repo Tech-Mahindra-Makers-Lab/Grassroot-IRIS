@@ -86,11 +86,11 @@ WSGI_APPLICATION = 'grassroot_iris.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.oracle'),
-        'NAME': os.getenv('DB_NAME', 'localhost:1521/orcl'),
+        'NAME': os.getenv('DB_NAME', '192.168.0.11:1521/xepdb1'),
         'USER': os.getenv('DB_USER', 'iris_test'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'Advik@2020'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '1521'),
+        'HOST': '',
+        'PORT': '',
     }
 }
 

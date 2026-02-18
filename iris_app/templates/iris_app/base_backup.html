@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Grassroot IRIS{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'iris_app/css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="app-container {% if is_landing %}landing-mode{% endif %}">
+        {% if not is_landing %}
+        <!-- Mobile Toggle Button -->
+        <button class="sidebar-toggle d-lg-none" id="sidebarToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <!-- Overlay for mobile sidebar -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        {% endif %}
+
+        <!-- Sidebar -->
+        {% if not is_landing %}
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <a href="{% url 'home' %}"><img src="{% static 'iris_app/img/logo.png' %}" alt="Tech Mahindra Logo"
+                        class="img-fluid"></a>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="{% url 'home' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        <img src="{% static 'iris_app/icon/Icon.svg' %}" class="sidebar-icon" alt="Home">
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'challenge_list' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'challenge_list' %}active{% endif %}">
+                        <img src="{% static 'iris_app/icon/Icon-1.svg' %}" class="sidebar-icon" alt="Dashboard">
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'notification_list' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'notification_list' %}active{% endif %}">
+                        <img src="{% static 'iris_app/icon/Icon.svg' %}" class="sidebar-icon" alt="Notifications">
+                        <span>Notifications</span>
+                        {% if unread_notifications_count > 0 %}
+                        <span class="badge rounded-pill bg-danger ms-auto">{{ unread_notifications_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'my_ideas' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'my_ideas' %}active{% endif %}">
+                        <img src="{% static 'iris_app/icon/Icon-2.svg' %}" class="sidebar-icon" alt="My Ideas">
+                        <span>My Ideas</span>
+                    </a>
+                </li>
+                {% if request.iris_user.is_challenge_owner %}
+                <li class="sidebar-item">
+                    <a href="{% url 'post_challenge' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'post_challenge' %}active{% endif %}">
+                        <img src="{% static 'iris_app/icon/Icon-3.svg' %}" class="sidebar-icon" alt="Post Challenge">
+                        <span>Post Challenge</span>
+                    </a>
+                </li>
+                {% endif %}
+                <li class="sidebar-item">
+                    <a href="{% url 'submit_grassroot_idea' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'submit_grassroot_idea' %}active{% endif %}">
+                        <img src="{% static 'iris_app/icon/Icon-3.svg' %}" class="sidebar-icon" alt="Submit Grassroot">
+                        <span>Submit Grassroot Idea</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{% url 'grassroot_dashboard' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'grassroot_dashboard' %}active{% endif %}">
+                        <img src="{% static 'iris_app/icon/Icon-2.svg' %}" class="sidebar-icon"
+                            alt="Grassroot Dashboard">
+                        <span>Grassroot Dashboard</span>
+                    </a>
+                </li>
+                {% if request.iris_user.is_rm %}
+                <li class="sidebar-item">
+                    <a href="{% url 'rm_dashboard' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'rm_dashboard' %}active{% endif %}">
+                        <img src="{% static 'iris_app/icon/Icon-4.svg' %}" class="sidebar-icon" alt="RM Dashboard">
+                        <span>RM Dashboard</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% if request.iris_user.is_ibu_head %}
+                <li class="sidebar-item">
+                    <a href="{% url 'ibu_dashboard' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'ibu_dashboard' %}active{% endif %}">
+                        <img src="{% static 'iris_app/icon/Icon-4.svg' %}" class="sidebar-icon" alt="IBU Dashboard">
+                        <span>IBU Dashboard</span>
+                    </a>
+                </li>
+                {% endif %}
+                <li class="sidebar-item">
+                    <a href="{% url 'reports_view' %}"
+                        class="sidebar-link {% if request.resolver_match.url_name == 'reports_view' %}active{% endif %}">
+                        <img src="{% static 'iris_app/icon/Icon-5.svg' %}" class="sidebar-icon" alt="Reports">
+                        <span>Reports</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="mt-auto">
+                <div class="user-info p-3 text-center">
+                    <div class="fw-bold text-primary">{{ request.session.iris_user_name|default:"Guest" }}</div>
+                    {% if request.iris_user.is_challenge_owner %}
+                    <div class="small text-success mb-2">Challenge Owner</div>
+                    {% else %}
+                    <div class="small text-muted mb-2">Member</div>
+                    {% endif %}
+                    <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-danger w-100 rounded-pill">Logout</a>
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <img src="{% static 'iris_app/icon/Icon-5.svg' %}" class="sidebar-icon" alt="Settings">
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+        {% endif %}
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% if messages %}
+            <div class="row">
+                <div class="col-12">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function () {
+                    sidebar.classList.toggle('active');
+                    overlay.classList.toggle('active');
+                    this.classList.toggle('active');
+                });
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', function () {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                    toggleBtn.classList.remove('active');
+                });
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

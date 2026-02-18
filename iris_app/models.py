@@ -23,7 +23,8 @@ class IrisUser(models.Model):
         ('EXTERNAL', 'External'),
     ]
     user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES)
-    employee_id = models.CharField(max_length=50, blank=True, null=True)
+    employee_master = models.ForeignKey('IrisEmployeeMaster', on_delete=models.SET_NULL, blank=True, null=True, related_name='system_users')
+    employee_id = models.CharField(max_length=50, blank=True, null=True) # Keep for legacy/temp until data is migrated
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -77,7 +78,8 @@ class Challenge(models.Model):
     description = models.TextField(blank=True, null=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    created_by = models.ForeignKey(IrisUser, on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey(IrisUser, on_delete=models.SET_NULL, null=True, related_name='created_challenges')
+    challenge_owner = models.ForeignKey(IrisUser, on_delete=models.SET_NULL, null=True, related_name='owned_challenges')
     
     # New fields from postchalleage.docx
     keywords = models.CharField(max_length=255, blank=True, null=True)
@@ -90,6 +92,7 @@ class Challenge(models.Model):
     
     key_insights = models.TextField(blank=True, null=True)
     expected_outcome = models.TextField(blank=True, null=True)
+    round1_eval_criteria = models.TextField(blank=True, null=True)
     
     has_idea_template = models.BooleanField(default=False)
     idea_template_file = models.FileField(upload_to='challenge_templates/', blank=True, null=True)
@@ -98,11 +101,16 @@ class Challenge(models.Model):
     VISIBILITY_CHOICES = [('PUBLIC', 'Public'), ('PRIVATE', 'Private')]
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES, default='PUBLIC')
     
+    # New field from design
+    ibu_name = models.CharField(max_length=100, blank=True, null=True)
+    
     TARGET_AUDIENCE_CHOICES = [('INTERNAL', 'Internal'), ('EXTERNAL', 'External'), ('BOTH', 'Both')]
     target_audience = models.CharField(max_length=20, choices=TARGET_AUDIENCE_CHOICES, default='INTERNAL')
     
     STATUS_CHOICES = [('DRAFT', 'Draft'), ('LIVE', 'Live'), ('COMPLETED', 'Completed'), ('ARCHIVED', 'Archived')]
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='DRAFT')
+    
+    num_rounds = models.IntegerField(default=1)
     
     is_featured = models.BooleanField(default=False)
     
@@ -477,6 +485,9 @@ class IrisEmployeeMaster(models.Model):
         managed = False
         db_table = 'IRIS_EMPLOYEE_MASTER'
 
+    def __str__(self):
+        return f"{self.empname} ({self.empcode})"
+
 class IrisLocationMaster(models.Model):
     location_id = models.CharField(primary_key=True, max_length=20)
     location_name = models.CharField(max_length=200, blank=True, null=True)
@@ -522,3 +533,21 @@ class IrisClusterIbgIbu(models.Model):
     class Meta:
         managed = False
         db_table = 'IRIS_CLUSTER_IBG_IBU'
+
+class IrisRoleMs(models.Model):
+    rolecode = models.DecimalField(primary_key=True, max_digits=38, decimal_places=0)
+    role_sh_desc = models.CharField(max_length=50)
+    role_lg_desc = models.CharField(max_length=100)
+    grade_desc = models.CharField(max_length=5, blank=True, null=True)
+    job_code = models.CharField(max_length=10, blank=True, null=True)
+    status_flag = models.CharField(max_length=1)
+    job_family = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'IRIS_ROLE_MS'
+        verbose_name = 'Role Master'
+        verbose_name_plural = 'Role Masters'
+
+    def __str__(self):
+        return self.role_lg_desc

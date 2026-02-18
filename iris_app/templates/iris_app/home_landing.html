@@ -1,293 +1,359 @@
 {% extends 'iris_app/base.html' %}
 {% load static %}
-
-{% block title %}Home - Grassroot IRIS{% endblock %}
-
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'iris_app/css/home_landing.css' %}">
+<style>
+    .sidebar {
+        display: none !important;
+    }
+
+    .main-wrapper {
+        margin-left: 0 !important;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<!-- Public Navigation -->
-<nav class="landing-nav">
-    <div class="nav-logo">
-        <img src="{% static 'iris_app/img/logo.png' %}" alt="Logo" height="40">
+<!-- Hero Section -->
+<header class="hero">
+    <video class="hero-video" autoplay muted loop playsinline>
+        <source src="{% static 'iris_app/video/KBK8A2C_1.mp4' %}" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>Every Idea Matters</h1>
+        <p>Join a global community of innovators solving real-world challenges. Share ideas, collaborate with teams, and
+            earn rewards for your creativity.</p>
+        <button class="btn btn-primary rounded-0 ">Explore Challenges</button>
     </div>
-    <ul class="nav-links d-none d-lg-flex">
-        <li><a href="#">About Us</a></li>
-        <li><a href="#">Community</a></li>
-        <li><a href="{% url 'challenge_list' %}">Challenges</a></li>
-        <li><a href="#">FAQ</a></li>
-    </ul>
-    <div class="nav-auth">
-        {% if request.session.iris_user_id %}
-        <a href="{% url 'challenge_list' %}" class="btn-login">Dashboard</a>
-        {% else %}
-        <a href="{% url 'login' %}" class="btn-login">Login</a>
-        {% endif %}
+    <div class="carousel-controls">
+        <button class="carousel-btn prev"></button>
+        <div class="carousel-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+        <button class="carousel-btn next"></button>
     </div>
-</nav>
+</header>
 
-<div class="landing-container">
-
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-content">
-            <h1>Innovate,<br>Collaborate, Reward</h1>
-            <p>Develop innovative approaches to re-engineer products, systems, or manufacturing processes.</p>
-            <button class="btn btn-primary-red">Enter Platform</button>
-            <div class="hero-dots mt-4">
-                <span class="dot active"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-            </div>
+<!-- Featured Challenges -->
+<section class="challenges-section" id="challenges">
+    <div class="challenges-wrapper">
+        <!-- Left Content -->
+        <div class="challenges-content">
+            <h2>Step into the arena where <span>ideas take shape through real world problem statements.</span></h2>
+            <p>Join the challenges designed to crack real business problems</p>
+            <ul class="challenges-list">
+                <li>Compete, learn, and build ideas that push the boundaries of what's possible.</li>
+            </ul>
+            <a href="{% url 'challenge_list' %}" class="btn btn-primary rounded-0">Explore the Challenges</a>
         </div>
-    </section>
 
-    <!-- Challenges Section -->
-    <section class="section-with-vertical-header">
-        <div class="vertical-header">Challenges</div>
-        <div class="container-fluid">
-            <div class="row g-4">
-                <div class="col-md-10">
-                    <div class="landing-card featured-challenge d-flex p-0 overflow-hidden">
-                        {% if featured_challenge %}
-                        {% if featured_challenge.challenge_icon %}
-                        <img src="{{ featured_challenge.challenge_icon.url }}" alt="{{ featured_challenge.title }}"
-                            class="w-40 object-fit-cover">
-                        {% else %}
-                        <img src="{% static 'iris_app/img/Rectangle 79.png' %}" alt="{{ featured_challenge.title }}"
-                            class="w-40 object-fit-cover">
-                        {% endif %}
-                        <div class="p-4 flex-grow-1">
-                            <h3>{{ featured_challenge.title }}</h3>
-                            <p class="text-muted small">{{ featured_challenge.description|truncatewords:30 }}</p>
-                            <div class="d-flex align-items-center gap-3 mt-3">
-                                <span class="badge-red">{{ featured_challenge.status }}</span>
-                                <a href="{% url 'submit_idea' featured_challenge.challenge_id %}"
-                                    class="btn btn-sm btn-primary-red">View Details</a>
-                            </div>
-                        </div>
-                        {% else %}
-                        <img src="{% static 'iris_app/img/Rectangle 79.png' %}" alt="Smart City"
-                            class="w-40 object-fit-cover">
-                        <div class="p-4 flex-grow-1">
-                            <h3>Smart City Traffic Management</h3>
-                            <p class="text-muted small">Design an intelligent traffic control system using real-time
-                                data to reduce urban congestion and improve emergency response times.</p>
-                            <div class="d-flex align-items-center gap-3 mt-3">
-                                <span class="badge-red">Active</span>
-                                <button class="btn btn-sm btn-primary-red">View Details</button>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <!-- Mini card for next challenge -->
-                <div class="col-md-2 d-none d-lg-block">
-                    <div class="landing-card mini text-center p-3 opacity-50">
-                        <h6 class="small">Next</h6>
-                    </div>
+        <!-- Right Content - Challenge Cards -->
+        <div class="challenges-carousel">
+            <div class="carousel-header">
+                <span>View All Challenges</span>
+                <div class="carousel-nav">
+                    <button class="carousel-arrow prev"></button>
+                    <button class="carousel-arrow next"></button>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Idea Grassroot Section -->
-    <section class="section-with-vertical-header">
-        <div class="vertical-header">Idea-Grassroot</div>
-        <div class="container-fluid">
-            <div class="row g-4">
-                <div class="col-md-10">
-                    <div class="landing-card featured-grassroot d-flex p-0 overflow-hidden bg-dark text-white">
-                        <img src="{% static 'iris_app/img/Container-1.png' %}" alt="Blockchain"
-                            class="w-40 object-fit-cover">
-                        <div class="p-4 flex-grow-1">
-                            <h3>Blockchain for Supply Chain</h3>
-                            <p class="text-light opacity-75 small">Leverage blockchain technology to provide end-to-end
-                                transparency in Global logistics.</p>
-                            <div class="d-flex align-items-center gap-3 mt-3">
-                                <span class="badge bg-light text-dark small">New</span>
-                                <button class="btn btn-sm btn-outline-light rounded-pill">Explore</button>
-                            </div>
+            <div class="challenges-cards">
+                <!-- Dynamic Challenge Cards (Ideally loop through database challenges here) -->
+                {% if recent_challenges %}
+                {% for challenge in recent_challenges %}
+                <div class="challenge-card-item">
+                    <div class="challenge-badge">CHALLENGES</div>
+                    {% if challenge.challenge_icon %}
+                    <img src="{{ challenge.challenge_icon.url }}" alt="{{ challenge.title }}"
+                        class="challenge-card-image">
+                    {% else %}
+                    <img src="{% static 'iris_app/images/techlednetwork.png' %}" alt="{{ challenge.title }}"
+                        class="challenge-card-image">
+                    {% endif %}
+                    <div class="challenge-card-content">
+                        <h3>{{ challenge.title }}</h3>
+                        <div class="challenge-card-tags">
+                            <span class="tag-small">QA</span>
+                            <span class="tag-small">Automation</span>
+                        </div>
+                        <div class="challenge-card-meta">
+                            <span class="meta-time">{{ challenge.end_date|timeuntil }} left</span>
+                            <span class="meta-views">120</span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
+                {% endfor %}
+                {% else %}
+                <!-- Static Fallback if no challenges -->
+                <div class="challenge-card-item">
+                    <div class="challenge-badge">CHALLENGES</div>
+                    <img src="{% static 'iris_app/images/techlednetwork.png' %}"
+                        alt="Technology Led Network Transformation" class="challenge-card-image">
+                    <div class="challenge-card-content">
+                        <h3>Technology Led Network Transformation As a Service</h3>
+                        <div class="challenge-card-tags">
+                            <span class="tag-small">QA</span>
+                            <span class="tag-small">Automation</span>
+                            <span class="tag-small">Testing</span>
+                        </div>
+                        <div class="challenge-card-meta">
+                            <span class="meta-time">15d left</span>
+                            <span class="meta-views">120</span>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Rewards & Achievements -->
-    <section class="rewards-section">
-        <h4 class="mb-4">Rewards & Achievements</h4>
-        <div class="row g-4">
-            <div class="col-md-2 col-6">
-                <div class="reward-card">
-                    <img src="{% static 'iris_app/icon/Icon-1.svg' %}" alt="Badge" class="mb-3" width="40">
-                    <h6 class="small mb-1">Innovation Leader</h6>
-                    <span class="text-warning small text-nowrap">★ 500 Pts</span>
+                <div class="challenge-card-item">
+                    <div class="challenge-badge">CHALLENGES</div>
+                    <img src="{% static 'iris_app/images/unifiedtest.png' %}" alt="Unified Test Automation"
+                        class="challenge-card-image">
+                    <div class="challenge-card-content">
+                        <h3>Unified Test Automation Across Domains</h3>
+                        <div class="challenge-card-tags">
+                            <span class="tag-small">QA</span>
+                            <span class="tag-small">Automation</span>
+                            <span class="tag-small">Testing</span>
+                        </div>
+                        <div class="challenge-card-meta">
+                            <span class="meta-time">12d left</span>
+                            <span class="meta-views">120</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-2 col-6">
-                <div class="reward-card">
-                    <img src="{% static 'iris_app/icon/Icon-2.svg' %}" alt="Badge" class="mb-3" width="40">
-                    <h6 class="small mb-1">Community Expert</h6>
-                    <span class="text-warning small text-nowrap">★ 300 Pts</span>
-                </div>
-            </div>
-            <div class="col-md-2 col-6">
-                <div class="reward-card">
-                    <img src="{% static 'iris_app/icon/Icon-3.svg' %}" alt="Badge" class="mb-3" width="40">
-                    <h6 class="small mb-1">Top Contributor</h6>
-                    <span class="text-warning small text-nowrap">★ 450 Pts</span>
-                </div>
-            </div>
-            <div class="col-md-2 col-6">
-                <div class="reward-card">
-                    <img src="{% static 'iris_app/icon/Icon-4.svg' %}" alt="Badge" class="mb-3" width="40">
-                    <h6 class="small mb-1">Rising Star</h6>
-                    <span class="text-warning small text-nowrap">★ 200 Pts</span>
-                </div>
-            </div>
-            <div class="col-md-2 col-6">
-                <div class="reward-card">
-                    <img src="{% static 'iris_app/icon/Icon-5.svg' %}" alt="Badge" class="mb-3" width="40">
-                    <h6 class="small mb-1">Master Minds</h6>
-                    <span class="text-warning small text-nowrap">★ 600 Pts</span>
-                </div>
+                {% endif %}
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Leaderboard -->
-    <section class="leaderboard-section mb-5">
-        <h2 class="text-center mb-5">Leaderboard</h2>
-        <div class="top-rankers">
-            <div class="text-center">
-                <img src="{% static 'iris_app/img/logo.png' %}" class="ranker-avatar" alt="User">
-                <p class="mb-0 mt-2 fw-bold">John Doe</p>
-                <span class="badge bg-secondary">2nd Place</span>
-            </div>
-            <div class="text-center pb-4">
-                <img src="{% static 'iris_app/img/logo.png' %}" class="ranker-avatar rank-1" alt="User">
-                <p class="mb-0 mt-2 fw-bold fs-5">Alice Vance</p>
-                <span class="badge bg-warning text-dark">1st Place</span>
-            </div>
-            <div class="text-center">
-                <img src="{% static 'iris_app/img/logo.png' %}" class="ranker-avatar" alt="User">
-                <p class="mb-0 mt-2 fw-bold">Sarah Lee</p>
-                <span class="badge bg-secondary">3rd Place</span>
+<!-- Grassroot Section (About Us) -->
+<section class="grassroot-section" id="about">
+    <div class="container grassroot-container">
+        <div class="grassroot-content">
+            <h2>Grassroot empowers you to improve what you work on every day.</h2>
+            <p>Submit practical, high-impact ideas from your project and drive measurable outcomes from the ground up.
+            </p>
+            <div class="grassroot-features">
+                <p>Convert everyday challenges into scalable best practices.</p>
+                <p>Strengthen client confidence through proactive innovation.</p>
+                <p>Turn microinnovations into enterprise-level value.</p>
             </div>
         </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
+        <div class="grassroot-card">
+            <div class="reward-badge">
+                <span class="badge-text">Get <strong>2x Reward</strong> Points!</span>
+            </div>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number">65+</div>
+                    <div class="stat-label">Total submissions</div>
+                </div>
+                <div class="divider"></div>
+                <div class="stat-item">
+                    <div class="stat-number">48+</div>
+                    <div class="stat-label">Ideas Validated</div>
+                </div>
+                <div class="divider"></div>
+                <div class="stat-item">
+                    <div class="stat-number">34</div>
+                    <div class="stat-label">Ideas Implemented</div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    <span>Ideation on</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Achievements Section -->
+<section class="achievements-section">
+    <div class="container">
+        <h2>Rewards & Achievements</h2>
+        <p>Track your progress and unlock exclusive rewards</p>
+        <div class="achievements-grid">
+            <div class="achievement-card">
+                <div class="achievement-icon">
+                    <img src="{% static 'iris_app/images/innovation.png' %}" alt="Innovation Leader">
+                </div>
+                <h3>Innovation Leader</h3>
+                <p>Complete 5 challenges with winning ideas</p>
+                <div class="progress-info">
+                    <span>2/5</span>
+                    <span>2000 pts</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 40%;"></div>
+                </div>
+            </div>
+            <!-- More cards can be added here -->
+        </div>
+    </div>
+</section>
+
+<!-- Leaderboard Section -->
+<section class="leaderboard-section">
+    <div class="container">
+        <h2>Leaderboard</h2>
+        <p>Top Contributors</p>
+        <div class="leaderboard-grid">
+            <div class="leaderboard-rank rank-2">
+                <img src="{% static 'iris_app/images/George.png' %}" alt="George D" class="rank-avatar">
+                <div class="rank-badge">
+                    <img src="{% static 'iris_app/images/broze.png' %}" alt="Rank 2">
+                    <span>2</span>
+                </div>
+                <h3>George D</h3>
+                <div class="rank-stats">
+                    <strong>9,100 pts</strong> | <strong>8 Subs.</strong>
+                </div>
+            </div>
+            <div class="leaderboard-rank rank-1">
+                <img src="{% static 'iris_app/images/Vijaya.png' %}" alt="Vijaya Rao" class="rank-avatar">
+                <div class="rank-badge">
+                    <img src="{% static 'iris_app/images/gold.png' %}" alt="Rank 1">
+                    <span>1</span>
+                </div>
+                <h3>Vijaya Rao</h3>
+                <div class="rank-stats">
+                    <strong>9,100 pts</strong> | <strong>8 Subs.</strong>
+                </div>
+            </div>
+            <div class="leaderboard-rank rank-3">
+                <img src="{% static 'iris_app/images/dipika.png' %}" alt="Dipika Das" class="rank-avatar">
+                <div class="rank-badge">
+                    <img src="{% static 'iris_app/images/silver.png' %}" alt="Rank 3">
+                    <span>3</span>
+                </div>
+                <h3>Dipika Das</h3>
+                <div class="rank-stats">
+                    <strong>9,100 pts</strong> | <strong>7 Subs.</strong>
+                </div>
+            </div>
+        </div>
+        <!-- Leaderboard Table -->
+        <div class="leaderboard-table">
+            <table>
                 <thead>
-                    <tr class="table-dark">
+                    <tr>
                         <th>Rank</th>
-                        <th>Innovator</th>
-                        <th>Category</th>
+                        <th>Participant</th>
+                        <th>Username</th>
                         <th>Points</th>
                         <th>Submissions</th>
-                        <th>Level</th>
+                        <th>Challenge</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>4</td>
-                        <td><img src="{% static 'iris_app/img/logo.png' %}" width="30" class="rounded-circle me-2">
-                            Rahul Kumar</td>
-                        <td>AI & ML</td>
-                        <td>1,250</td>
-                        <td>12</td>
-                        <td><span class="badge border text-dark">Gold</span></td>
-                    </tr>
-                    <tr>
+                        <td>
+                            <img src="{% static 'iris_app/images/ananya.png' %}" alt="Ananya Raj">
+                            <span>Ananya Raj</span>
+                        </td>
+                        <td><span class="username">@ananya</span></td>
+                        <td>8,100</td>
                         <td>5</td>
-                        <td><img src="{% static 'iris_app/img/logo.png' %}" width="30" class="rounded-circle me-2">
-                            Meera Shah</td>
-                        <td>IoT</td>
-                        <td>1,100</td>
-                        <td>8</td>
-                        <td><span class="badge border text-dark">Silver</span></td>
+                        <td><span class="challenge-badge">Innovation Hub</span></td>
                     </tr>
                 </tbody>
             </table>
         </div>
-    </section>
+        <a href="#" class="view-all">View Full Leaderboard →</a>
+    </div>
+</section>
 
-    <!-- Community Stats -->
-    <section class="community-stats mb-5">
-        <div class="stat-item">
-            <h2>{{ member_count|default:"2,347" }}</h2>
-            <p>Total Members</p>
-        </div>
-        <div class="stat-item">
-            <h2>{{ idea_count|default:"1,256" }}</h2>
-            <p>Ideas Submitted</p>
-        </div>
-        <div class="stat-item">
-            <h2>{{ challenge_count|default:"104" }}</h2>
-            <p>Active Challenges</p>
-        </div>
-        <div class="stat-item">
-            <h2>{{ expert_count|default:"457" }}</h2>
-            <p>Community Experts</p>
-        </div>
-    </section>
-
-    <!-- Impact CTA -->
-    <section class="landing-card bg-light border-0 p-5 text-center mb-5">
-        <div class="row align-items-center">
-            <div class="col-lg-8 text-lg-start">
-                <h2>Ready to make an impact?</h2>
-                <p class="text-muted">Join thousands of innovators and start sharing your ideas today.</p>
-            </div>
-            <div class="col-lg-4 text-lg-end">
-                <button class="btn btn-primary-red btn-lg">Get Started Now</button>
+<!-- Community Section -->
+<section class="community-section" id="community">
+    <div class="section-bg"></div>
+    <div class="container">
+        <h1 class="community-title">Connect, Collaborate and Create<br>Impact Together</h1>
+        <div class="community-featured-wrapper">
+            <div class="featured-card">
+                <img src="{% static 'iris_app/images/Internalcommunciation.png' %}" alt="Internal Communications"
+                    class="banner-image">
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Testimonial -->
-    <section class="testimonial-section mb-5">
-        <h4 class="mb-4">Innovator Says</h4>
-        <div class="testimonial-box">
-            <img src="{% static 'iris_app/img/Rectangle 82.png' %}" alt="Innovator" class="testimonial-img">
-            <div>
-                <h5 class="mb-1">Manisha Bharadi</h5>
-                <p class="text-danger small mb-3">UI/UX Designer & Researcher</p>
-                <p class="opacity-75">"The IRIS platform has completely transformed how we collaborate on new ideas. The
-                    rewards system is a great motivator!"</p>
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <div class="cta-left">
+                <div class="cta-icon">
+                    <img src="{% static 'iris_app/images/Vector.png' %}">
+                </div>
+                <div class="cta-text">
+                    <h2>Ready to Make an Impact?</h2>
+                    <p>Join community of innovators and start collaborating today!</p>
+                </div>
+            </div>
+            <button class="btn btn-primary cta-button rounded-0">Submit your Ideas <span class="arrow">→</span></button>
+        </div>
+    </div>
+</section>
+
+<!-- Innovator Testimonial -->
+<section class="testimonial-section">
+    <div class="container">
+        <div class="testimonial-header">
+            <p class="testimonial-label">What our</p>
+            <h2>Innovator Says</h2>
+        </div>
+        <div class="testimonial-card">
+            <div class="testimonial-image-wrapper">
+                <div class="testimonial-image">
+                    <img src="{% static 'iris_app/images/nikhil.png' %}" alt="NIKHIL MALHOTRA">
+                </div>
+                <div class="testimonial-nav">
+                    <button class="nav-btn prev-btn">‹</button>
+                    <button class="nav-btn next-btn">›</button>
+                </div>
+            </div>
+            <div class="testimonial-content">
+                <h3>NIKHIL MALHOTRA</h3>
+                <p class="testimonial-title">Chief Innovation Officer & Global Head – AI, Tech Mahindra</p>
+                <blockquote>
+                    "Innovation represents the pursuit of novel ideas designed to refine existing processes or enhance
+                    applications. This initiative has successfully empowered many to contribute creative solutions that
+                    drive Tech Mahindra’s business objectives and optimize our technical ecosystem. By fostering this
+                    culture of continuous improvement, we are ensuring that our applications remain efficient,
+                    competitive, and future-ready."
+                </blockquote>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- FAQ -->
-    <section class="mb-5">
-        <h4 class="mb-4">Your Questions?</h4>
-        <div class="faq-list">
+<!-- FAQ Section -->
+<section class="faq-section" id="faq">
+    <div class="container">
+        <h2>Your Questions?</h2>
+        <p>If you have questions, we have answers for you here. In case we don't, please feel free to reach out to us
+            here <strong>iris@techmahindra.com</strong></p>
+
+        <div class="faq-accordion">
             <div class="faq-item">
-                <div class="faq-question">What is the Grassroot Innovation Platform? <span>+</span></div>
+                <div class="faq-header">
+                    <span class="faq-number">1.</span>
+                    <h3>Which programs does Tech Mahindra Foundation run?</h3>
+                    <button class="faq-toggle">+</button>
+                </div>
+                <div class="faq-content">
+                    <p>Our programs cater to underserved communities, including women, youth, children, teachers, and
+                        persons with disabilities. We collaborate with NGOs, educational institutions, and government
+                        bodies to ensure maximum outreach and impact.</p>
+                </div>
             </div>
-            <div class="faq-item">
-                <div class="faq-question">Who can participate in the challenges? <span>+</span></div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question">How do I earn rewards and points? <span>+</span></div>
-            </div>
+            <!-- More FAQ items... -->
         </div>
-    </section>
-
-</div>
-
-{% block extra_js %}
-<script>
-    // Simple FAQ toggle
-    document.querySelectorAll('.faq-question').forEach(q => {
-        q.addEventListener('click', () => {
-            alert('FAQ content expanded (interactive demo)');
-        });
-    });
-</script>
-{% endblock %}
+    </div>
+</section>
 {% endblock %}

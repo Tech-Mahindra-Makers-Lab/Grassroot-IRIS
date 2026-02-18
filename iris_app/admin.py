@@ -7,7 +7,7 @@ from .models import (
     Review, WorkflowLog, Reward, Badge, UserBadge,
     ReviewParameter, ReviewRating, ChallengeReviewParameter,
     ImprovementCategory, ImprovementSubCategory, GrassrootIdea, GrassrootEvaluation, UserLoginLog,
-    IrisCollage, IrisEmployeeMaster, IrisLocationMaster, IrisGradeRoleMaster, IrisMailMaster, IrisClusterIbgIbu
+    IrisCollage, IrisEmployeeMaster, IrisLocationMaster, IrisGradeRoleMaster, IrisMailMaster, IrisClusterIbgIbu, IrisRoleMs
 )
 from .admin_custom import ChallengeOwner, ChallengeOwnerAdmin, UserLoginLogAdmin
 from import_export.admin import ImportExportModelAdmin
@@ -17,11 +17,18 @@ class RoleAdmin(admin.ModelAdmin):
     list_display = ('role_name', 'description', 'role_id')
     search_fields = ('role_name',)
 
+@admin.register(IrisEmployeeMaster)
+class IrisEmployeeMasterAdmin(ImportExportModelAdmin):
+    list_display = ('empname', 'empcode', 'emailid', 'emptitle', 'grade', 'status_flag')
+    search_fields = ('empname', 'empcode', 'emailid')
+    list_filter = ('grade', 'status_flag')
+
 @admin.register(IrisUser)
 class IrisUserAdmin(ImportExportModelAdmin):
-    list_display = ('full_name', 'email', 'user_type', 'get_roles', 'employee_id', 'created_at')
+    list_display = ('full_name', 'email', 'user_type', 'get_roles', 'employee_master', 'created_at')
     list_filter = ('user_type', 'created_at', 'userrole__role')
-    search_fields = ('full_name', 'email', 'employee_id')
+    search_fields = ('full_name', 'email', 'employee_master__empcode')
+    autocomplete_fields = ['employee_master']
 
     def get_roles(self, obj):
         return ", ".join([r.role.role_name for r in obj.userrole_set.all()])
@@ -48,7 +55,7 @@ class ChallengePanelInline(admin.TabularInline):
 
 @admin.register(Challenge)
 class ChallengeAdmin(ImportExportModelAdmin):
-    list_display = ('title', 'status', 'start_date', 'end_date', 'visibility', 'created_by')
+    list_display = ('title', 'status', 'start_date', 'end_date', 'visibility', 'challenge_owner')
     list_filter = ('status', 'visibility', 'target_audience', 'start_date')
     search_fields = ('title', 'description')
     inlines = [ChallengeReviewParameterInline, ChallengePanelInline]
@@ -61,7 +68,7 @@ class ChallengeAdmin(ImportExportModelAdmin):
             'fields': ('start_date', 'end_date', 'round1_eval_start', 'round1_eval_end', 'round2_eval_start', 'round2_eval_end')
         }),
         ('Targeting & Visibility', {
-            'fields': ('target_audience', 'visibility', 'created_by')
+            'fields': ('target_audience', 'visibility', 'challenge_owner', 'created_by')
         }),
         ('Insights & Outcomes', {
             'fields': ('key_insights', 'expected_outcome')
@@ -185,12 +192,6 @@ class IrisCollageAdmin(ImportExportModelAdmin):
     list_display = ('collage_name', 'university_id', 'created_by', 'created_on')
     search_fields = ('collage_name',)
 
-@admin.register(IrisEmployeeMaster)
-class IrisEmployeeMasterAdmin(ImportExportModelAdmin):
-    list_display = ('empname', 'empcode', 'emailid', 'emptitle', 'grade', 'status_flag')
-    search_fields = ('empname', 'empcode', 'emailid')
-    list_filter = ('grade', 'status_flag')
-
 @admin.register(IrisLocationMaster)
 class IrisLocationMasterAdmin(admin.ModelAdmin):
     list_display = ('location_id', 'location_name', 'status_flag')
@@ -210,3 +211,9 @@ class IrisMailMasterAdmin(admin.ModelAdmin):
 class IrisClusterIbgIbuAdmin(admin.ModelAdmin):
     list_display = ('functioncode', 'function_lg_desc', 'function_type', 'function_level')
     list_filter = ('function_type', 'function_level')
+
+@admin.register(IrisRoleMs)
+class IrisRoleMsAdmin(ImportExportModelAdmin):
+    list_display = ('role_lg_desc', 'rolecode', 'grade_desc', 'job_code', 'status_flag')
+    search_fields = ('role_lg_desc', 'rolecode', 'job_code')
+    list_filter = ('status_flag', 'grade_desc')
