@@ -133,7 +133,7 @@
         font-weight: 600;
         transition: all 0.2s;
     }
-    
+
     .btn-next:hover {
         background: #0F172A;
         transform: translateY(-1px);
@@ -148,7 +148,7 @@
         font-weight: 600;
         transition: all 0.2s;
     }
-    
+
     .btn-prev:hover {
         background: #F8FAFC;
         color: #1E293B;
@@ -186,165 +186,453 @@
         <div class="wizard-container">
             <div class="wizard-step active" id="wizard-step-1">
                 <div class="step-number">1</div>
-                <div class="step-label">Basics</div>
+                <div class="step-label">Your Details</div>
             </div>
             <div class="wizard-step" id="wizard-step-2">
                 <div class="step-number">2</div>
-                <div class="step-label">Solution</div>
+                <div class="step-label">Idea Details</div>
             </div>
             <div class="wizard-step" id="wizard-step-3">
                 <div class="step-number">3</div>
-                <div class="step-label">Collab</div>
+                <div class="step-label">Value Proposition</div>
             </div>
             <div class="wizard-step" id="wizard-step-4">
                 <div class="step-number">4</div>
-                <div class="step-label">Review</div>
+                <div class="step-label">Review & Submit</div>
             </div>
         </div>
 
-        <form method="POST" enctype="multipart/form-data" id="ideaForm">
+        <form method="POST" action="{% url 'submit_idea' challenge.challenge_id %}" enctype="multipart/form-data" id="ideaForm">
             {% csrf_token %}
 
-            <!-- Step 1: Basic Info -->
-            <div class="form-card step-content active" id="step-1">
-                <h3 class="card-title-custom">Basic Information</h3>
-                <div class="row g-4">
-                    <div class="col-12">
-                        <label class="form-label fw-bold">Idea Title*</label>
-                        <input type="text" name="title" class="form-control form-control-lg"
-                                placeholder="A catchy name for your idea" required>
+            <!-- Hidden Fields for form data consolidation -->
+            <input type="hidden" name="keywords" id="keywords_hidden" value="">
+            <input type="hidden" name="is_confidential" value="off">
+            <input type="hidden" name="sharing_scope" value="NONE">
+            <input type="hidden" name="problem_statement" id="problem_statement_hidden" value="">
+            <input type="hidden" name="proposed_solution" id="proposed_solution_hidden" value="">
+            <input type="hidden" name="business_value_non_monetary" value="">
+            <input type="hidden" name="risks" id="risks_hidden" value="">
+            <input type="hidden" name="innovation_type" value="Challenge Based">
+
+            <!-- Step 1: Your Details -->
+            <div class="form-card step-content active step1-card" id="step-1">
+                <!-- Section Header -->
+                <div class="step1-section-header">
+                    <h3 class="step1-section-title">Your Details</h3>
+                    <p class="step1-section-description">Auto-populated from your profile</p>
+                </div>
+
+                <!-- Employee Information Display -->
+                <div class="step1-employee-info-grid">
+                    <!-- Row 1: Employee ID & Name -->
+                    <div class="step1-employee-row">
+                        <!-- Employee ID -->
+                        <div class="step1-employee-field">
+                            <label class="step1-field-label">Employee ID</label>
+                            <div class="step1-field-display">
+                                <span class="step1-field-display-span">{{ user.employee_id|default:"N/A" }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Employee Name -->
+                        <div class="step1-employee-field">
+                            <label class="step1-field-label">Employee Name</label>
+                            <div class="step1-field-display">
+                                <span class="step1-field-display-span">{{ user.full_name }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-12">
-                        <label class="form-label fw-bold">Tagline / Short Description*</label>
-                        <textarea name="description" class="form-control" rows="3"
-                                placeholder="Briefly summarize your idea in 2-3 sentences..." required></textarea>
+
+                    <!-- Row 2: Email & IBU -->
+                    <div class="step1-employee-row">
+                        <!-- Email ID -->
+                        <div class="step1-employee-field">
+                            <label class="step1-field-label">Email ID</label>
+                            <div class="step1-field-display">
+                                <span class="step1-field-display-span step1-field-display-email">{{ user.email }}</span>
+                            </div>
+                        </div>
+
+                        <!-- IBU -->
+                        <div class="step1-employee-field">
+                            <label class="step1-field-label">IBU</label>
+                            <div class="step1-field-display">
+                                <span class="step1-field-display-span">{% if employee_detail and employee_detail.ibu_name %}{{ employee_detail.ibu_name }}{% else %}N/A{% endif %}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-12">
-                        <label class="form-label fw-bold">Keywords</label>
-                        <input type="text" name="keywords" class="form-control"
-                                placeholder="AI, Automation, Sustainability, etc.">
-                    </div>
-                    <div class="col-12">
-                        <div class="form-check form-switch p-3 bg-light rounded-3">
-                            <input class="form-check-input ms-0 me-3" type="checkbox" name="is_confidential" id="confidentialSwitch">
-                            <label class="form-check-label fw-bold" for="confidentialSwitch">Mark as Confidential</label>
-                            <small class="d-block text-muted mt-1">If enabled, only authorized reviewers can see this idea.</small>
+
+                    <!-- Row 3: Service Line (Full Width) -->
+                    <div class="step1-employee-field">
+                        <label class="step1-field-label">Service Line</label>
+                        <div class="step1-field-display">
+                            <span class="step1-field-display-span">{% if employee_detail and employee_detail.service_line %}{{ employee_detail.service_line }}{% else %}N/A{% endif %}</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="footer-actions justify-content-end">
-                    <button type="button" class="btn btn-next" onclick="goToStep(2)">Next Step <i class="fa-solid fa-chevron-right ms-2"></i></button>
+                <!-- Info Alert -->
+                <div class="step1-info-alert">
+                    <div class="step1-info-alert-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="step1-info-alert-text">
+                        These details are automatically populated from your employee profile. If any information is incorrect, please contact BHR to update your records.
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="step1-footer-actions">
+                    <button type="button" class="step1-btn-next" onclick="goToStep(2)">Next Step <i class="fa-solid fa-chevron-right ms-2"></i></button>
                 </div>
             </div>
 
-            <!-- Step 2: Solution & Value -->
-            <div class="form-card step-content" id="step-2">
-                <h3 class="card-title-custom">Detailed Solution</h3>
-                <div class="row g-4">
-                    <div class="col-12">
-                        <label class="form-label fw-bold">Problem Statement*</label>
-                        <textarea name="problem_statement" class="form-control" rows="4" required></textarea>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label fw-bold">Proposed Solution*</label>
-                        <textarea name="proposed_solution" class="form-control" rows="5" required></textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Innovation Type*</label>
-                        <select name="innovation_type" class="form-select" required>
-                            {% for val, label in innovation_types %}
-                            <option value="{{ val }}">{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Sharing Scope*</label>
-                        <select name="sharing_scope" class="form-select" required>
-                            {% for val, label in sharing_scopes %}
-                            <option value="{{ val }}">{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Business Value (Monetary)</label>
-                        <textarea name="business_value_monetary" class="form-control" rows="2" placeholder="Expected revenue/savings..."></textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Business Value (Non-Monetary)</label>
-                        <textarea name="business_value_non_monetary" class="form-control" rows="2" placeholder="Brand value, efficiency..."></textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Assumptions</label>
-                        <textarea name="assumptions" class="form-control" rows="2"></textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Risks</label>
-                        <textarea name="risks" class="form-control" rows="2"></textarea>
-                    </div>
+            <!-- Step 2: Idea Details -->
+            <div class="form-card step-content step2-card" id="step-2">
+                <!-- Section Header -->
+                <div class="step2-section-header">
+                    <div class="step2-section-header-icon"></div>
+                    <h3 class="step2-section-title">Idea Details</h3>
                 </div>
 
-                <div class="footer-actions">
-                    <button type="button" class="btn btn-prev" onclick="goToStep(1)"><i class="fa-solid fa-chevron-left me-2"></i> Prev</button>
-                    <button type="button" class="btn btn-next" onclick="goToStep(3)">Next Step <i class="fa-solid fa-chevron-right ms-2"></i></button>
-                </div>
-            </div>
-
-            <!-- Step 3: Collaboration & Documents -->
-            <div class="form-card step-content" id="step-3">
-                <h3 class="card-title-custom">Collaboration & Attachments</h3>
-                
-                <div class="mb-4">
-                    <label class="form-label fw-bold">Co-Ideators (Collaborators)</label>
-                    <div class="bg-light p-4 rounded-4">
-                        <div class="input-group mb-3">
-                            <input type="email" id="coIdeatorEmail" class="form-control" placeholder="Enter collaborator's email...">
-                            <button type="button" id="addCoIdeatorBtn" class="btn btn-primary">Add</button>
+                <!-- Focus Area Selection Section -->
+                <div class="step2-focus-area-section">
+                    <div class="step2-focus-area-header">
+                        <div class="step2-focus-area-title">
+                            Select Your Focus Area
                         </div>
-                        <div id="coIdeatorList" class="d-flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <!-- Improvement Categories & Theme Two-Column Layout -->
+                    <div class="step2-categories-theme-container">
+                        <!-- Left Column: Improvement Categories -->
+                        <div class="step2-categories-column">
+                            <label class="step2-categories-label">Improvement Categories <span class="required">*</span></label>
+                            <div class="step2-categories-list">
+                                <div class="step2-category-item active" onclick="selectCategory(this, 'customer_experience')">
+                                    <i class="fas fa-check"></i>
+                                    <span>Customer Experience</span>
+                                </div>
+                                <div class="step2-category-item selected" onclick="selectCategory(this, 'time_to_market')">
+                                    <span>Time to Market</span>
+                                </div>
+                                <div class="step2-category-item" onclick="selectCategory(this, 'service_scope')">
+                                    <span>Service Scope</span>
+                                </div>
+                                <div class="step2-category-item" onclick="selectCategory(this, 'cost_optimization')">
+                                    <span>Cost Optimization</span>
+                                </div>
+                                <div class="step2-category-item" onclick="selectCategory(this, 'faster_ttm')">
+                                    <span>Faster time to market</span>
+                                </div>
+                                <div class="step2-category-item" onclick="selectCategory(this, 'product_quality')">
+                                    <span>Product Quality</span>
+                                </div>
+                            </div>
+                            <input type="hidden" name="improvement_category" id="improvement_category" value="customer_experience">
+                        </div>
+
+                        <!-- Right Column: Improvement Theme -->
+                        <div class="step2-theme-column">
+                            <label class="step2-theme-label">Improvement Theme <span class="required">*</span></label>
+                            <div class="step2-theme-grid">
+                                <div class="step2-theme-option" onclick="selectTheme(this, 'improving_1st_resolution')">
+                                    <span>Improving 1st level Resolution</span>
+                                </div>
+                                <div class="step2-theme-option" onclick="selectTheme(this, 'improving_kedb')">
+                                    <span>Improving KEDB Effectiveness</span>
+                                </div>
+                                <div class="step2-theme-option active" onclick="selectTheme(this, 'improving_satisfaction')">
+                                    <i class="fas fa-check"></i>
+                                    <span>Improving Customer Satisfaction</span>
+                                </div>
+                                <div class="step2-theme-option" onclick="selectTheme(this, 'improving_security')">
+                                    <span>Improving Security Compliance</span>
+                                </div>
+                                <div class="step2-theme-option" onclick="selectTheme(this, 'improving_usage')">
+                                    <span>Improving Application Usage</span>
+                                </div>
+                                <div class="step2-theme-option" onclick="selectTheme(this, 'improving_capacity')">
+                                    <span>Improving Application Capacity</span>
+                                </div>
+                                <div class="step2-theme-option" onclick="selectTheme(this, 'improving_performance')">
+                                    <span>Improving Application Performance</span>
+                                </div>
+                                <div class="step2-theme-option" onclick="selectTheme(this, 'improving_km')">
+                                    <span>Improving KM Effectiveness</span>
+                                </div>
+                            </div>
+                            <input type="hidden" name="improvement_theme" id="improvement_theme" value="improving_satisfaction">
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-4">
-                    <label class="form-label fw-bold">Supporting Documents</label>
-                    <div class="bg-light p-4 rounded-4 text-center border-dashed">
-                         <i class="fa-solid fa-cloud-arrow-up fa-2x text-muted mb-3"></i>
-                         <input type="file" name="idea_documents" class="form-control" multiple>
-                         <div class="small text-muted mt-2">Upload multiple files (PDF, PPT, Images)</div>
+                <!-- Idea Name Field (Title) -->
+                <div class="step2-form-field">
+                    <label class="step2-field-label">Idea Name</label>
+                    <input type="text" name="title" class="step2-field-input" placeholder="Enter a descriptive name for your idea" maxlength="200" required>
+                    <div class="step2-field-hint">
+                        <span>Only Characters, Digits and special characters.;@!?€*EÇ$%'&/#*+4?^~•—=]</span>
+                        <span class="step2-char-count"><span id="idea-name-count">0</span>/200</span>
                     </div>
                 </div>
 
-                <div class="footer-actions">
-                    <button type="button" class="btn btn-prev" onclick="goToStep(2)"><i class="fa-solid fa-chevron-left me-2"></i> Prev</button>
-                    <button type="button" class="btn btn-next" onclick="goToStep(4)">Review <i class="fa-solid fa-chevron-right ms-2"></i></button>
+                <!-- Proposed Idea Field (Description) -->
+                <div class="step2-form-field">
+                    <label class="step2-field-label">Proposed Idea <span class="required">*</span></label>
+                    <textarea name="description" class="step2-field-textarea" placeholder="Briefly describe your idea — what you plan to do and the key approach or steps you'll use to make it work" maxlength="1000" required></textarea>
+                    <div class="step2-field-hint">
+                        <span></span>
+                        <span class="step2-char-count"><span id="proposed-idea-count">0</span>/1000</span>
+                    </div>
+                </div>
+
+                <!-- Keywords Field -->
+                <div class="step2-form-field">
+                    <label class="step2-field-label">Keywords <span class="required">*</span></label>
+                    <div class="step2-tags-container" id="keywords-container" onclick="focusKeywordInput()">
+
+
+                        <input type="text" class="step2-tag-input" id="keywords-input" placeholder="Add keywords..." onkeydown="handleKeywordInput(event)">
+                    </div>
+                    <div class="step2-field-hint">Separate with commas</div>
+                </div>
+
+                <!-- Tools/Technology Field -->
+                <div class="step2-form-field">
+                    <label class="step2-field-label">Tools/Technology used <span class="required">*</span></label>
+                    <div class="step2-tags-container" id="tools-container" onclick="focusToolInput()">
+
+
+                        <input type="text" class="step2-tag-input" id="tools-input" placeholder="Add tools..." onkeydown="handleToolInput(event)">
+                    </div>
+                    <div class="step2-field-hint">What tech/ tools are you using?</div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="step2-footer-actions">
+                    <div class="step2-footer-left">
+                        <button type="button" class="step2-btn-prev" onclick="goToStep(1)">
+                            <i class="fa-solid fa-chevron-left"></i> Prev
+                        </button>
+                    </div>
+                    <div class="step2-footer-right">
+                        <button type="button" class="step2-btn-cancel" onclick="cancelForm()">Cancel</button>
+                        <button type="button" class="step2-btn-next" onclick="goToStep(3)">
+                            Next Step <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Step 4: Review -->
-            <div class="form-card step-content" id="step-4">
-                <h3 class="card-title-custom">Review Submission</h3>
-                <div class="alert alert-info border-0 bg-info-subtle text-info-emphasis">
-                    <i class="fa-solid fa-award me-2"></i> Submitting this idea will award you <strong>5 IRIS Points</strong>!
-                </div>
-                
-                <div class="bg-light p-4 rounded-4 mb-4">
-                    <div class="summary-group">
-                        <div class="summary-label">Title</div>
-                        <div class="summary-value" id="sum-title">-</div>
-                    </div>
-                     <div class="summary-group">
-                        <div class="summary-label">Description</div>
-                        <div class="summary-value" id="sum-desc">-</div>
-                    </div>
-                    <div class="summary-group">
-                        <div class="summary-label">Innovation Type</div>
-                        <div class="summary-value" id="sum-type">-</div>
+            <!-- Step 3: Value Proposition -->
+            <div class="form-card step-content step3-card" id="step-3">
+                <!-- Section Header -->
+                <div class="step3-section-header">
+                    <div class="step3-section-header-icon"></div>
+                    <div class="step3-section-title-container">
+                        <h3 class="step3-section-title">Value Proposition</h3>
+                        <p class="step3-section-description">Define the expected value and impact</p>
                     </div>
                 </div>
 
-                <div class="footer-actions">
-                     <button type="button" class="btn btn-prev" onclick="goToStep(3)"><i class="fa-solid fa-chevron-left me-2"></i> Prev</button>
-                     <button type="submit" class="btn btn-danger px-5 fw-bold" id="mainSubmitBtn">Submit Idea</button>
+                <!-- Business Value Field -->
+                <div class="step3-form-field">
+                    <label class="step3-field-label">Business Value <span class="required">*</span></label>
+                    <textarea name="business_value_monetary" class="step3-field-textarea" placeholder="Describe the business impact of your idea by listing key KPIs, the value to your Service Line, the personas benefitted, how they gain, and what uniquely differentiates your solution" maxlength="1000" required></textarea>
+                    <div class="step3-field-hint">
+                        <span class="step3-char-count"><span id="business-value-count">0</span>/1000</span>
+                    </div>
+                </div>
+
+                <!-- Monetary Value Field -->
+                <div class="step3-form-field">
+                    <label class="step3-field-label">Monetary Value <span class="required">*</span></label>
+                    <input type="text" name="monetary_value" class="step3-field-input" placeholder="e.g., $50,000 annual savings" required>
+                </div>
+
+                <!-- Additional Info Field (Assumptions) -->
+                <div class="step3-form-field">
+                    <label class="step3-field-label">Assumptions & Risks</label>
+                    <textarea name="assumptions" class="step3-field-textarea" placeholder="Assumptions/ risks/ Additional Commentary" maxlength="1000"></textarea>
+                    <div class="step3-field-hint">
+                        <span class="step3-char-count"><span id="additional-info-count">0</span>/1000</span>
+                    </div>
+                </div>
+
+                <!-- Supporting Documents Field -->
+                <div class="step3-upload-section">
+                    <label class="step3-field-label">Supporting Doc.</label>
+                    <div class="step3-upload-container" onclick="document.getElementById('idea_documents').click()">
+                        <div class="step3-upload-content">
+                            <div class="step3-upload-icon"></div>
+                            <span class="step3-upload-text">Upload Supporting Document</span>
+                        </div>
+                    </div>
+                    <input type="file" id="idea_documents" name="idea_documents" class="step3-upload-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg">
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="step3-footer-actions">
+                    <div class="step3-footer-left">
+                        <button type="button" class="step3-btn-prev" onclick="goToStep(2)">
+                            <i class="fa-solid fa-chevron-left"></i> Prev
+                        </button>
+                    </div>
+                    <div class="step3-footer-right">
+                        <button type="button" class="step3-btn-cancel" onclick="cancelForm()">Cancel</button>
+                        <button type="button" class="step3-btn-next" onclick="goToStep(4)">
+                            Next Step <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Review & Submit -->
+            <div class="form-card step-content step4-card" id="step-4">
+                <!-- Section Header -->
+                <div class="step4-section-header">
+                    <div class="step4-section-header-icon"></div>
+                    <div class="step4-section-title-container">
+                        <h3 class="step4-section-title">Review & Submit</h3>
+                        <p class="step4-section-description">Define the expected value and impact</p>
+                    </div>
+                </div>
+
+                <!-- Summary Container -->
+                <div class="step4-summary-container">
+                    <!-- Rewards Box -->
+                    <div class="step4-rewards-box">
+                        <div class="step4-rewards-icon">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <p class="step4-rewards-text">
+                            Submitting this idea will award you <span class="step4-rewards-highlight">5 IRIS Points</span>!
+                        </p>
+                    </div>
+
+                    <!-- Your Details Section -->
+                    <div class="step4-summary-section">
+                        <div class="step4-summary-section-header">
+                            <div class="step4-summary-section-icon">
+                                <div class="icon-1"></div>
+                                <div class="icon-2"></div>
+                            </div>
+                            <h4 class="step4-summary-section-title">Your Details</h4>
+                        </div>
+                        <div class="step4-data-grid">
+                            <div class="step4-data-row">
+                                <div class="step4-data-label">Employee ID</div>
+                                <div class="step4-data-value" id="sum-emp-id">-</div>
+                            </div>
+                            <div class="step4-data-row">
+                                <div class="step4-data-label">Employee Name</div>
+                                <div class="step4-data-value" id="sum-emp-name">-</div>
+                            </div>
+                            <div class="step4-data-row">
+                                <div class="step4-data-label">Email ID</div>
+                                <div class="step4-data-value" id="sum-email">-</div>
+                            </div>
+                            <div class="step4-data-row">
+                                <div class="step4-data-label">IBU</div>
+                                <div class="step4-data-value" id="sum-ibu">-</div>
+                            </div>
+                            <div class="step4-data-row">
+                                <div class="step4-data-label">Service Line</div>
+                                <div class="step4-data-value" id="sum-service-line">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Idea Details Section -->
+                    <div class="step4-summary-section">
+                        <div class="step4-summary-section-header">
+                            <div></div>
+                            <h4 class="step4-summary-section-title" style="margin-left: -22px; margin-top: 5.79px;"><span style="display: inline-block; width: 22px; height: 18.77px; outline: 2px #E31837 solid; outline-offset: -1px; margin-right: 11px; vertical-align: middle;"></span>Idea details</h4>
+                        </div>
+                        <div class="step4-data-grid">
+                            <div class="step4-data-row">
+                                <div class="step4-data-label">Improvement Categories</div>
+                                <div class="step4-data-value" id="sum-category">-</div>
+                            </div>
+                            <div class="step4-data-row">
+                                <div class="step4-data-label">Improvement Theme</div>
+                                <div class="step4-data-value" id="sum-theme">-</div>
+                            </div>
+                            <div class="step4-data-row">
+                                <div class="step4-data-label">Idea Name</div>
+                                <div class="step4-data-value" id="sum-idea-name">-</div>
+                            </div>
+                            <div class="step4-data-row tall">
+                                <div class="step4-data-label">Proposed Idea</div>
+                                <div class="step4-data-value tall" id="sum-proposed-idea">-</div>
+                            </div>
+                            <div class="step4-data-row">
+                                <div class="step4-data-label">Keywords</div>
+                                <div class="step4-tags-container" id="sum-keywords">
+                                    <span class="step4-tag"><span class="step4-tag-text">-</span></span>
+                                </div>
+                            </div>
+                            <div class="step4-data-row">
+                                <div class="step4-data-label">Tools/Technology used</div>
+                                <div class="step4-tags-container" id="sum-tools">
+                                    <span class="step4-tag"><span class="step4-tag-text">-</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Value Proposition Section -->
+                    <div class="step4-summary-section">
+                        <div class="step4-summary-section-header">
+                            <div></div>
+                            <h4 class="step4-summary-section-title" style="margin-left: -22px; margin-top: 5.79px;"><span style="display: inline-block; width: 22px; height: 18.77px; outline: 2px #E31837 solid; outline-offset: -1px; margin-right: 11px; vertical-align: middle;"></span>Value Proposition</h4>
+                        </div>
+                        <div class="step4-data-grid">
+                            <div class="step4-data-row tall">
+                                <div class="step4-data-label">Business Value</div>
+                                <div class="step4-data-value tall" id="sum-business-value">-</div>
+                            </div>
+                            <div class="step4-data-row">
+                                <div class="step4-data-label">Monetary Value</div>
+                                <div class="step4-data-value" id="sum-monetary-value">-</div>
+                            </div>
+                            <div class="step4-data-row tall">
+                                <div class="step4-data-label">Additional info</div>
+                                <div class="step4-data-value tall" id="sum-additional-info">-</div>
+                            </div>
+                            <div class="step4-data-row">
+                                <div class="step4-data-label">Supporting Document</div>
+                                <div class="step4-data-value" id="sum-supporting-docs">
+                                    <a href="#" style="color: #E31837; text-decoration: underline;">Preview</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Download Summary Section -->
+                    <div class="step4-download-section">
+                        <button type="button" class="step4-download-btn" onclick="downloadSummary()">
+                            <span>Download Summary</span>
+                            <div class="step4-download-icon">
+                                <i class="fa-solid fa-download"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="step4-footer-actions">
+                    <div class="step4-footer-left">
+                        <button type="button" class="step4-btn-prev" onclick="goToStep(3)">
+                            <i class="fa-solid fa-chevron-left"></i> Prev
+                        </button>
+                    </div>
+                    <div class="step4-footer-right">
+                        <button type="button" class="step4-btn-cancel" onclick="cancelForm()">Cancel</button>
+                        <button type="submit" class="step4-btn-submit" id="mainSubmitBtn">Submit Idea</button>
+                    </div>
                 </div>
             </div>
         </form>
@@ -375,14 +663,14 @@
         if (step > currentStep && !validateStep(currentStep)) return;
         $('.step-content').removeClass('active');
         $(`#step-${step}`).addClass('active');
-        
+
         $('.wizard-step').each((i, el) => {
             const s = i + 1;
             $(el).removeClass('active completed');
             if (s < step) $(el).addClass('completed');
             else if (s === step) $(el).addClass('active');
         });
-        
+
         currentStep = step;
         if (step === 4) updateSummary();
         window.scrollTo(0, 0);
@@ -398,9 +686,63 @@
     }
 
     function updateSummary() {
-        $('#sum-title').text($('[name="title"]').val());
-        $('#sum-desc').text($('[name="description"]').val());
-        $('#sum-type').text($('[name="innovation_type"] option:selected').text());
+        // Step 1: Your Details - Get from display elements
+        $('#sum-emp-id').text($('.step1-field-display-span').eq(0).text() || 'N/A');
+        $('#sum-emp-name').text($('.step1-field-display-span').eq(1).text() || 'N/A');
+        $('#sum-email').text($('.step1-field-display-email').text() || 'N/A');
+        $('#sum-ibu').text($('.step1-field-display-span').eq(3).text() || 'N/A');
+        $('#sum-service-line').text($('.step1-field-display-span').eq(4).text() || 'N/A');
+
+        // Step 2: Idea Details - Updated field names
+        $('#sum-category').text($('#improvement_category').val() || '-');
+        $('#sum-theme').text($('#improvement_theme').val() || '-');
+        $('#sum-idea-name').text($('[name="title"]').val() || '-');
+        $('#sum-proposed-idea').text($('[name="description"]').val() || '-');
+
+        // Step 2: Keywords Tags
+        const keywords = document.querySelectorAll('input[name="keywords"]');
+        const keywordContainer = document.getElementById('sum-keywords');
+        keywordContainer.innerHTML = '';
+        if (keywords.length > 0) {
+            keywords.forEach(kw => {
+                const tag = document.createElement('span');
+                tag.className = 'step4-tag';
+                tag.innerHTML = `<span class="step4-tag-text">${kw.value}</span>`;
+                keywordContainer.appendChild(tag);
+            });
+        } else {
+            keywordContainer.innerHTML = '<span class="step4-tag"><span class="step4-tag-text">-</span></span>';
+        }
+
+        // Step 2: Tools/Technology Tags
+        const tools = document.querySelectorAll('input[name="tools"]');
+        const toolsContainer = document.getElementById('sum-tools');
+        toolsContainer.innerHTML = '';
+        if (tools.length > 0) {
+            tools.forEach(tool => {
+                const tag = document.createElement('span');
+                tag.className = 'step4-tag';
+                tag.innerHTML = `<span class="step4-tag-text">${tool.value}</span>`;
+                toolsContainer.appendChild(tag);
+            });
+        } else {
+            toolsContainer.innerHTML = '<span class="step4-tag"><span class="step4-tag-text">-</span></span>';
+        }
+
+        // Step 3: Value Proposition - Updated field names
+        $('#sum-business-value').text($('[name="business_value_monetary"]').val() || '-');
+        $('#sum-monetary-value').text($('[name="monetary_value"]').val() || '-');
+        $('#sum-additional-info').text($('[name="assumptions"]').val() || '-');
+
+        // Step 3: Supporting Documents
+        const fileInput = document.getElementById('idea_documents');
+        const fileCount = fileInput && fileInput.files ? fileInput.files.length : 0;
+        if (fileCount > 0) {
+            const fileNames = Array.from(fileInput.files).map(f => f.name).join(', ');
+            $('#sum-supporting-docs').html(`<a href="#" onclick="return false;" style="color: #E31837; text-decoration: underline;">${fileNames}</a>`);
+        } else {
+            $('#sum-supporting-docs').html('-');
+        }
     }
 
     // Co-Ideator Logic
@@ -431,47 +773,146 @@
         function validateEmail(email) {
             return String(email).toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0:9]{1,3}\.[0:9]{1,3}\.[0:9]{1,3}\.[0:9]{1,3}\])|(([a-zA-Z\-0:9]+\.)+[a-zA-Z]{2,}))$/);
         }
+
+        // Character counter for Title
+        const titleInput = document.querySelector('[name="title"]');
+        if (titleInput) {
+            titleInput.addEventListener('input', function() {
+                document.getElementById('idea-name-count').textContent = this.value.length;
+            });
+        }
+
+        // Character counter for Description
+        const descriptionInput = document.querySelector('[name="description"]');
+        if (descriptionInput) {
+            descriptionInput.addEventListener('input', function() {
+                document.getElementById('proposed-idea-count').textContent = this.value.length;
+            });
+        }
+
+        // Character counter for Business Value
+        const businessValueInput = document.querySelector('[name="business_value_monetary"]');
+        if (businessValueInput) {
+            businessValueInput.addEventListener('input', function() {
+                document.getElementById('business-value-count').textContent = this.value.length;
+            });
+        }
+
+        // Character counter for Assumptions
+        const assumptionsInput = document.querySelector('[name="assumptions"]');
+        if (assumptionsInput) {
+            assumptionsInput.addEventListener('input', function() {
+                document.getElementById('additional-info-count').textContent = this.value.length;
+            });
+        }
     });
 
-    // Form Submit
-    /* NOTE: Not using AJAX here because file uploads + redirects are handled by standard form submission usually, 
-       but standard form submit won't show the modal nicely without page reload.
-       We'll intercept, show modal on success logic? 
-       Actually, standard Submit is safer for file uploads unless we use FormData. 
-       Let's use standard POST for now to ensure robustness, or if we want the modal, we need AJAX.
-    */
-   
-    // Let's use standard submit for now to let Django handle the redirect/messages naturally
-    // OR if user really wants the modal, we can use AJAX. 
-    // The previous implementation utilized AJAX for Grassroot. Let's use standard for this one to be safe with files 
-    // BUT user asked for design. Design implies modal. I'll stick to standard submit unless I see errors, as file handling is tricky with simple AJAX.
-    // Actually, I can use FormData for AJAX file upload.
-    
-    /* Using AJAX for seamless experience */
-    /*
-    $('#ideaForm').on('submit', function(e) {
-        e.preventDefault();
-        $('#mainSubmitBtn').prop('disabled', true).text('Submitting...');
-        var formData = new FormData(this);
-        $.ajax({
-            url: window.location.href,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(resp) {
-                // If view redirects, we might just follow specific logic or show modal.
-                // NOTE: The view returns a redirect. AJAX will follow the redirect URL in response headers transparently usually or get the HTML of the new page.
-                // Ideally backend should return JSON.
-                // Since I didn't change backend, I will stick to standard submit to avoid breaking "Redirect" logic.
-            },
-            error: function() {
-                alert('Submission failed.');
-                $('#mainSubmitBtn').prop('disabled', false).text('Submit Idea');
+    // Category Selection Function
+    function selectCategory(element, categoryValue) {
+        const allCategories = document.querySelectorAll('.step2-category-item');
+        allCategories.forEach(cat => cat.classList.remove('active', 'selected'));
+        element.classList.add('active');
+        document.getElementById('improvement_category').value = categoryValue;
+    }
+
+    // Theme Selection Function
+    function selectTheme(element, themeValue) {
+        const allThemes = document.querySelectorAll('.step2-theme-option');
+        allThemes.forEach(theme => theme.classList.remove('active'));
+        element.classList.add('active');
+        document.getElementById('improvement_theme').value = themeValue;
+    }
+
+    // Keywords Tag Functions
+    function focusKeywordInput() {
+        document.getElementById('keywords-input').focus();
+    }
+
+    function handleKeywordInput(event) {
+        if (event.key === 'Enter' || event.key === ',') {
+            event.preventDefault();
+            const input = event.target;
+            const keyword = input.value.trim().replace(/,/g, '');
+            if (keyword) {
+                addKeywordTag(keyword);
+                input.value = '';
             }
-        });
+        }
+    }
+
+    function addKeywordTag(keyword) {
+        const container = document.getElementById('keywords-container');
+        const tag = document.createElement('div');
+        tag.className = 'step2-tag';
+        tag.innerHTML = `
+            <div class="step2-tag-icon">+</div>
+            <span>${keyword}</span>
+            <button type="button" class="step2-tag-remove-btn" onclick="removeTag(event)">×</button>
+            <input type="hidden" name="keywords" value="${keyword}">
+        `;
+        container.insertBefore(tag, document.getElementById('keywords-input'));
+    }
+
+    // Tools Tag Functions
+    function focusToolInput() {
+        document.getElementById('tools-input').focus();
+    }
+
+    function handleToolInput(event) {
+        if (event.key === 'Enter' || event.key === ',') {
+            event.preventDefault();
+            const input = event.target;
+            const tool = input.value.trim().replace(/,/g, '');
+            if (tool) {
+                addToolTag(tool);
+                input.value = '';
+            }
+        }
+    }
+
+    function addToolTag(tool) {
+        const container = document.getElementById('tools-container');
+        const tag = document.createElement('div');
+        tag.className = 'step2-tag';
+        tag.innerHTML = `
+            <div class="step2-tag-icon">+</div>
+            <span>${tool}</span>
+            <button type="button" class="step2-tag-remove-btn" onclick="removeTag(event)">×</button>
+            <input type="hidden" name="tools" value="${tool}">
+        `;
+        container.insertBefore(tag, document.getElementById('tools-input'));
+    }
+
+    // Remove Tag Function
+    function removeTag(event) {
+        event.preventDefault();
+        event.target.closest('.step2-tag').remove();
+    }
+
+    // Cancel Form Function
+    function cancelForm() {
+        if (confirm('Are you sure you want to cancel? All unsaved changes will be lost.')) {
+            window.location.href = '{% url "my_ideas" %}';
+        }
+    }
+
+    // Form Submit Handler - Consolidate data before submission
+    document.getElementById('ideaForm').addEventListener('submit', function(e) {
+        // Consolidate keywords from tags
+        const keywords = document.querySelectorAll('input[name="keywords"]');
+        const keywordsList = Array.from(keywords).map(kw => kw.value).join(', ');
+        document.getElementById('keywords_hidden').value = keywordsList;
+
+        // Copy description to problem_statement and proposed_solution for compatibility
+        const description = document.querySelector('[name="description"]').value;
+        document.getElementById('problem_statement_hidden').value = description;
+        document.getElementById('proposed_solution_hidden').value = description;
+
+        // Copy assumptions to risks for compatibility
+        const assumptions = document.querySelector('[name="assumptions"]').value;
+        document.getElementById('risks_hidden').value = assumptions;
+        
+        // Form will now submit with all required fields
     });
-    */
-   /* sticking to standard submit for now to ensure backend compatibility */
 </script>
 {% endblock %}

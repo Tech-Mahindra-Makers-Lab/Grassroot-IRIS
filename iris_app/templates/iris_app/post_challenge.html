@@ -282,30 +282,24 @@
                 <div class="step-number">1</div>
                 <div class="text-center">
                     <div class="step-label">Basic Info</div>
-                    <div class="step-sublabel d-none d-md-block">Challenge details</div>
+                    <div class="step-sublabel d-none d-md-block">DashBoard</div>
                 </div>
             </div>
             <div class="wizard-step" id="wizard-step-2">
                 <div class="step-number">2</div>
                 <div class="text-center">
-                    <div class="step-label">Configuration</div>
+                    <div class="step-label">Assessment setup</div>
                     <div class="step-sublabel d-none d-md-block">Duration & setup</div>
                 </div>
             </div>
             <div class="wizard-step" id="wizard-step-3">
                 <div class="step-number">3</div>
                 <div class="text-center">
-                    <div class="step-label">Review Setup</div>
+                    <div class="step-label">Review & Publish</div>
                     <div class="step-sublabel d-none d-md-block">Parameters & panels</div>
                 </div>
             </div>
-            <div class="wizard-step" id="wizard-step-4">
-                <div class="step-number">4</div>
-                <div class="text-center">
-                    <div class="step-label">Finalize</div>
-                    <div class="step-sublabel d-none d-md-block">Review & publish</div>
-                </div>
-            </div>
+
         </div>
 
         <form method="POST" enctype="multipart/form-data" id="multiStepForm">
@@ -344,21 +338,32 @@
                         placeholder="e.g., AI, Cloud, Innovation, 5G" required>
                 </div>
 
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label required">Start Date</label>
+                        <input type="date" name="chan_start_date" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required">End Date</label>
+                        <input type="date" name="chan_end_date" class="form-control" required>
+                    </div>
+                </div>
                 <div class="mb-4">
-                    <label class="form-label">Challenge Icon</label>
-                    <input type="file" name="challenge_icon" class="form-control" accept="image/*">
+                    <label class="form-label required">Expected Business Outcome</label>
+                    <textarea name="expected_outcome" class="form-control" rows="3" required></textarea>
                 </div>
 
-                <div class="footer-actions">
-                    <div></div>
-                    <button type="button" class="btn btn-next" onclick="goToStep(2)">Next Step <i
-                            class="fa-solid fa-chevron-right ms-2"></i></button>
-                </div>
-            </div>
-
-            <!-- Step 2: Configuration -->
-            <div class="form-card step-content" id="step-2">
                 <div class="mb-4">
+                    <label class="form-label">Upload Supporting Document</label>
+                    <div class="border-2 rounded-3 p-4" style="border: 2px dashed #CBD5E1; text-align: center; cursor: pointer; position: relative;" onclick="document.getElementById('supporting_document').click()">
+                        <input type="file" id="supporting_document" name="supporting_document" class="d-none" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+                        <i class="fa-solid fa-arrow-up-from-bracket text-muted" style="font-size: 24px; margin-right: 10px;"></i>
+
+                        <p class="text-muted mt-2 mb-0" style="font-size: 12px;">Click to upload or drag and drop files here</p>
+                        <div id="file-name-display" class="mt-2"></div>
+                    </div>
+                </div>
+                 <div class="mb-4">
                     <label class="form-label required">Target Audience</label>
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -392,193 +397,410 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label required">Start Date</label>
-                        <input type="date" name="start_date" class="form-control" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label required">End Date</label>
-                        <input type="date" name="end_date" class="form-control" required>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label required">Number of Evaluation Rounds</label>
+                  <div class="mb-4">
+                    <label class="form-label required">View Mode</label>
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <input type="radio" name="num_rounds" value="1" id="rounds-1" class="d-none" checked>
-                            <label for="rounds-1" class="rounds-card selected" onclick="selectCard(this, 'rounds')">
+                     <div class="col-md-6">
+                            <input type="radio" name="visibility" value="PRIVATE" id="view-private" class="d-none" checked>
+                            <label for="view-private" class="audience-card visibility-card selected" onclick="selectViewMode(this)">
+                                <div class="bg-light p-2 rounded-circle"><i class="fa-solid fa-lock text-muted"></i>
+                                </div>
                                 <div>
-                                    <div class="fw-bold">Single Round</div>
-                                    <small class="text-muted">One evaluation round</small>
+                                    <div class="fw-bold">Private</div><small class="text-muted">Selected people can view</small>
                                 </div>
                                 <i class="fa-solid fa-circle-check ms-auto text-success check-icon"></i>
                             </label>
                         </div>
+
                         <div class="col-md-6">
-                            <input type="radio" name="num_rounds" value="2" id="rounds-2" class="d-none">
-                            <label for="rounds-2" class="rounds-card" onclick="selectCard(this, 'rounds')">
+                            <input type="radio" name="visibility" value="PUBLIC" id="view-public" class="d-none">
+                            <label for="view-public" class="audience-card visibility-card"
+                                onclick="selectViewMode(this)">
+                                <div class="bg-light p-2 rounded-circle"><i class="fa-solid fa-eye text-muted"></i>
+                                </div>
                                 <div>
-                                    <div class="fw-bold">Two Rounds</div>
-                                    <small class="text-muted">Two evaluation rounds</small>
+                                    <div class="fw-bold">Public</div><small class="text-muted">Visible to all participants</small>
                                 </div>
                                 <i class="fa-solid fa-circle-check ms-auto text-success check-icon d-none"></i>
                             </label>
                         </div>
+
                     </div>
                 </div>
-
-                <div class="mb-4">
-                    <label class="form-label required">Round 01 Evaluation Criteria</label>
-                    <textarea name="round1_eval_criteria" class="form-control" rows="3" required></textarea>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label required">Expected Business Outcome</label>
-                    <textarea name="expected_outcome" class="form-control" rows="3" required></textarea>
-                </div>
-
                 <div class="footer-actions">
-                    <button type="button" class="btn btn-prev" onclick="goToStep(1)"><i
-                            class="fa-solid fa-chevron-left me-2"></i> Prev</button>
-                    <button type="button" class="btn btn-next" onclick="goToStep(3)">Next Step <i
+                    <div></div>
+                    <button type="button" class="btn btn-next" onclick="goToStep(2)">Next Step <i
                             class="fa-solid fa-chevron-right ms-2"></i></button>
                 </div>
             </div>
 
-            <!-- Step 3: Review Setup -->
-            <div class="form-card step-content" id="step-3">
-                <div class="mb-5">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <label class="form-label required">Review Parameters (Total weight must be 100)</label>
-                        <button type="button" class="btn btn-sm btn-outline-danger px-3 rounded-pill"
-                            onclick="addParameter()"><i class="fa-solid fa-plus me-1"></i> Add Parameter</button>
-                    </div>
+            <!-- Step 2: Assessment Setup -->
+            <div class="form-card step-content assessment-setup-container" id="step-2">
 
-                    <div id="parameters-dynamic-container">
-                        <div class="row align-items-center mb-3 parameter-row">
-                            <div class="col-8"><input type="text" name="param_names[]" class="form-control"
-                                    value="Innovation"></div>
-                            <div class="col-3">
-                                <div class="input-group">
-                                    <input type="number" name="param_weights[]" class="form-control weight-input"
-                                        value="25" oninput="calculateTotalWeight()">
-                                    <span class="input-group-text bg-white border-start-0">%</span>
+                <!-- Assessment Setup Header -->
+                <div class="assessment-header">
+                    <div class="assessment-header-wrapper">
+                        <div class="assessment-header-icon">
+                            <div class="assessment-header-icon-inner"></div>
+                        </div>
+                        <div class="assessment-header-title">Assessment Setup</div>
+                    </div>
+                    <div class="assessment-header-subtitle">Set up duration, audience, and evaluation rounds</div>
+                </div>
+
+                <!-- Number of Evaluation Rounds -->
+                <div class="evaluation-rounds-container">
+                    <div class="evaluation-rounds-label">
+                        Number of Evaluation Rounds
+                        <span class="evaluation-rounds-required">*</span>
+                    </div>
+                    <div class="rounds-options-container">
+                         <div class="rounds-card" onclick="selectRound('1')">
+                            <div class="rounds-card-header">
+                                <div class="rounds-card-title">Single Round</div>
+                                <div class="rounds-check">
+                                    <div class="rounds-check-mark"></div>
                                 </div>
                             </div>
-                            <div class="col-1"><button type="button" class="btn btn-link text-danger p-0"
-                                    onclick="removeRow(this)"><i class="fa-solid fa-circle-minus"></i></button></div>
+                            <div class="rounds-card-description">One evaluation round for faster results</div>
+                            <input type="radio" name="num_rounds" value="1" id="rounds-1" class="d-none">
                         </div>
-                        <div class="row align-items-center mb-3 parameter-row">
-                            <div class="col-8"><input type="text" name="param_names[]" class="form-control"
-                                    value="Feasibility"></div>
-                            <div class="col-3">
-                                <div class="input-group">
-                                    <input type="number" name="param_weights[]" class="form-control weight-input"
-                                        value="25" oninput="calculateTotalWeight()">
-                                    <span class="input-group-text bg-white border-start-0">%</span>
+                        <div class="rounds-card active" onclick="selectRound('2')">
+                            <div class="rounds-card-header">
+                                <div class="rounds-card-title">Two Rounds</div>
+                                <div class="rounds-check">
+                                    <div class="rounds-check-mark" id="rounds-check-1"></div>
                                 </div>
                             </div>
-                            <div class="col-1"><button type="button" class="btn btn-link text-danger p-0"
-                                    onclick="removeRow(this)"><i class="fa-solid fa-circle-minus"></i></button></div>
+                            <div class="rounds-card-description">Two evaluation rounds for thorough assessment</div>
+                            <input type="radio" name="num_rounds" value="2" id="rounds-2" class="d-none" checked>
                         </div>
-                    </div>
 
-                    <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center mt-3">
-                        <span class="fw-bold">Total Weight: <span id="weight-total-display">50</span>%</span>
-                        <span id="weight-status" class="text-danger"><i class="fa-solid fa-circle-exclamation me-1"></i>
-                            Must be 100%</span>
                     </div>
                 </div>
 
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0">Review Panels & Mentors</h5>
-                        <button type="button" class="btn btn-sm btn-outline-danger px-3 rounded-pill"
-                            onclick="addPanel()"><i class="fa-solid fa-plus me-1"></i> Add Panel</button>
+                <!-- Round 01 Section -->
+                <div class="round-section" id="round-1-section">
+                    <div class="round-section-header">
+                        <div class="round-section-title">
+                            Round 01 - Evaluator Details
+                            <span class="round-section-title-required">*</span>
+                        </div>
+                        <div class="round-section-subtitle">Specify the email IDs of the mentors you want to add</div>
                     </div>
 
-                    <div id="panels-container">
-                        <div class="border rounded-4 p-4 mb-3 panel-item position-relative">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label required">Panel Name</label>
-                                    <input type="text" name="panel_names[]" class="form-control" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label required">Review Round</label>
-                                    <select name="panel_rounds[]" class="form-select" required>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-12">
-                                    <label class="form-label required">Select Mentors</label>
-                                    <select name="panel_mentors[0][]" class="form-select select2-mentors" multiple
-                                        required>
-                                        {% for owner in challenge_owners %}
-                                        <option value="{{ owner.user_id }}">{{ owner.full_name }} ({{ owner.email }})
-                                        </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
+                    <div class="evaluator-search-container">
+                        <label class="form-label evaluator-search-label required">Search Evaluators</label>
+                        <label class="form-label required">Evaluator Name</label>
+                    <select name="evaluator_name" class="form-select select2-eval">
+                        <option value="" disabled selected>Search for Evaluator...</option>
+                    </select>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-self: stretch;">
+                        <div class="date-field">
+                            <label class="form-label date-field-label required">Employee Name</label>
+                            <input type="text" name="round1_employee_name" class="form-control date-field-input" placeholder="">
+                        </div>
+                        <div class="date-field">
+                            <label class="form-label date-field-label required">Email ID</label>
+                            <input type="email" name="round1_employee_email" class="form-control date-field-input" placeholder="">
+                        </div>
+                        <div class="date-field">
+                            <label class="form-label date-field-label required">Employee ID</label>
+                            <input type="text" name="round1_employee_id" class="form-control date-field-input" placeholder="">
+                        </div>
+                    </div>
+
+                    <div class="date-fields-container">
+                        <div class="date-field">
+                            <label class="form-label date-field-label required">Start Date</label>
+                            <input type="date" name="round1_start_date" class="form-control date-field-input">
+                        </div>
+                        <div class="date-field">
+                            <label class="form-label date-field-label required">End Date</label>
+                            <input type="date" name="round1_end_date" class="form-control date-field-input">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Round 02 Section (Shown conditionally) -->
+                <div class="round-section" id="round-2-section" style="display: none;">
+                    <div class="round-section-header">
+                        <div class="round-section-title">
+                            Round 02 - Evaluator Details
+                            <span class="round-section-title-required">*</span>
+                        </div>
+                        <div class="round-section-subtitle">Specify the email IDs of the mentors you want to add</div>
+                    </div>
+
+                     <div class="evaluator-search-container">
+                        <label class="form-label evaluator-search-label required">Search Evaluators</label>
+                        <label class="form-label required">Evaluator Name</label>
+                    <select name="evaluator_name2" class="form-select select2-eval2">
+                        <option value="" disabled selected>Search for Evaluator...</option>
+                    </select>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-self: stretch;">
+                        <div class="date-field">
+                            <label class="form-label date-field-label required">Employee Name</label>
+                            <input type="text" name="round2_employee_name" class="form-control date-field-input" placeholder="">
+                        </div>
+                        <div class="date-field">
+                            <label class="form-label date-field-label required">Email ID</label>
+                            <input type="email" name="round2_employee_email" class="form-control date-field-input" placeholder="">
+                        </div>
+                        <div class="date-field">
+                            <label class="form-label date-field-label required">Employee ID</label>
+                            <input type="text" name="round2_employee_id" class="form-control date-field-input" placeholder="">
+                        </div>
+                    </div>
+
+                    <div class="date-fields-container">
+                        <div class="date-field">
+                            <label class="form-label date-field-label required">Start Date</label>
+                            <input type="date" name="round2_start_date" class="form-control date-field-input">
+                        </div>
+                        <div class="date-field">
+                            <label class="form-label date-field-label required">End Date</label>
+                            <input type="date" name="round2_end_date" class="form-control date-field-input">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Parameters Section -->
+                <div class="review-parameters-container">
+                    <div class="review-parameters-header">
+                        <div class="review-parameters-title">
+                            Review Parameters
+                            <span class="review-parameters-title-required">*</span>
+                        </div>
+                        <div class="review-parameters-subtitle">The Sum of the weightages of the Parameters selected should be 100.</div>
+                    </div>
+
+                    <div class="parameters-select-container">
+                        <select class="parameters-select-dropdown" id="review-parameters-dropdown">
+                            <option value="">Select Parameters</option>
+                            {% if review_parameters %}
+                                {% for param in review_parameters %}
+                                <option value="{{ param.parameter_id }}" data-name="{{ param.parameter_name }}">{{ param.parameter_name }}</option>
+                                {% endfor %}
+                            {% else %}
+                                <option value="" disabled>No parameters available</option>
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <div class="parameters-table-container">
+                        <table class="parameters-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 70%;">Parameters</th>
+                                    <th style="width: 30%;">Weightage</th>
+                                </tr>
+                            </thead>
+                            <tbody id="parameters-tbody">
+                                <!-- Parameters will be populated dynamically here -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="parameters-total-row">
+                                    <td>Total Weightage</td>
+                                    <td id="parameters-total-weight">0</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="assessment-footer">
+                    <button type="button" class="btn assessment-footer-prev" onclick="goToStep(1)">
+                        <i class="fa-solid fa-chevron-left me-2"></i> Prev
+                    </button>
+                    <div class="assessment-footer-actions">
+                        <button type="button" class="btn assessment-btn-cancel" onclick="goToStep(1)">Cancel</button>
+                        <button type="button" class="btn assessment-btn-next" onclick="goToStep(3)">
+                            Next Step <i class="fa-solid fa-chevron-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <!-- Step 3: Finalize & Publish -->
+            <div class="form-card step-content" id="step-3">
+
+                <div class="bg-light rounded-4 p-4 mb-5">
+                    <h5 class="fw-bold mb-4">Review & Publish Summary</h5>
+                </div>
+
+                <!-- Target Audience & View Mode -->
+                <div class="row mb-5">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label required">Target Audience</label>
+                        <div id="target-audience-display">
+                            <!-- Selected target audience will be displayed here -->
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label required">View Mode</label>
+                        <div id="view-mode-display">
+                            <!-- Selected view mode will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Information Section -->
+                <div class="border rounded-3 p-4 mb-5">
+                    <h6 class="fw-bold mb-4"><i class="fa-solid fa-file-lines me-2" style="color: #E31837;"></i>Basic Information</h6>
+
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">IBU</small>
+                                <span id="review-ibu" class="fw-500">-</span>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Challenge Name</small>
+                                <span id="review-challenge-name" class="fw-500">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-bottom pb-3 mb-3">
+                        <small class="text-muted d-block mb-2">Description</small>
+                        <div id="review-description" class="fw-500" style="word-wrap: break-word; white-space: pre-wrap; line-height: 1.6;">-</div>
+                    </div>
+
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Keywords</small>
+                                <div id="review-keywords" class="fw-500">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Start & End Date</small>
+                                <span id="review-dates" class="fw-500">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-bottom pb-3 mb-3">
+                        <small class="text-muted d-block mb-2">Expected Business Outcome</small>
+                        <span id="review-outcome" class="fw-500">-</span>
+                    </div>
+
+                    <div>
+                        <small class="text-muted d-block mb-2">Supporting Document</small>
+                        <div id="review-document" class="fw-500">-</div>
+                    </div>
+                </div>
+
+                <!-- Evaluation Section -->
+                <div class="border rounded-3 p-4 mb-5">
+                    <h6 class="fw-bold mb-4"><i class="fa-solid fa-chart-simple me-2" style="color: #E31837;"></i>Evaluation Settings</h6>
+
+                    <div class="border-bottom pb-3 mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-2">Number of Evaluation Rounds</small>
+                                <span id="review-num-rounds" class="fw-500">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Round 01 Details -->
+                    <div class="border-bottom pb-3 mb-4">
+                        <h6 class="mb-3"><small>Round 01 - Evaluator Details</small></h6>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <small class="text-muted d-block mb-1">Employee Name</small>
+                                <span id="review-r1-emp-name" class="fw-500">-</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block mb-1">Email ID</small>
+                                <span id="review-r1-email" class="fw-500">-</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block mb-1">Employee ID</small>
+                                <span id="review-r1-emp-id" class="fw-500">-</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-1">Start & End Date</small>
+                                <span id="review-r1-dates" class="fw-500">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Round 02 Details (Shown conditionally) -->
+                    <div class="border-bottom pb-3 mb-4" id="review-round-02" style="display: none;">
+                        <h6 class="mb-3"><small>Round 02 - Evaluator Details</small></h6>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <small class="text-muted d-block mb-1">Employee Name</small>
+                                <span id="review-r2-emp-name" class="fw-500">-</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block mb-1">Email ID</small>
+                                <span id="review-r2-email" class="fw-500">-</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block mb-1">Employee ID</small>
+                                <span id="review-r2-emp-id" class="fw-500">-</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block mb-1">Start & End Date</small>
+                                <span id="review-r2-dates" class="fw-500">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review Parameters Table -->
+                    <div>
+                        <h6 class="mb-3"><small>Review Parameters</small></h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless mb-0">
+                                <thead>
+                                    <tr style="background-color: #F8FAFC;">
+                                        <th class="text-muted small fw-600" style="width: 70%;">Parameters</th>
+                                        <th class="text-muted small fw-600 text-end" style="width: 30%;">Weightage</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="review-parameters-tbody">
+                                    <tr>
+                                        <td colspan="2" class="text-center text-muted small">-</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background-color: #F8FAFC; border-top: 1px solid #E2E8F0;">
+                                        <td class="text-muted small fw-600">Total Weightage</td>
+                                        <td class="text-end small fw-600" id="review-total-weight">-</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
                 </div>
 
                 <div class="footer-actions">
                     <button type="button" class="btn btn-prev" onclick="goToStep(2)"><i
-                            class="fa-solid fa-chevron-left me-2"></i> Prev</button>
-                    <button type="button" class="btn btn-next" onclick="goToStep(4)">Next Step <i
-                            class="fa-solid fa-chevron-right ms-2"></i></button>
-                </div>
-            </div>
-
-            <!-- Step 4: Finalize & Publish -->
-            <div class="form-card step-content" id="step-4">
-                <div class="mb-4">
-                    <label class="form-label required">View Mode</label>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <input type="radio" name="visibility" value="PUBLIC" id="view-public" class="d-none"
-                                checked>
-                            <label for="view-public" class="audience-card selected"
-                                onclick="selectCard(this, 'visibility')">
-                                <div class="bg-light p-2 rounded-circle"><i class="fa-solid fa-eye text-muted"></i>
-                                </div>
-                                <div>
-                                    <div class="fw-bold">Public</div><small class="text-muted">Visible to all</small>
-                                </div>
-                                <i class="fa-solid fa-circle-check ms-auto text-success check-icon"></i>
-                            </label>
-                        </div>
-                        <div class="col-md-6">
-                            <input type="radio" name="visibility" value="PRIVATE" id="view-private" class="d-none">
-                            <label for="view-private" class="audience-card" onclick="selectCard(this, 'visibility')">
-                                <div class="bg-light p-2 rounded-circle"><i class="fa-solid fa-lock text-muted"></i>
-                                </div>
-                                <div>
-                                    <div class="fw-bold">Private</div><small class="text-muted">Invited only</small>
-                                </div>
-                                <i class="fa-solid fa-circle-check ms-auto text-success check-icon d-none"></i>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-light rounded-4 p-4 mb-4">
-                    <h5 class="fw-bold mb-4">Summary</h5>
-                    <div class="summary-item"><span class="text-muted">Challenge Name:</span><span id="summary-title"
-                            class="fw-bold">-</span></div>
-                    <div class="summary-item"><span class="text-muted">Duration:</span><span id="summary-duration"
-                            class="fw-bold">-</span></div>
-                </div>
-
-                <div class="footer-actions">
-                    <button type="button" class="btn btn-prev" onclick="goToStep(3)"><i
                             class="fa-solid fa-chevron-left me-2"></i> Prev</button>
                     <button type="submit" class="btn btn-danger px-5 fw-bold" id="mainSubmitBtn">Challenge Live</button>
                 </div>
@@ -612,7 +834,105 @@
     let currentStep = 1;
     let panelCount = 1;
 
+    function selectRound(roundType) {
+        const round1Section = document.getElementById('round-1-section');
+        const round2Section = document.getElementById('round-2-section');
+        const round2Radio = document.getElementById('rounds-2');
+        const round1Radio = document.getElementById('rounds-1');
+        const roundsCards = document.querySelectorAll('.rounds-card');
+
+        // Remove active class from all cards and reset checkmarks
+        roundsCards.forEach(card => {
+            card.classList.remove('active');
+            const checkmark = card.querySelector('.rounds-check-mark');
+            if (checkmark) {
+                checkmark.style.display = 'none';
+            }
+        });
+
+        if (roundType === '2') {
+            // Two rounds selected
+            round2Radio.checked = true;
+            round1Radio.checked = false;
+            // Find and activate Two Rounds card
+            Array.from(roundsCards).forEach(card => {
+                if (card.textContent.includes('Two Rounds')) {
+                    card.classList.add('active');
+                    const checkmark = card.querySelector('.rounds-check-mark');
+                    if (checkmark) checkmark.style.display = 'block';
+                }
+            });
+            // Show both sections
+            round1Section.style.display = 'flex';
+            round2Section.style.display = 'flex';
+
+            // Make Round 1 fields required
+            setRound1Required(true);
+            // Make Round 2 fields required
+            setRound2Required(true);
+        } else {
+            // Single round selected
+            round1Radio.checked = true;
+            round2Radio.checked = false;
+            // Find and activate Single Round card
+            Array.from(roundsCards).forEach(card => {
+                if (card.textContent.includes('Single Round')) {
+                    card.classList.add('active');
+                    const checkmark = card.querySelector('.rounds-check-mark');
+                    if (checkmark) checkmark.style.display = 'block';
+                }
+            });
+            // Show only Round 01 section
+            round1Section.style.display = 'flex';
+            round2Section.style.display = 'none';
+
+            // Make Round 1 fields required
+            setRound1Required(true);
+            // Make Round 2 fields NOT required
+            setRound2Required(false);
+        }
+    }
+
+    function setRound1Required(isRequired) {
+        const round1Fields = [
+            'evaluator_name',
+            'round1_employee_name',
+            'round1_employee_email',
+            'round1_employee_id',
+            'round1_start_date',
+            'round1_end_date'
+        ];
+        round1Fields.forEach(fieldName => {
+            const field = $(`[name="${fieldName}"]`);
+            if (isRequired) {
+                field.attr('required', 'required');
+            } else {
+                field.removeAttr('required');
+            }
+        });
+    }
+
+    function setRound2Required(isRequired) {
+        const round2Fields = [
+            'evaluator_name2',
+            'round2_employee_name',
+            'round2_employee_email',
+            'round2_employee_id',
+            'round2_start_date',
+            'round2_end_date'
+        ];
+        round2Fields.forEach(fieldName => {
+            const field = $(`[name="${fieldName}"]`);
+            if (isRequired) {
+                field.attr('required', 'required');
+            } else {
+                field.removeAttr('required');
+            }
+        });
+    }
+
     function goToStep(step) {
+        console.log('Going to step', step);
         if (step > currentStep && !validateStep(currentStep)) return;
         $('.step-content').removeClass('active');
         $(`#step-${step}`).addClass('active');
@@ -623,16 +943,81 @@
             else if (s === step) $(el).addClass('active');
         });
         currentStep = step;
-        if (step === 4) updateSummary();
+        if (step === 3) updateSummary();
         window.scrollTo(0, 0);
     }
 
     function validateStep(step) {
         let valid = true;
-        $(`#step-${step} [required]`).each((i, el) => {
-            if (!$(el).val()) { $(el).addClass('is-invalid'); valid = false; }
-            else $(el).removeClass('is-invalid');
-        });
+
+        // Custom validation for step 2 (Assessment Setup)
+        if (step === 2) {
+            const numRounds = $('input[name="num_rounds"]:checked').val();
+
+            // Always validate Round 1 fields when on step 2
+            const round1Fields = [
+                'evaluator_name',
+                'round1_employee_name',
+                'round1_employee_email',
+                'round1_employee_id',
+                'round1_start_date',
+                'round1_end_date'
+            ];
+            round1Fields.forEach(fieldName => {
+                const field = $(`[name="${fieldName}"]`);
+                if (!field.val()) {
+                    field.addClass('is-invalid');
+                    valid = false;
+                } else {
+                    field.removeClass('is-invalid');
+                }
+            });
+
+            // If two rounds selected, also validate Round 2 fields
+            if (numRounds === '2') {
+                const round2Fields = [
+                    'evaluator_name2',
+                    'round2_employee_name',
+                    'round2_employee_email',
+                    'round2_employee_id',
+                    'round2_start_date',
+                    'round2_end_date'
+                ];
+                round2Fields.forEach(fieldName => {
+                    const field = $(`[name="${fieldName}"]`);
+                    if (!field.val()) {
+                        field.addClass('is-invalid');
+                        valid = false;
+                    } else {
+                        field.removeClass('is-invalid');
+                    }
+                });
+            }
+
+            // Validate Review Parameters - at least one must be selected
+            const paramCount = $('#parameters-tbody tr').length;
+            if (paramCount === 0) {
+                alert('Please select at least one Review Parameter.');
+                valid = false;
+            }
+
+            // Validate that all parameters have weightages
+            const emptyWeightages = $('[name="param_weightages[]"]').filter(function() {
+                return !$(this).val() || $(this).val() === '';
+            }).length;
+
+            if (emptyWeightages > 0) {
+                alert('Please enter weightage for all parameters.');
+                valid = false;
+            }
+        } else {
+            // Standard validation for other steps
+            $(`#step-${step} [required]`).each((i, el) => {
+                if (!$(el).val()) { $(el).addClass('is-invalid'); valid = false; }
+                else $(el).removeClass('is-invalid');
+            });
+        }
+
         if (step === 3 && calculateTotalWeight() !== 100) { alert('Total weightage must be 100%.'); valid = false; }
         return valid;
     }
@@ -642,13 +1027,28 @@
         $(el).addClass('selected').find('.check-icon').removeClass('d-none');
     }
 
+    function selectViewMode(el) {
+        // Get the associated input element using the 'for' attribute
+        const inputId = $(el).attr('for');
+        const input = $(`#${inputId}`);
+
+        // Uncheck all visibility radio buttons
+        $('input[name="visibility"]').prop('checked', false);
+
+        // Remove selected class and hide checkmarks from all visibility cards
+        $('.visibility-card').removeClass('selected').find('.check-icon').addClass('d-none');
+
+        // Check the selected input
+        input.prop('checked', true);
+
+        // Add selected class and show checkmark for clicked card
+        $(el).addClass('selected').find('.check-icon').removeClass('d-none');
+    }
+
     function calculateTotalWeight() {
+        // Calculate total from review parameters table (new method)
         let total = 0;
-        $('.weight-input').each((i, el) => total += parseInt($(el).val() || 0));
-        $('#weight-total-display').text(total);
-        const status = $('#weight-status');
-        if (total === 100) status.html('<i class="fa-solid fa-check-circle"></i> Valid').attr('class', 'text-success');
-        else status.html('<i class="fa-solid fa-circle-exclamation"></i> Must be 100%').attr('class', 'text-danger');
+        $('.param-weight-input').each((i, el) => total += parseInt($(el).val() || 0));
         return total;
     }
 
@@ -678,11 +1078,269 @@
     }
 
     function updateSummary() {
-        $('#summary-title').text($('[name="title"]').val() || '-');
-        $('#summary-duration').text(`${$('[name="start_date"]').val()} to ${$('[name="end_date"]').val()}`);
+        // Basic Information
+        $('#review-ibu').text($('[name="ibu_name"]').find(':selected').text() || '-');
+        $('#review-challenge-name').text($('[name="title"]').val() || '-');
+        console.log("Challenge Name:", $('[name="title"]').val());
+
+        // Description - using text content and preserving line breaks
+        const descriptionTextarea = document.getElementById('description');
+        const descValue = descriptionTextarea ? descriptionTextarea.value.trim() : '';
+        console.log("Description value:", descValue);
+        console.log("Description length:", descValue ? descValue.length : 0);
+
+        if (descValue && descValue.length > 0) {
+            // Escape HTML and convert newlines to br tags
+            const escapedDesc = $('<div>').text(descValue).html();
+            $('#review-description').html(escapedDesc.replace(/\n/g, '<br>'));
+        } else {
+            $('#review-description').text('-');
+        }
+
+        $('#review-outcome').text($('[name="expected_outcome"]').val() || '-');
+      //  $('#review-dates').text(`${$('[name="chan_start_date"]').val() || '-'} to ${$('[name="chan_end_date"]').val() || '-'}`);
+function formatDate(dateStr) {
+    if (!dateStr) return '-';
+    const parts = dateStr.split('-'); // YYYY-MM-DD
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+}
+
+const startDate = formatDate($('[name="chan_start_date"]').val());
+const endDate = formatDate($('[name="chan_end_date"]').val());
+
+$('#review-dates').text(`${startDate} to ${endDate}`);
+        // Keywords
+        const keywords = $('[name="keywords"]').val() || '';
+        if (keywords) {
+            $('#review-keywords').html(keywords.split(',').map(k => `<span class="badge bg-light text-dark me-2">${k.trim()}</span>`).join(''));
+        } else {
+            $('#review-keywords').text('-');
+        }
+
+        // Supporting Document
+        const fileDisplay = $('#file-name-display').text();
+        if (fileDisplay) {
+            $('#review-document').html('<i class="fa-solid fa-file me-2"></i>' + fileDisplay);
+        } else {
+            $('#review-document').text('-');
+        }
+
+        // Evaluation Settings
+        const numRounds = $('input[name="num_rounds"]:checked').val();
+        $('#review-num-rounds').text(numRounds === '1' ? 'Single Round' : 'Two Rounds');
+
+        // Round 01 Details
+        $('#review-r1-emp-name').text($('[name="round1_employee_name"]').val() || '-');
+        $('#review-r1-email').text($('[name="round1_employee_email"]').val() || '-');
+        $('#review-r1-emp-id').text($('[name="round1_employee_id"]').val() || '-');
+        $('#review-r1-dates').text(`${$('[name="round1_start_date"]').val() || '-'} to ${$('[name="round1_end_date"]').val() || '-'}`);
+
+        // Round 02 Details
+        if (numRounds === '2') {
+            $('#review-round-02').show();
+            $('#review-r2-emp-name').text($('[name="round2_employee_name"]').val() || '-');
+            $('#review-r2-email').text($('[name="round2_employee_email"]').val() || '-');
+            $('#review-r2-emp-id').text($('[name="round2_employee_id"]').val() || '-');
+            $('#review-r2-dates').text(`${$('[name="round2_start_date"]').val() || '-'} to ${$('[name="round2_end_date"]').val() || '-'}`);
+        } else {
+            $('#review-round-02').hide();
+        }
+
+        // Review Parameters
+        let paramsHTML = '';
+        let totalWeight = 0;
+        $('#parameters-tbody tr').each((index, el) => {
+            const paramName = $(el).find('td').eq(0).text().trim();
+            const paramWeight = parseInt($(el).find('.param-weight-input').val() || 0);
+            if (paramName) {
+                paramsHTML += `<tr><td>${paramName}</td><td class="text-end">${paramWeight}%</td></tr>`;
+                totalWeight += paramWeight;
+            }
+        });
+
+        if (paramsHTML) {
+            $('#review-parameters-tbody').html(paramsHTML);
+            $('#review-total-weight').text(totalWeight + '%');
+        } else {
+            $('#review-parameters-tbody').html('<tr><td colspan="2" class="text-center text-muted small">-</td></tr>');
+            $('#review-total-weight').text('-');
+        }
+
+        // Display selected Target Audience
+        const selectedAudience = $('input[name="target_audience"]:checked').val();
+        let audienceHTML = '';
+
+        if (selectedAudience === 'INTERNAL') {
+            audienceHTML = `
+                <div class="audience-card selected">
+                    <div class="bg-light p-2 rounded-circle">
+                        <i class="fa-solid fa-users text-muted"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold">Internal</div>
+                        <small class="text-muted">Only for organization members</small>
+                    </div>
+                    <i class="fa-solid fa-circle-check ms-auto text-success"></i>
+                </div>
+            `;
+        } else if (selectedAudience === 'EXTERNAL') {
+            audienceHTML = `
+                <div class="audience-card selected">
+                    <div class="bg-light p-2 rounded-circle">
+                        <i class="fa-solid fa-globe text-muted"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold">External</div>
+                        <small class="text-muted">Open to external participants</small>
+                    </div>
+                    <i class="fa-solid fa-circle-check ms-auto text-success"></i>
+                </div>
+            `;
+        }
+        $('#target-audience-display').html(audienceHTML);
+
+        // Display selected View Mode
+        const selectedViewMode = $('input[name="visibility"]:checked').val();
+        let viewModeHTML = '';
+
+        if (selectedViewMode === 'PRIVATE') {
+            viewModeHTML = `
+                <div class="audience-card selected">
+                    <div class="bg-light p-2 rounded-circle">
+                        <i class="fa-solid fa-lock text-muted"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold">Private</div>
+                        <small class="text-muted">Selected people can view</small>
+                    </div>
+                    <i class="fa-solid fa-circle-check ms-auto text-success"></i>
+                </div>
+            `;
+        } else if (selectedViewMode === 'PUBLIC') {
+            viewModeHTML = `
+                <div class="audience-card selected">
+                    <div class="bg-light p-2 rounded-circle">
+                        <i class="fa-solid fa-eye text-muted"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold">Public</div>
+                        <small class="text-muted">Visible to all participants</small>
+                    </div>
+                    <i class="fa-solid fa-circle-check ms-auto text-success"></i>
+                </div>
+            `;
+        }
+        $('#view-mode-display').html(viewModeHTML);
+    }
+
+    // Global functions for parameter management
+    window.addParameterToTable = function(paramId, paramName) {
+        const tbody = $('#parameters-tbody');
+
+        // Check if parameter already exists
+        const exists = tbody.find(`tr[data-param-id="${paramId}"]`).length > 0;
+        if (exists) {
+            alert('This parameter is already added.');
+            return;
+        }
+
+        // Add new row to table
+        const newRow = `
+            <tr data-param-id="${paramId}">
+                <td style="vertical-align: middle;">${paramName}</td>
+                <td style="vertical-align: middle;">
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="hidden" name="selected_params[]" value="${paramId}">
+                        <input type="number" name="param_weightages[]" class="param-weight-input form-control" placeholder="Enter %" min="0" max="100" required style="width: 80px; padding: 8px 10px; border: 2px solid #E2E8F0; border-radius: 6px;">
+                        <span class="param-weightage-display" style="width: 30px; text-align: center; font-weight: 600; color: #94A3B8;">-</span>
+                        <button type="button" class="btn btn-link text-danger p-0" style="padding: 0 !important;" onclick="removeParameterRow(this)">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        tbody.append(newRow);
+
+        // Add change and input event listeners
+        setupWeightageInputListeners();
+
+        // Calculate total
+        calculateParameterTotal();
+    };
+
+    window.removeParameterRow = function(btn) {
+        $(btn).closest('tr').remove();
+        calculateParameterTotal();
+    };
+
+    window.calculateParameterTotal = function() {
+        let total = 0;
+        let emptyCount = 0;
+
+        $('.param-weight-input').each(function() {
+            const val = $(this).val();
+            if (val === '' || val === null) {
+                emptyCount++;
+            } else {
+                total += parseInt(val);
+            }
+        });
+
+        const totalCell = $('#parameters-total-weight');
+        totalCell.text(total);
+
+        // Add visual feedback for total
+        const totalRow = totalCell.closest('.parameters-total-row');
+        if (emptyCount > 0) {
+            totalRow.css('color', '#94A3B8'); // Gray - incomplete
+            totalRow.css('font-weight', 'normal');
+        } else if (total === 100) {
+            totalRow.css('color', '#10B981'); // Green - valid
+            totalRow.css('font-weight', '600');
+        } else if (total > 100) {
+            totalRow.css('color', '#E31837'); // Red - over
+            totalRow.css('font-weight', '600');
+        } else {
+            totalRow.css('color', '#F59E0B'); // Orange - under
+            totalRow.css('font-weight', '600');
+        }
+    };
+
+    function setupWeightageInputListeners() {
+        $('.param-weight-input').off('change input').on('change input', function() {
+            const value = $(this).val();
+            $(this).closest('tr').find('.param-weightage-display').text(value ? value + '%' : '-');
+            calculateParameterTotal();
+        });
     }
 
     $(document).ready(function () {
+        // Initialize round selection based on active card
+        const activeRoundCard = document.querySelector('.rounds-card.active');
+        if (activeRoundCard) {
+            const roundType = activeRoundCard.getAttribute('onclick').match(/selectRound\('(\d+)'\)/)[1];
+            selectRound(roundType);
+        }
+
+        // Handle Review Parameters dropdown change
+        $('#review-parameters-dropdown').on('change', function() {
+            const selectedOption = $(this).find(':selected');
+            const paramId = selectedOption.val();
+            const paramName = selectedOption.data('name');
+
+            console.log('Parameter selected:', { paramId, paramName });
+
+            if (paramId && paramName) {
+                addParameterToTable(paramId, paramName);
+                // Reset dropdown
+                $(this).val('');
+            } else {
+                console.warn('Invalid parameter data:', { paramId, paramName });
+            }
+        });
+
         $('.select2-mentors').select2({ width: '100%', placeholder: 'Select mentors...' });
 
         $('.select2-ibu').select2({
@@ -697,9 +1355,95 @@
                     return { q: params.term };
                 },
                 processResults: function (data) {
+                    console.log('IBU search results:', data);
                     return { results: data.results };
                 },
                 cache: true
+            }
+        });
+//serch evaluator1
+          $('.select2-eval').select2({
+            width: '100%',
+            placeholder: 'Search for an Evaluator...',
+            minimumInputLength: 2,
+            ajax: {
+                url: '/employee_search/',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { q: params.term };
+                },
+                processResults: function (data) {
+                    console.log('employee search results:', data);
+                    return { results: data.results };
+                },
+                cache: true
+            }
+        });
+// Handle evaluator selection for Round 1
+        $('[name="evaluator_name"]').on('select2:select', function(e) {
+            const data = e.params.data;
+            console.log('Selected evaluator:', data);
+
+            if (data.employee_name) {
+                $('[name="round1_employee_name"]').val(data.employee_name);
+            }
+            if (data.email) {
+                $('[name="round1_employee_email"]').val(data.email);
+            }
+            if (data.employee_id) {
+                $('[name="round1_employee_id"]').val(data.employee_id);
+            }
+        });
+        //serch evaluator2
+          $('.select2-eval2').select2({
+            width: '100%',
+            placeholder: 'Search for an Evaluator...',
+            minimumInputLength: 2,
+            ajax: {
+                url: '/employee_search/',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { q: params.term };
+                },
+                processResults: function (data) {
+                    console.log('employee search results:', data);
+                    return { results: data.results };
+                },
+                cache: true
+            }
+        });
+// Handle evaluator selection for Round 2
+        $('[name="evaluator_name2"]').on('select2:select', function(e) {
+            const data = e.params.data;
+            console.log('Selected evaluator:', data);
+
+            if (data.employee_name) {
+                $('[name="round2_employee_name"]').val(data.employee_name);
+            }
+            if (data.email) {
+                $('[name="round2_employee_email"]').val(data.email);
+            }
+            if (data.employee_id) {
+                $('[name="round2_employee_id"]').val(data.employee_id);
+            }
+        });
+
+
+        // Handle evaluator selection for Round 2
+        $('[name="round2_evaluator_search"]').on('change', function(e) {
+            const selectedValue = $(this).val();
+            if (selectedValue) {
+                // Parse the selected value if it contains employee data
+                try {
+                    const data = JSON.parse(selectedValue);
+                    if (data.employee_name) $('[name="round2_employee_name"]').val(data.employee_name);
+                    if (data.email) $('[name="round2_employee_email"]').val(data.email);
+                    if (data.employee_id) $('[name="round2_employee_id"]').val(data.employee_id);
+                } catch (e) {
+                    console.log('Could not parse employee data');
+                }
             }
         });
 
@@ -708,7 +1452,21 @@
             if (len < 1000) $('#char-warning').html(`<i class="fa-solid fa-circle-exclamation"></i> ${1000 - len} more needed`).attr('class', 'text-warning');
             else $('#char-warning').html('<i class="fa-solid fa-circle-check"></i> Valid').attr('class', 'text-success');
         });
+
+        // Handle supporting document upload display
+        $('#supporting_document').on('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const fileName = file.name;
+                const fileSize = (file.size / 1024).toFixed(2); // Convert to KB
+                $('#file-name-display').html(`<small class="text-success"><i class="fa-solid fa-check-circle me-2"></i>${fileName} (${fileSize} KB)</small>`);
+            } else {
+                $('#file-name-display').html('');
+            }
+        });
+
         $('#multiStepForm').on('submit', function (e) {
+            console.log('Form submitted');
             e.preventDefault();
             const btn = $('#mainSubmitBtn');
             btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Publishing...');

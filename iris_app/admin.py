@@ -59,7 +59,7 @@ class ChallengeAdmin(ImportExportModelAdmin):
     list_filter = ('status', 'visibility', 'target_audience', 'start_date')
     search_fields = ('title', 'description')
     inlines = [ChallengeReviewParameterInline, ChallengePanelInline]
-    
+
     fieldsets = (
         (None, {
             'fields': ('title', 'description', 'keywords', 'challenge_icon', 'status')
@@ -138,6 +138,19 @@ class ReviewParameterAdmin(ImportExportModelAdmin):
     list_display = ('parameter_name', 'is_active', 'parameter_id')
     list_filter = ('is_active',)
     search_fields = ('parameter_name',)
+
+@admin.register(ChallengeReviewParameter)
+class ChallengeReviewParameterAdmin(admin.ModelAdmin):
+    list_display = ('challenge', 'parameter', 'weightage')
+    list_filter = ('challenge', 'parameter')
+    search_fields = ('challenge__title', 'parameter__parameter_name')
+    readonly_fields = ('challenge', 'parameter')
+
+@admin.register(ReviewRating)
+class ReviewRatingAdmin(admin.ModelAdmin):
+    list_display = ('review', 'parameter', 'score')
+    list_filter = ('parameter', 'score')
+    search_fields = ('review__comments', 'parameter__parameter_name')
 
 @admin.register(WorkflowLog)
 class WorkflowLogAdmin(admin.ModelAdmin):

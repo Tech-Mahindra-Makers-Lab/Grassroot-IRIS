@@ -13,8 +13,10 @@ urlpatterns = [
     path('submit-challenge/<uuid:challenge_id>/', views.submit_challenge, name='submit_challenge'),
     path('my-ideas/', views.my_ideas, name='my_ideas'),
     path('dashboard/', views.user_dashboard, name='user_dashboard'),
+    path('idea-details/<uuid:challenge_id>/', views.idea_details, name='idea_details'),
     path('submit-idea/<uuid:challenge_id>/', views.submit_idea, name='submit_idea'),
-    
+    path('employee_search/', views.employee_search, name='employee_search'),
+
     # Grassroot Idea Flow
     path('submit-grassroot-idea/', views.submit_grassroot_idea, name='submit_grassroot_idea'),
     path('get-subcategories/', views.get_subcategories, name='get_subcategories'),

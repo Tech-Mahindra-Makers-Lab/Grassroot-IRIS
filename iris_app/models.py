@@ -80,40 +80,40 @@ class Challenge(models.Model):
     end_date = models.DateTimeField()
     created_by = models.ForeignKey(IrisUser, on_delete=models.SET_NULL, null=True, related_name='created_challenges')
     challenge_owner = models.ForeignKey(IrisUser, on_delete=models.SET_NULL, null=True, related_name='owned_challenges')
-    
+
     # New fields from postchalleage.docx
     keywords = models.CharField(max_length=255, blank=True, null=True)
     challenge_icon = models.ImageField(upload_to='challenge_icons/', blank=True, null=True)
-    
+
     round1_eval_start = models.DateTimeField(blank=True, null=True)
     round1_eval_end = models.DateTimeField(blank=True, null=True)
     round2_eval_start = models.DateTimeField(blank=True, null=True)
     round2_eval_end = models.DateTimeField(blank=True, null=True)
-    
+
     key_insights = models.TextField(blank=True, null=True)
     expected_outcome = models.TextField(blank=True, null=True)
     round1_eval_criteria = models.TextField(blank=True, null=True)
-    
+
     has_idea_template = models.BooleanField(default=False)
     idea_template_file = models.FileField(upload_to='challenge_templates/', blank=True, null=True)
     challenge_document = models.FileField(upload_to='challenge_docs/', blank=True, null=True)
-    
+
     VISIBILITY_CHOICES = [('PUBLIC', 'Public'), ('PRIVATE', 'Private')]
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES, default='PUBLIC')
-    
+
     # New field from design
     ibu_name = models.CharField(max_length=100, blank=True, null=True)
-    
+
     TARGET_AUDIENCE_CHOICES = [('INTERNAL', 'Internal'), ('EXTERNAL', 'External'), ('BOTH', 'Both')]
     target_audience = models.CharField(max_length=20, choices=TARGET_AUDIENCE_CHOICES, default='INTERNAL')
-    
+
     STATUS_CHOICES = [('DRAFT', 'Draft'), ('LIVE', 'Live'), ('COMPLETED', 'Completed'), ('ARCHIVED', 'Archived')]
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='DRAFT')
-    
+
     num_rounds = models.IntegerField(default=1)
-    
+
     is_featured = models.BooleanField(default=False)
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -139,7 +139,10 @@ class ChallengePanel(models.Model):
     panel_name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     round_number = models.IntegerField()
-
+    emp_id = models.CharField(max_length=50, null=True, blank=True) # Temporary field to link with employee until we have proper user accounts for panelists
+    emailid = models.CharField(max_length=100, blank=True, null=True) # Temporary field to link with user until we have proper user accounts for panelists
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
     class Meta:
         db_table = 'IRIS_CHALLENGE_PANELS'
         managed = True
@@ -159,16 +162,16 @@ class Idea(models.Model):
     submitter = models.ForeignKey(IrisUser, on_delete=models.SET_NULL, null=True)
     challenge = models.ForeignKey(Challenge, on_delete=models.SET_NULL, null=True, blank=True)
     submission_date = models.DateTimeField(auto_now_add=True)
-    
+
     STATUS_CHOICES = [
         ('SUBMITTED', 'Submitted'), ('UNDER_REVIEW', 'Under Review'),
         ('APPROVED', 'Approved'), ('REJECTED', 'Rejected'),
         ('IMPLEMENTED', 'Implemented'), ('ARCHIVED', 'Archived')
     ]
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='SUBMITTED')
-    
+
     is_confidential = models.BooleanField(default=False)
-    
+
     SHARING_SCOPE_CHOICES = [
         ('CUSTOMER', 'Customer'), ('ECOSYSTEM', 'Ecosystem'),
         ('PUBLIC', 'Public'), ('NONE', 'None')
@@ -192,7 +195,7 @@ class IdeaDetail(models.Model):
     assumptions = models.TextField(blank=True, null=True)
     risks = models.TextField(blank=True, null=True)
     context = models.TextField(blank=True, null=True)
-    
+
     INNOVATION_TYPE_CHOICES = [
         ('INCREMENTAL', 'Incremental'),
         ('ADJACENT', 'Adjacent'),
@@ -247,19 +250,19 @@ class IdeaDocument(models.Model):
 
 class Review(models.Model):
     review_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    
+
     ENTITY_TYPE_CHOICES = [('IDEA', 'Idea'), ('CHALLENGE_SOLUTION', 'Challenge Solution')]
     entity_type = models.CharField(max_length=20, choices=ENTITY_TYPE_CHOICES, blank=True, null=True)
-    
+
     entity_id = models.UUIDField() # Generic link, could use GenericForeignKey but keeping simple as per SQL
     reviewer = models.ForeignKey(IrisUser, on_delete=models.SET_NULL, null=True)
     rating = models.IntegerField(blank=True, null=True) # Validator could be added
     comments = models.TextField(blank=True, null=True)
     stage = models.CharField(max_length=50, blank=True, null=True)
-    
+
     DECISION_CHOICES = [('APPROVE', 'Approve'), ('REJECT', 'Reject'), ('REWORK', 'Rework')]
     decision = models.CharField(max_length=20, choices=DECISION_CHOICES, blank=True, null=True)
-    
+
     review_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -352,7 +355,7 @@ class ImprovementSubCategory(models.Model):
     name = models.CharField(max_length=255)
 
     class Meta:
-        db_table = 'IRIS_IMPROVEMENT_SUB_CATEGORIES'
+        db_table = 'IRIS_IMPROVEMENT_SUB_CATEGDE2E'
         managed = True
 
     def __str__(self):
@@ -361,11 +364,11 @@ class ImprovementSubCategory(models.Model):
 class GrassrootIdea(models.Model):
     idea_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ideator = models.ForeignKey(IrisUser, on_delete=models.CASCADE, related_name='grassroot_ideas')
-    
+
     # Idea Details
     improvement_category = models.ForeignKey(ImprovementCategory, on_delete=models.SET_NULL, null=True)
     improvement_sub_category = models.ForeignKey(ImprovementSubCategory, on_delete=models.SET_NULL, null=True)
-    
+
     business_value = models.TextField()
     monetary_value = models.TextField()
     proposed_idea = models.TextField()
@@ -373,7 +376,7 @@ class GrassrootIdea(models.Model):
     additional_information = models.TextField(blank=True, null=True)
     assumptions = models.TextField()
     key_risks = models.TextField()
-    
+
     STATUS_CHOICES = [
         ('SUBMITTED_RM', 'Submitted to RM'),
         ('REWORK_RM', 'Rework Required by RM'),
@@ -387,7 +390,7 @@ class GrassrootIdea(models.Model):
         ('COMPLETED', 'Completed'),
     ]
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='SUBMITTED_RM')
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -407,11 +410,11 @@ class GrassrootEvaluation(models.Model):
     idea = models.ForeignKey(GrassrootIdea, on_delete=models.CASCADE, related_name='evaluations')
     evaluator = models.ForeignKey(IrisUser, on_delete=models.CASCADE)
     evaluator_role = models.CharField(max_length=20) # RM or IBU
-    
+
     is_desirable = models.BooleanField(default=False)
     is_feasible = models.BooleanField(default=False)
     is_viable = models.BooleanField(default=False)
-    
+
     remarks = models.TextField(blank=True, null=True)
     evaluated_at = models.DateTimeField(auto_now_add=True)
 
@@ -452,12 +455,13 @@ class IrisCollage(models.Model):
     collage_id = models.DecimalField(primary_key=True, max_digits=38, decimal_places=0)
     university_id = models.DecimalField(max_digits=38, decimal_places=0)
     collage_name = models.CharField(max_length=200)
-    collage_description = models.CharField(max_length=2000, blank=True, null=True)
+    collage_description = models.TextField(blank=True, null=True)
     created_by = models.CharField(max_length=200)
     created_on = models.DateTimeField()
 
     class Meta:
-        managed = False
+        managed = True
+
         db_table = 'IRIS_COLLAGE'
         verbose_name = 'Collage'
         verbose_name_plural = 'Collages'
@@ -482,7 +486,7 @@ class IrisEmployeeMaster(models.Model):
     empl_status = models.CharField(max_length=1, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'IRIS_EMPLOYEE_MASTER'
 
     def __str__(self):
@@ -494,7 +498,7 @@ class IrisLocationMaster(models.Model):
     status_flag = models.CharField(max_length=1, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'IRIS_LOCATION_MASTER'
 
 class IrisGradeRoleMaster(models.Model):
@@ -505,16 +509,16 @@ class IrisGradeRoleMaster(models.Model):
     role_description = models.CharField(max_length=200, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'IRIS_GRADE_ROLE_MASTER'
 
 class IrisMailMaster(models.Model):
     status_id = models.DecimalField(primary_key=True, max_digits=38, decimal_places=0)
     mail_subject = models.CharField(max_length=200)
-    mail_body = models.CharField(max_length=4000)
+    mail_body = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'IRIS_MAIL_MASTER'
 
 class IrisClusterIbgIbu(models.Model):
@@ -531,7 +535,7 @@ class IrisClusterIbgIbu(models.Model):
     function_evp = models.CharField(max_length=11)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'IRIS_CLUSTER_IBG_IBU'
 
 class IrisRoleMs(models.Model):
@@ -544,7 +548,7 @@ class IrisRoleMs(models.Model):
     job_family = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'IRIS_ROLE_MS'
         verbose_name = 'Role Master'
         verbose_name_plural = 'Role Masters'

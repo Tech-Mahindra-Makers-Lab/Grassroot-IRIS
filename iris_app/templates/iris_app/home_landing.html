@@ -9,7 +9,154 @@
     .main-wrapper {
         margin-left: 0 !important;
     }
+
+    .faq-content {
+        display: none;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .faq-content.active {
+        display: block;
+        max-height: 500px;
+    }
+
+    .faq-toggle {
+        transition: transform 0.3s ease;
+    }
+
+    .faq-toggle.active {
+        transform: rotate(45deg);
+    }
+
+    .footer {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .footer-bg {
+        width: 1440px;
+        height: 250.26px;
+        left: 0px;
+        top: 0px;
+        position: absolute;
+        background: #0A0838;
+    }
+
+    .footer-email {
+        width: 347.68px;
+        left: 61px;
+        top: 184.16px;
+        position: absolute;
+        color: white;
+        font-size: 14px;
+        font-family: Poppins;
+        font-weight: 400;
+        line-height: 21px;
+        word-wrap: break-word;
+    }
+
+    .footer-copyright {
+        width: 212.86px;
+        left: 1187.84px;
+        top: 184.17px;
+        position: absolute;
+        color: white;
+        font-size: 14px;
+        font-family: Poppins;
+        font-weight: 400;
+        line-height: 21px;
+        word-wrap: break-word;
+    }
+
+    .footer-links-1 {
+        width: 200px;
+        left: 361.09px;
+        top: 47.13px;
+        position: absolute;
+        color: white;
+        font-size: 14px;
+        font-family: Poppins;
+        font-weight: 400;
+        line-height: 25.20px;
+        word-wrap: break-word;
+    }
+
+    .footer-links-2 {
+        width: 200px;
+        left: 587.04px;
+        top: 47.13px;
+        position: absolute;
+        color: white;
+        font-size: 14px;
+        font-family: Poppins;
+        font-weight: 400;
+        line-height: 25.20px;
+        word-wrap: break-word;
+    }
+
+    .footer-logo {
+        width: 127px;
+        height: 31px;
+        left: 61.22px;
+        top: 45px;
+        position: absolute;
+    }
+
+    .footer-logo-text-1 {
+        width: 37.30px;
+        height: 8.25px;
+        left: 38.42px;
+        top: 7.90px;
+        position: absolute;
+        background: white;
+    }
+
+    .footer-logo-text-2 {
+        width: 88.58px;
+        height: 10.95px;
+        left: 38.42px;
+        top: 20.05px;
+        position: absolute;
+        background: white;
+    }
+
+    .footer-logo-accent {
+        width: 30.53px;
+        height: 31px;
+        left: 0px;
+        top: 0px;
+        position: absolute;
+        background: #E31837;
+    }
 </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            const toggle = item.querySelector('.faq-toggle');
+            const content = item.querySelector('.faq-content');
+
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Toggle the active class
+                content.classList.toggle('active');
+                toggle.classList.toggle('active');
+
+                // Update button text
+                if (toggle.textContent === '+') {
+                    toggle.textContent = '−';
+                } else {
+                    toggle.textContent = '+';
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}
 
 {% block content %}
@@ -142,56 +289,27 @@
             </div>
         </div>
         <div class="grassroot-card">
-            <div class="reward-badge">
-                <span class="badge-text">Get <strong>2x Reward</strong> Points!</span>
-            </div>
-            <div class="stats-container">
-                <div class="stat-item">
-                    <div class="stat-number">65+</div>
-                    <div class="stat-label">Total submissions</div>
-                </div>
-                <div class="divider"></div>
-                <div class="stat-item">
-                    <div class="stat-number">48+</div>
-                    <div class="stat-label">Ideas Validated</div>
-                </div>
-                <div class="divider"></div>
-                <div class="stat-item">
-                    <div class="stat-number">34</div>
-                    <div class="stat-label">Ideas Implemented</div>
-                </div>
-            </div>
-            <div class="card-footer">
-                <div class="status-badge">
-                    <span class="status-dot"></span>
-                    <span>Ideation on</span>
-                </div>
-            </div>
+            <img src="{% static 'iris_app/images/ideapulseempower.png' %}" alt="Grassroot" class="grassroot-image">
         </div>
     </div>
 </section>
 
 <!-- Achievements Section -->
 <section class="achievements-section">
-    <div class="container">
-        <h2>Rewards & Achievements</h2>
-        <p>Track your progress and unlock exclusive rewards</p>
-        <div class="achievements-grid">
-            <div class="achievement-card">
-                <div class="achievement-icon">
-                    <img src="{% static 'iris_app/images/innovation.png' %}" alt="Innovation Leader">
-                </div>
-                <h3>Innovation Leader</h3>
-                <p>Complete 5 challenges with winning ideas</p>
-                <div class="progress-info">
-                    <span>2/5</span>
-                    <span>2000 pts</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 40%;"></div>
-                </div>
+    <div class="achievements-container">
+        <img class="achievements-bg-image" src="{% static 'iris_app/images/rewardsachievement.png' %}" />
+        <div class="achievements-circle-1"></div>
+        <div class="achievements-circle-2"></div>
+        <div class="achievements-circle-3"></div>
+        <div class="achievements-circle-4"></div>
+        <img class="achievements-robot-image" src="{% static 'iris_app/images/robot.png' %}" />
+        <img class="achievements-bottom-image" src="{% static 'iris_app/images/rewardsachievement.png' %}" />
+        <div class="achievements-content">
+            <div class="achievements-subtitle">Rewards & Achievements</div>
+            <div class="achievements-heading">
+                <span class="achievements-heading-accent">Unlock Achievements. earn Rewards:</span><span class="achievements-heading-white"> Make an Impact</span>
             </div>
-            <!-- More cards can be added here -->
+            <div class="achievements-description">Track your progression and unlock exclusive rewards.</div>
         </div>
     </div>
 </section>
@@ -343,17 +461,91 @@
             <div class="faq-item">
                 <div class="faq-header">
                     <span class="faq-number">1.</span>
-                    <h3>Which programs does Tech Mahindra Foundation run?</h3>
+                    <h3>What is IRIS?</h3>
                     <button class="faq-toggle">+</button>
                 </div>
                 <div class="faq-content">
-                    <p>Our programs cater to underserved communities, including women, youth, children, teachers, and
-                        persons with disabilities. We collaborate with NGOs, educational institutions, and government
-                        bodies to ensure maximum outreach and impact.</p>
+                    <p>IRIS is Tech Mahindra’s unified innovation platform that enables every associate to observe a challenge, shape an idea, and turn it into real business impact. It brings together organizationwide challenges and projectlevel ideation in one seamless ecosystem. .</p>
+                </div>
+            </div>
+
+             <div class="faq-item">
+                <div class="faq-header">
+                    <span class="faq-number">2.</span>
+                    <h3>What’s the difference between Idea Arena and Idea Pulse?</h3>
+                    <button class="faq-toggle">+</button>
+                </div>
+                <div class="faq-content">
+                    <p>IRIS is Tech Mahindra’s unified innovation platform that enables every associate to observe a challenge, shape an idea, and turn it into real business impact. It brings together organizationwide challenges and projectlevel ideation in one seamless ecosystem. .</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-header">
+                    <span class="faq-number">3.</span>
+                    <h3>Who can submit an idea?</h3>
+                    <button class="faq-toggle">+</button>
+                </div>
+                <div class="faq-content">
+                    <p>IRIS is Tech Mahindra’s unified innovation platform that enables every associate to observe a challenge, shape an idea, and turn it into real business impact. It brings together organizationwide challenges and projectlevel ideation in one seamless ecosystem. .</p>
+                </div>
+            </div>
+             <div class="faq-item">
+                <div class="faq-header">
+                    <span class="faq-number">4.</span>
+                    <h3>What framework should I use while submitting a Idea Pulse?</h3>
+                    <button class="faq-toggle">+</button>
+                </div>
+                <div class="faq-content">
+                    <p>IRIS is Tech Mahindra’s unified innovation platform that enables every associate to observe a challenge, shape an idea, and turn it into real business impact. It brings together organizationwide challenges and projectlevel ideation in one seamless ecosystem. .</p>
+                </div>
+            </div>
+             <div class="faq-item">
+                <div class="faq-header">
+                    <span class="faq-number">5.</span>
+                    <h3>What happens after I submit an idea in under a Idea Arena?</h3>
+                    <button class="faq-toggle">+</button>
+                </div>
+                <div class="faq-content">
+                    <p>IRIS is Tech Mahindra’s unified innovation platform that enables every associate to observe a challenge, shape an idea, and turn it into real business impact. It brings together organizationwide challenges and projectlevel ideation in one seamless ecosystem. .</p>
+                </div>
+            </div>
+             <div class="faq-item">
+                <div class="faq-header">
+                    <span class="faq-number">6.</span>
+                    <h3>Who reviews and validates Grassroot ideas?</h3>
+                    <button class="faq-toggle">+</button>
+                </div>
+                <div class="faq-content">
+                    <p>IRIS is Tech Mahindra’s unified innovation platform that enables every associate to observe a challenge, shape an idea, and turn it into real business impact. It brings together organizationwide challenges and projectlevel ideation in one seamless ecosystem. .</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-header">
+                    <span class="faq-number">7.</span>
+                    <h3>How do I track my ideas and rewards?</h3>
+                    <button class="faq-toggle">+</button>
+                </div>
+                <div class="faq-content">
+                    <p>IRIS is Tech Mahindra’s unified innovation platform that enables every associate to observe a challenge, shape an idea, and turn it into real business impact. It brings together organizationwide challenges and projectlevel ideation in one seamless ecosystem. .</p>
                 </div>
             </div>
             <!-- More FAQ items... -->
         </div>
     </div>
 </section>
+
+<!-- Footer Section -->
+<footer class="footer">
+    <div class="footer-bg"></div>
+    <div class="footer-logo">
+        <div class="footer-logo-text-1"></div>
+        <div class="footer-logo-text-2"></div>
+        <div class="footer-logo-accent"></div>
+    </div>
+    <div class="footer-links-1">Reward Process   Community <br/>Contact Us<br/></div>
+    <div class="footer-links-2">Makers Lab <br/>InnoQuest</div>
+    <div class="footer-email">Reach out to us: innoquest@techmahindra.com</div>
+    <div class="footer-copyright">© 2026 Tech Mahindra Limited</div>
+</footer>
+
 {% endblock %}

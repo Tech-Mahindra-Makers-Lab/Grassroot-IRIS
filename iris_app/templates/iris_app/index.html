@@ -126,7 +126,7 @@
                             <a href="{% url 'challenge_detail' challenge.challenge_id %}"
                                 class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">View Details</a>
                             {% if challenge.status == 'LIVE' %}
-                            <a href="{% url 'submit_idea' challenge.challenge_id %}"
+                            <a href="{% url 'idea_details' challenge.challenge_id %}"
                                 class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Submit Idea</a>
                             {% endif %}
                         </div>
