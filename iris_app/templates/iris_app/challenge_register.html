@@ -1,0 +1,567 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Registration Page Styles */
+    .reg-container {
+        width: 100%;
+        min-height: 100vh;
+        padding-top: 40px;
+        padding-bottom: 32px;
+        padding-left: 40px;
+        padding-right: 40px;
+        position: relative;
+        background: #F6F2EA;
+        overflow-x: hidden;
+        outline: 8px solid #5F0229;
+        outline-offset: -8px;
+        background-image: url(https://placehold.co/1920x1080);
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    .reg-content {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 34px;
+        display: inline-flex;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .reg-header {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 8px;
+        display: flex;
+        width: 100%;
+    }
+
+    .reg-header-top {
+        width: 100%;
+        display: inline-flex;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
+
+    .reg-title-section {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 10px;
+        display: inline-flex;
+    }
+
+    .reg-title {
+        color: #5F0229;
+        font-size: 24px;
+        font-family: Poppins;
+        font-weight: 500;
+        line-height: 36.80px;
+        word-wrap: break-word;
+    }
+
+    .reg-challenge-name {
+        color: #29251D;
+        font-size: 14px;
+        font-family: Inter;
+        font-weight: 600;
+        line-height: 20px;
+        word-wrap: break-word;
+    }
+
+    /* Toggle Switch Styles */
+    .toggle-switch {
+        width: 221.73px;
+        height: 44px;
+        position: relative;
+        background: #E5DFD3;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    .toggle-option {
+        flex: 1;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-option input[type="radio"] {
+        display: none;
+    }
+
+    .toggle-option input[type="radio"]:checked+label {
+        background: white;
+        box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.10), 0px 1px 3px rgba(0, 0, 0, 0.10);
+        border-radius: 8px;
+        color: #29251D;
+        font-weight: 600;
+    }
+
+    .toggle-option label {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #4A453D;
+        font-size: 14px;
+        font-family: Poppins;
+        font-weight: 600;
+        line-height: 20px;
+        transition: all 0.3s ease;
+        margin: 0;
+    }
+
+    /* Form Sections */
+    .form-section {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 10px;
+        display: flex;
+        width: 100%;
+    }
+
+    .section-label {
+        color: #E31837;
+        font-size: 14px;
+        font-family: Inter;
+        font-weight: 500;
+        line-height: 20px;
+        word-wrap: break-word;
+        margin-bottom: 10px;
+    }
+
+    .form-group {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 12px;
+    }
+
+    .form-input {
+        width: 100%;
+        height: 50px;
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        background: rgba(77, 77, 79, 0);
+        overflow: hidden;
+        border-bottom: 1.50px rgba(77, 77, 79, 0.40) solid;
+        color: #29251D;
+        font-size: 14px;
+        font-family: Inter;
+        font-weight: 600;
+        line-height: 20px;
+        border: none;
+        border-bottom: 1.5px rgba(77, 77, 79, 0.40) solid;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-bottom: 1.5px rgba(95, 2, 41, 0.8) solid;
+        background-color: #fafafa;
+    }
+
+    .form-input::placeholder {
+        color: #4D4D4F;
+    }
+
+    .form-input:disabled {
+        background-color: #f6f6f6;
+        color: #999;
+    }
+
+    /* Team Details Section */
+    .team-details-section {
+        width: 100%;
+        padding-top: 20px;
+        margin-top: 20px;
+        border-top: 1px solid #E5DFD3;
+        display: none;
+    }
+
+    .team-details-section.active {
+        display: block;
+    }
+
+    .team-members-header {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-right: 12px;
+    }
+
+    .team-members-label {
+        color: #29251D;
+        font-size: 12px;
+        font-family: Poppins;
+        font-weight: 500;
+        line-height: 16px;
+    }
+
+    .add-member-btn {
+        width: 55.55px;
+        height: 24px;
+        background: #5F0229;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        font-size: 12px;
+        font-family: Inter;
+        font-weight: 600;
+        line-height: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .add-member-btn:hover {
+        background-color: #4A0220;
+    }
+
+    .team-members-container {
+        max-height: 400px;
+        overflow-y: auto;
+        background: #E5DFD3;
+        padding: 12px;
+        border-radius: 6px;
+        margin-top: 8px;
+    }
+
+    .team-member-item {
+        background: white;
+        padding: 8px;
+        border-radius: 4px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .team-member-name {
+        color: #4A453D;
+        font-size: 12px;
+        font-family: Poppins;
+        font-weight: 500;
+    }
+
+    .remove-member-btn {
+        background: none;
+        border: none;
+        color: #E31837;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    /* Button Section */
+    .button-section {
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-start;
+        gap: 10px;
+        display: flex;
+        width: 100%;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #E5DFD3;
+    }
+
+    .submit-btn {
+        width: auto;
+        padding: 12px 32px;
+        background: #E31837;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        font-family: Poppins;
+        font-weight: 500;
+        line-height: 22.50px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        background-color: #c41529;
+    }
+
+    .submit-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .cancel-btn {
+        padding: 12px 32px;
+        background: #f0f0f0;
+        color: #29251D;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 15px;
+        font-family: Poppins;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .cancel-btn:hover {
+        background-color: #e8e8e8;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .reg-container {
+            padding: 20px;
+        }
+
+        .reg-title {
+            font-size: 18px;
+        }
+
+        .toggle-switch {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="reg-container">
+    <div class="reg-content">
+        <!-- Header -->
+        <div class="reg-header">
+            <div class="reg-header-top">
+                <div class="reg-title-section">
+                    <div class="reg-title">Register Now</div>
+                    <div class="reg-challenge-name">Challenge: {{ challenge.title }}</div>
+                </div>
+            </div>
+        </div>
+
+        <form id="registrationForm" method="POST" action="{% url 'submit_registration' challenge.challenge_id %}">
+            {% csrf_token %}
+
+            <!-- Participation Mode Selection -->
+            {% if challenge.participation_type|lower != 'individual' %}
+            <div class="form-section">
+                <label class="section-label">Participation Type</label>
+                <div class="toggle-switch">
+                    {% with participation_type_lower=challenge.participation_type|lower %}
+                    {% if participation_type_lower == 'individual' or participation_type_lower == 'both' %}
+                    <div class="toggle-option">
+                        <input type="radio" id="modeIndividual" name="participation_mode" value="Individual" {% if participation_type_lower == 'individual' %}checked{% endif %} {% if participation_type_lower == 'team' %}disabled{% endif %}>
+                        <label for="modeIndividual">Individual</label>
+                    </div>
+                    {% endif %}
+
+                    {% if participation_type_lower == 'team' or participation_type_lower == 'both' %}
+                    <div class="toggle-option">
+                        <input type="radio" id="modeTeam" name="participation_mode" value="Team" {% if participation_type_lower == 'team' %}checked{% endif %} {% if participation_type_lower == 'individual' %}disabled{% endif %}>
+                        <label for="modeTeam">Team</label>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+            {% else %}
+            <input type="hidden" name="participation_mode" value="Individual">
+            {% endif %}
+
+            <!-- Personal Information Section -->
+            <div class="form-section">
+                <label class="section-label">Personal Information</label>
+
+                <div class="form-group">
+                    <label for="challengeName"
+                        style="color: #29251D; font-size: 12px; font-weight: 600;">Challenge</label>
+                    <input type="text" id="challengeName" class="form-input" value="{{ challenge.title }}" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName" style="color: #29251D; font-size: 12px; font-weight: 600;">Full Name</label>
+                    <input type="text" id="fullName" class="form-input" value="{{ user.full_name }}" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="employeeID" style="color: #29251D; font-size: 12px; font-weight: 600;">Employee
+                        ID</label>
+                    <input type="text" id="employeeID" class="form-input" value="{{ user.employee_id }}" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="emailID" style="color: #29251D; font-size: 12px; font-weight: 600;">Email ID
+                        (Official)</label>
+                    <input type="email" id="emailID" class="form-input" value="{{ user.email }}" disabled>
+                </div>
+            </div>
+
+            <!-- Team Details Section -->
+            <div class="team-details-section" id="teamDetailsSection">
+                <label class="section-label" style="margin-bottom: 12px;">Team Details</label>
+
+                <div class="form-group">
+                    <label for="teamName" style="color: #29251D; font-size: 12px; font-weight: 600;">Team Name <span
+                            style="color: red;">*</span></label>
+                    <input type="text" id="teamName" name="team_name" class="form-input" placeholder="Enter team name">
+                </div>
+
+                <div class="form-group">
+                    <label for="teamLeadName" style="color: #29251D; font-size: 12px; font-weight: 600;">Team Lead <span
+                            style="color: red;">*</span></label>
+                    <input type="text" id="teamLeadName" name="team_lead_name" class="form-input"
+                        placeholder="Enter team lead name">
+                </div>
+
+                <div class="team-members-header">
+                    <span class="team-members-label">Team Members (Max: {{ max_team_size }})</span>
+                    <button type="button" class="add-member-btn" onclick="addTeamMember()">+ Add</button>
+                </div>
+
+                <div class="team-members-container" id="teamMembersContainer">
+                    <div style="padding: 12px; text-align: center; color: #999; background: white; border-radius: 4px;">
+                        No team members added yet
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-section">
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button type="submit" class="submit-btn">Register Now</button>
+                    <a href="{% url 'challenge_list' %}" class="cancel-btn">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const MAX_TEAM_SIZE = parseInt("{{ max_team_size }}") || 1;
+    const participationType = "{{ challenge.participation_type }}";
+    let teamMembers = [];
+
+    // Toggle team details section visibility
+    document.querySelectorAll('input[name="participation_mode"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            const teamSection = document.getElementById('teamDetailsSection');
+            if (this.value === 'Team') {
+                teamSection.classList.add('active');
+                document.getElementById('teamName').required = true;
+                document.getElementById('teamLeadName').required = true;
+            } else {
+                teamSection.classList.remove('active');
+                document.getElementById('teamName').required = false;
+                document.getElementById('teamLeadName').required = false;
+                teamMembers = [];
+                renderTeamMembers();
+            }
+        });
+    });
+
+    function addTeamMember() {
+        const currentSize = teamMembers.length + 1; // +1 for current user
+        if (currentSize >= MAX_TEAM_SIZE) {
+            alert(`Maximum team size is ${MAX_TEAM_SIZE}`);
+            return;
+        }
+
+        const email = prompt('Enter team member email:');
+        if (email && email.trim()) {
+            teamMembers.push(email.trim());
+            renderTeamMembers();
+        }
+    }
+
+    function removeTeamMember(index) {
+        teamMembers.splice(index, 1);
+        renderTeamMembers();
+    }
+
+    function renderTeamMembers() {
+        const container = document.getElementById('teamMembersContainer');
+        if (teamMembers.length === 0) {
+            container.innerHTML = `
+                <div style="padding: 12px; text-align: center; color: #999; background: white; border-radius: 4px;">
+                    No team members added yet
+                </div>
+            `;
+        } else {
+            container.innerHTML = teamMembers.map((email, index) => `
+                <div class="team-member-item">
+                    <span class="team-member-name">${email}</span>
+                    <button type="button" class="remove-member-btn" onclick="removeTeamMember(${index})">✕</button>
+                </div>
+            `).join('');
+        }
+
+        // Create hidden inputs for form submission
+        const form = document.getElementById('registrationForm');
+        const existingInputs = form.querySelectorAll('input[name="team_member_emails[]"]');
+        existingInputs.forEach(input => input.remove());
+
+        teamMembers.forEach(email => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'team_member_emails[]';
+            input.value = email;
+            form.appendChild(input);
+        });
+    }
+
+    // Initialize based on challenge participation type
+    if (participationType === 'Individual') {
+        document.getElementById('modeIndividual').checked = true;
+        document.getElementById('teamDetailsSection').classList.remove('active');
+    } else if (participationType === 'Team') {
+        document.getElementById('modeTeam').checked = true;
+        document.getElementById('teamDetailsSection').classList.add('active');
+    } else {
+        // Both - default to Individual
+        document.getElementById('modeIndividual').checked = true;
+    }
+
+    // Form submission
+    document.getElementById('registrationForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Great! Registration successful. Now let\'s submit your innovative idea!');
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred during registration.');
+            });
+    });
+</script>
+
+{% endblock %}

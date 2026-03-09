@@ -13,8 +13,15 @@ urlpatterns = [
     path('submit-challenge/<uuid:challenge_id>/', views.submit_challenge, name='submit_challenge'),
     path('my-ideas/', views.my_ideas, name='my_ideas'),
     path('dashboard/', views.user_dashboard, name='user_dashboard'),
+    # Review and Evaluation Dashboard
+    path('review-dashboard/', views.review_dashboard, name='review_dashboard'),
+    path('review-dashboard/idea-detail/<uuid:idea_id>/', views.idea_detail, name='view_idea_detail'),
+    path('reviewer-idea-page/<uuid:idea_id>/', views.reviewer_idea_page, name='reviewer_idea_page'),
+    path('submit-evaluation/<uuid:idea_id>/', views.submit_evaluation, name='submit_evaluation'),
     path('idea-details/<uuid:challenge_id>/', views.idea_details, name='idea_details'),
     path('submit-idea/<uuid:challenge_id>/', views.submit_idea, name='submit_idea'),
+    path('challenge-register/<uuid:challenge_id>/', views.challenge_register, name='challenge_register'),
+    path('submit-registration/<uuid:challenge_id>/', views.submit_registration, name='submit_registration'),
     path('employee_search/', views.employee_search, name='employee_search'),
 
     # Grassroot Idea Flow

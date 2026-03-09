@@ -1,0 +1,799 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'iris_app/css/evaluator_remark_new.css' %}">
+
+<div class="evaluator-wrapper">
+    <!-- HEADER SECTION -->
+    <div class="evaluator-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="header-badges">
+
+                    <div class="status-badge">
+                         <div class="badge-primary">IDEA ARENA</div>
+                        <div class="status-text">{{ idea.status|default:"Submitted" }}</div>
+                    </div>
+                </div>
+                <div class="header-title">
+                    <div class="header-title-text">{{ idea.title }}</div>
+                </div>
+                <div class="header-date">
+                    <div class="header-date-text">Submitted {{ submission_date }}</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div style="align-self: stretch; height: 24px; position: relative; overflow: hidden">
+                    <div style="width: 12px; height: 12px; left: 5.67px; top: 4.65px; position: absolute; outline: 2px #4D4D4F solid; outline-offset: -1px"></div>
+                    <div style="width: 12px; height: 12px; left: 5.67px; top: 4.65px; position: absolute; outline: 2px #4D4D4F solid; outline-offset: -1px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABS SECTION -->
+    <div class="tabs-section">
+        <div class="tabs-container">
+            <button class="tab-button tab-active" data-tab="details-evaluate">
+                <span class="tab-text">Details & Evaluate</span>
+            </button>
+            <button class="tab-button {% if is_first_evaluator %}tab-disabled{% endif %}" data-tab="assessment-history" {% if is_first_evaluator %}disabled{% endif %} title="{% if is_first_evaluator %}Assessment history is only available for second evaluator{% endif %}">
+                <span class="tab-text ">Assessment History</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTENT SECTION -->
+    <div class="evaluator-content">
+        <!-- TAB 1: DETAILS & EVALUATE -->
+        <div class="tab-content tab-content-active" id="details-evaluate">
+            <form method="POST" action="{% url 'submit_evaluation' idea.idea_id %}" class="evaluation-form" id="evaluation-form" novalidate>
+                {% csrf_token %}
+
+                <!-- SUBMITTER INFORMATION -->
+                <div class="submitter-section">
+                <div class="section-title-info">
+                    <div class="section-icon">
+                        <div style="width: 16px; height: 16px; left: -0.33px; top: 0.65px; position: absolute; overflow: hidden">
+                            <div style="width: 9.33px; height: 4px; left: 1.33px; top: 10px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px"></div>
+                            <div style="width: 5.33px; height: 5.33px; left: 3.33px; top: 2px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px"></div>
+                            <div style="width: 2px; height: 3.91px; left: 12.67px; top: 10.09px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px"></div>
+                            <div style="width: 2.01px; height: 5.17px; left: 10.67px; top: 2.09px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px"></div>
+                        </div>
+                    </div>
+                    <div class="section-title-text">Submitter Information</div>
+                </div>
+                <div class="submitter-info-box">
+                    <div class="submitter-detail-flex">
+                        <img class="submitter-avatar" src="https://placehold.co/50x50" alt="Submitter" />
+                        <div class="submitter-info">
+                            <div>
+                                <span class="submitter-name">{{ submitter.full_name }}</span>
+                                <span class="submitter-email">({{ submitter.email }})</span>
+                            </div>
+                            <div class="submitter-type-text">{{ submitter.user_type|default:"N/A" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IDEA NAME -->
+            <div class="idea-name-section">
+                <div class="idea-name-label-text">Idea Name</div>
+                <div class="idea-name-value">{{ idea.title }}</div>
+            </div>
+
+            <!-- REVIEW PARAMETERS -->
+            <div class="review-params-section">
+                <div class="section-title-info">
+                    <div class="section-icon">
+                        <div style="width: 2.67px; height: 2.67px; left: 7.60px; top: 3.65px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px"></div>
+                        <div style="width: 2.67px; height: 2.67px; left: 6.93px; top: 12.82px; position: absolute; transform: rotate(-180deg); transform-origin: top left; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px"></div>
+                    </div>
+                    <div class="section-title-text">Review Parameters</div>
+                </div>
+                <div class="params-list">
+                    {% for param in review_parameters %}
+                    <div class="param-row">
+                        <div class="param-name-col">
+                            <div class="param-name-text">{{ param.parameter.parameter_name }} ({{ param.weightage }}%) <span style="color: red;">*</span></div>
+                        </div>
+                        <div class="param-score-col">
+                            <input type="number" class="param-score-input" name="param_score_{{ param.parameter.parameter_id }}" min="0" max="5" placeholder="0-5" required />
+                        </div>
+                        <div class="param-empty-col"></div>
+                    </div>
+                    {% endfor %}
+                    <div class="params-total-row">
+                        <div class="total-name-col">
+                            <div class="total-name-text">Weighted Calculated Score</div>
+                        </div>
+                        <div class="total-score-col">
+                            <input type="number" class="param-score-input" id="total_score" name="total_score" min="0" max="5" readonly style="background-color: #f6f2ea; font-weight: 600;" />
+                        </div>
+                        <div class="total-empty-col"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RATING SECTION -->
+            <div class="rating-section">
+                <div class="section-title-info">
+                    <div class="section-icon">
+                        <div style="width: 7.16px; height: 6.53px; left: 4.42px; top: 8.64px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px"></div>
+                        <div style="width: 8.60px; height: 8.60px; left: 3.70px; top: 0.84px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px"></div>
+                    </div>
+                    <div class="section-title-text">Calculated Weighted Score *</div>
+                </div>
+                <div class="rating-box">
+                    <div class="required-note"><span style="color: red;">*</span> Required field</div>
+                    <div class="rating-content">
+                        <!-- STARS AND SCORE -->
+                        <div class="rating-stars">
+                            <div class="stars-container" id="rating-stars">
+                                <input type="hidden" id="rating-value" name="rating" required />
+                                <div class="star" data-value="1"><span class="star-empty">★</span></div>
+                                <div class="star" data-value="2"><span class="star-empty">★</span></div>
+                                <div class="star" data-value="3"><span class="star-empty">★</span></div>
+                                <div class="star" data-value="4"><span class="star-empty">★</span></div>
+                                <div class="star" data-value="5"><span class="star-empty">★</span></div>
+                            </div>
+                            <div class="score-display">
+                                <div class="score-label">Score:</div>
+                                <div class="score-value"><span id="score-number">0</span></div>
+                            </div>
+                        </div>
+
+                        <!-- RATING DESCRIPTION -->
+                        <div class="rating-text-content">
+                            <div class="rating-description-text" id="rating-description">Select a rating</div>
+                            <div class="rating-note-text" id="rating-note">Please select a rating to continue.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REMARKS SECTION -->
+            <div class="eval-remarks-section">
+                <div class="section-title-info">
+                    <div class="section-icon">
+                        <div style="width: 12px; height: 12px; left: 2px; top: 2px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px"></div>
+                    </div>
+                    <div class="remarks-title-text" style="color: #4D4D4F; font-size: 14px; font-weight: 600; line-height: 20px;">Remarks <span style="color: red;">*</span></div>
+                </div>
+                <div class="remarks-inner">
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <textarea name="remarks" class="remarks-textarea" placeholder="Provide detailed feedback, suggestions, or concerns..." required minlength="10" maxlength="1000"></textarea>
+                        <div class="char-counter">
+                            <div class="char-count-number"><span id="char-count">0</span>/1000</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FOOTER BUTTONS -->
+        </form>
+            </div>
+
+            <!-- TAB 2: ASSESSMENT HISTORY -->
+            <div class="tab-content" id="assessment-history">
+                <div class="assessment-history-container">
+                    {% if assessment_history %}
+                        {% for review in assessment_history %}
+                            <div class="assessment-item">
+                                <div class="assessment-header">
+                                    <div class="assessment-reviewer-info">
+                                        <img class="reviewer-avatar" src="https://placehold.co/50x50" alt="Reviewer" />
+                                        <div class="reviewer-details">
+                                            <div class="reviewer-name">{{ review.reviewer.full_name }}</div>
+                                            <div class="reviewer-email">{{ review.reviewer.email }}</div>
+                                            <div class="review-stage">{{ review.stage }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="assessment-date">
+                                        <div class="date-label">Reviewed on</div>
+                                        <div class="date-value">{{ review.review_date|date:"M d, Y" }}</div>
+                                    </div>
+                                </div>
+
+                                <!-- ASSESSMENT PARAMETERS SCORES -->
+                                <div class="assessment-parameters">
+                                    <div class="assessment-param-title">Parameter Scores</div>
+                                    <div class="assessment-param-table">
+                                        {% for rating in review.ratings.all %}
+                                            <div class="assessment-param-row">
+                                                <div class="assessment-param-name">{{ rating.parameter.parameter_name }}</div>
+                                                <div class="assessment-param-score">{{ rating.score }}/5</div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <!-- RATING AND REMARKS -->
+                                <div class="assessment-rating-remarks">
+                                    <!-- STARS AND SCORE -->
+                                    <div class="assessment-rating-stars-section">
+                                        <div class="rating-stars-display" data-rating="{{ review.rating }}">
+                                            <div class="star-display"></div>
+                                            <div class="star-display"></div>
+                                            <div class="star-display"></div>
+                                            <div class="star-display"></div>
+                                            <div class="star-display"></div>
+                                        </div>
+                                        <div class="rating-score-info">
+                                            <span class="score-label">Score:</span>
+                                            <span class="score-value">{{ review.rating }}.000</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- RATING DESCRIPTION -->
+                                    <div class="assessment-remarks">
+                                        <div class="remarks-description-title">Meets basic expectations</div>
+                                        <div class="remarks-description-text">{{ review.comments }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="assessment-divider"></div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-assessment-history">
+                            <div class="no-history-icon">📋</div>
+                            <div class="no-history-text">No previous assessments yet</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- DECORATIVE ICONS -->
+        <div class="icon-small-1"></div>
+        <div class="icon-small-2"></div>
+
+        <!-- FOOTER BUTTONS: Always visible -->
+        <div class="evaluator-footer">
+            <div class="button-group">
+                <button type="reset" class="btn-clear" form="evaluation-form">Clear</button>
+                <button type="submit" class="btn-submit" form="evaluation-form">Submit Evaluation</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const footer = document.querySelector(".evaluator-footer");
+
+    tabButtons.forEach(button => {
+        button.addEventListener("click", function () {
+
+            const tabName = this.getAttribute("data-tab");
+
+            // Show footer only for Details & Evaluate
+            if (tabName === "details-evaluate") {
+                footer.style.display = "block";
+            } else {
+                footer.style.display = "none";
+            }
+
+        });
+    });
+
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    // Tab switching functionality
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Prevent switching to disabled tabs
+            if (this.hasAttribute('disabled') || this.classList.contains('tab-disabled')) {
+                console.log('Tab is disabled, preventing click');
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+
+            const tabId = this.getAttribute('data-tab');
+            console.log('Switching to tab:', tabId);
+
+            // Remove active class from all tabs and buttons
+            tabButtons.forEach(btn => btn.classList.remove('tab-active'));
+            tabContents.forEach(content => {
+                content.classList.remove('tab-content-active');
+            });
+
+            // Add active class to clicked button and corresponding content
+            this.classList.add('tab-active');
+            const targetContent = document.getElementById(tabId);
+            if (targetContent) {
+                targetContent.classList.add('tab-content-active');
+            }
+        });
+    });
+
+    const form = document.getElementById('evaluation-form');
+    const ratingStars = document.querySelectorAll('#rating-stars .star');
+    const ratingInput = document.getElementById('rating-value');
+    const ratingDescription = document.getElementById('rating-description');
+    const ratingNote = document.getElementById('rating-note');
+    const scoreNumber = document.getElementById('score-number');
+    const charCount = document.getElementById('char-count');
+    const remarksInput = document.querySelector('textarea[name="remarks"]');
+
+    // Rating descriptions
+    const ratingDescriptions = {
+        1: { title: 'Poor', desc: 'Does not meet expectations and needs significant improvements.' },
+        2: { title: 'Below Average', desc: 'Below expectations with considerable issues.' },
+        3: { title: 'Meets basic expectations', desc: 'Acceptable but requires refinement to move forward.' },
+        4: { title: 'Good', desc: 'Meets expectations with minor improvements needed.' },
+        5: { title: 'Excellent', desc: 'Exceeds expectations and is ready to move forward.' }
+    };
+
+    // Star rating click handler
+    ratingStars.forEach(star => {
+        star.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            ratingInput.value = value;
+            scoreNumber.textContent = value;
+
+            // Update visual state
+            ratingStars.forEach(s => {
+                const starSpan = s.querySelector('span');
+                if (s.getAttribute('data-value') <= value) {
+                    starSpan.className = 'star-filled';
+                } else {
+                    starSpan.className = 'star-empty';
+                }
+            });
+
+            // Update description
+            const desc = ratingDescriptions[value];
+            ratingDescription.textContent = desc.title;
+            ratingNote.textContent = desc.desc;
+        });
+
+        // Hover effect
+        star.addEventListener('mouseenter', function() {
+            const value = this.getAttribute('data-value');
+            ratingStars.forEach(s => {
+                const starSpan = s.querySelector('span');
+                if (s.getAttribute('data-value') <= value) {
+                    starSpan.style.opacity = '0.7';
+                }
+            });
+        });
+    });
+
+    // Remove hover effect
+    if (document.getElementById('rating-stars')) {
+        document.getElementById('rating-stars').addEventListener('mouseleave', function() {
+            ratingStars.forEach(s => {
+                const starSpan = s.querySelector('span');
+                starSpan.style.opacity = '1';
+            });
+        });
+    }
+
+    // Character counter for remarks
+    if (remarksInput) {
+        remarksInput.addEventListener('input', function() {
+            charCount.textContent = this.value.length;
+        });
+    }
+
+    // Form submission validation
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+
+            // Validate all parameter scores are filled
+            const paramInputs = document.querySelectorAll('.param-score-input[name^="param_score_"]');
+            paramInputs.forEach(input => {
+                if (!input.value || input.value < 0 || input.value > 5) {
+                    input.style.borderColor = 'red';
+                    isValid = false;
+                } else {
+                    input.style.borderColor = '';
+                }
+            });
+
+            // Validate rating is selected
+            if (!ratingInput.value) {
+                alert('Please select a rating');
+                e.preventDefault();
+                return false;
+            }
+
+            // Validate remarks
+            if (!remarksInput.value || remarksInput.value.trim().length < 10) {
+                alert('Remarks are required and must be at least 10 characters');
+                remarksInput.style.borderColor = 'red';
+                e.preventDefault();
+                return false;
+            } else {
+                remarksInput.style.borderColor = '';
+            }
+
+            // Validate parameters
+            if (!isValid) {
+                alert('Please fill all parameter scores (0-5)');
+                e.preventDefault();
+                return false;
+            }
+
+            // Calculate total score
+            let totalScore = 0;
+            document.querySelectorAll('.param-row').forEach(row => {
+                const scoreInput = row.querySelector('.param-score-input[name^="param_score_"]');
+                const weightageText = row.querySelector('.param-name-text').textContent;
+                const weightageMatch = weightageText.match(/\((\d+)%\)/);
+
+                if (scoreInput && scoreInput.value && weightageMatch) {
+                    const score = parseFloat(scoreInput.value);
+                    const weightage = parseFloat(weightageMatch[1]);
+                    totalScore += (score * weightage) / 100;
+                }
+            });
+
+            // Update total score field
+            document.getElementById('total_score').value = totalScore.toFixed(2);
+        });
+    }
+
+    // Real-time parameter score calculation
+    document.querySelectorAll('.param-score-input[name^="param_score_"]').forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.value && (this.value < 0 || this.value > 5)) {
+                this.value = '';
+                alert('Score must be between 0 and 5');
+                return;
+            }
+
+            // Recalculate total score
+            let totalScore = 0;
+            document.querySelectorAll('.param-row').forEach(row => {
+                const scoreInput = row.querySelector('.param-score-input[name^="param_score_"]');
+                const weightageText = row.querySelector('.param-name-text').textContent;
+                const weightageMatch = weightageText.match(/\((\d+)%\)/);
+
+                if (scoreInput && scoreInput.value && weightageMatch) {
+                    const score = parseFloat(scoreInput.value);
+                    const weightage = parseFloat(weightageMatch[1]);
+                    totalScore += (score * weightage) / 100;
+                }
+            });
+
+            document.getElementById('total_score').value = totalScore.toFixed(2);
+        });
+    });
+});
+
+// Validate form - check if all required fields are filled
+function validateEvaluationForm() {
+    const form = document.getElementById('evaluation-form');
+    if (!form) return false;
+
+    let allFieldsFilled = true;
+    let errorMessage = '';
+
+    // Get all score inputs (rating parameters)
+    const scoreInputs = form.querySelectorAll('input[type="number"]');
+
+    scoreInputs.forEach(input => {
+        if (!input.value || input.value === '' || parseFloat(input.value) === 0) {
+            allFieldsFilled = false;
+            const paramName = input.closest('.param-row')?.querySelector('.param-name-text')?.textContent || 'A parameter';
+            errorMessage += `- ${paramName} requires a score\n`;
+        }
+    });
+
+    // Validate remarks field specifically
+    const remarksInput = form.querySelector('textarea[name="remarks"]');
+    if (remarksInput) {
+        const remarksValue = remarksInput.value.trim();
+        const minLength = remarksInput.getAttribute('minlength') || 10;
+
+        if (!remarksValue) {
+            allFieldsFilled = false;
+            errorMessage += '- Remarks field is required\n';
+        } else if (remarksValue.length < minLength) {
+            allFieldsFilled = false;
+            errorMessage += `- Remarks must be at least ${minLength} characters long (currently ${remarksValue.length})\n`;
+        }
+    }
+
+    // Check all other required fields
+    const requiredInputs = form.querySelectorAll('[required]');
+    requiredInputs.forEach(input => {
+        // Skip textarea as we already validated it
+        if (input.tagName === 'TEXTAREA') return;
+
+        if (!input.value || input.value.trim() === '') {
+            allFieldsFilled = false;
+            const label = input.previousElementSibling?.textContent || input.name;
+            errorMessage += `- ${label} is required\n`;
+        }
+    });
+
+    // If validation fails, show detailed message
+    if (!allFieldsFilled && errorMessage) {
+        alert('Please fix the following issues:\n\n' + errorMessage);
+    }
+
+    return allFieldsFilled;
+}
+
+
+// Handle form submission to show success modal
+document.addEventListener('DOMContentLoaded', function() {
+    const evaluationForm = document.getElementById('evaluation-form');
+    if (evaluationForm) {
+        evaluationForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Form submission intercepted');
+
+            // Validate form before submission
+            if (!validateEvaluationForm()) {
+                alert('Please fill in all required fields before submitting.');
+                console.log('Validation failed - form incomplete');
+                return;
+            }
+
+            console.log('Validation passed - showing modal and proceeding with submission');
+
+            // Show success modal immediately
+            showEvalSuccessModal();
+
+            // Submit the form via fetch
+            const formData = new FormData(this);
+            const actionUrl = this.getAttribute('action');
+
+            fetch(actionUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => {
+                console.log('Response received:', response.status);
+                // Modal already shown, just handle errors if any
+                if (!response.ok && response.status !== 200 && response.status !== 201) {
+                    alert('Error submitting evaluation. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting evaluation. Please try again.');
+            });
+        });
+    }
+
+    // Handle Clear button to show confirmation modal
+    const clearBtn = document.querySelector('.btn-clear');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Clear button clicked');
+            showEvalClearModal();
+        });
+    }
+});
+
+// Show success modal
+function showEvalSuccessModal() {
+    console.log('showEvalSuccessModal called');
+    const modal = document.getElementById('evalSuccessModal');
+    console.log('Modal element found:', modal);
+    if (modal) {
+        modal.classList.add('show');
+        console.log('Modal show class added');
+    }
+}
+
+// Close success modal
+function closeEvalSuccessModal() {
+    const modal = document.getElementById('evalSuccessModal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
+}
+
+// Show clear/discard confirmation modal
+function showEvalClearModal() {
+    console.log('showEvalClearModal called');
+    const modal = document.getElementById('evalClearModal');
+    if (modal) {
+        modal.classList.add('show');
+        console.log('Clear modal show class added');
+    }
+}
+
+// Close clear modal
+function closeEvalClearModal() {
+    const modal = document.getElementById('evalClearModal');
+    if (modal) {
+        modal.classList.remove('show');
+    }
+}
+
+// Handle success modal close button
+document.addEventListener('DOMContentLoaded', function() {
+    const closeBtn = document.getElementById('evalSuccessCloseBtn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeEvalSuccessModal);
+    }
+
+    const reviewBtn = document.getElementById('evalSuccessReviewBtn');
+    if (reviewBtn) {
+        reviewBtn.addEventListener('click', function() {
+            window.location.href = '/review-dashboard/';
+        });
+    }
+});
+
+// Handle clear modal buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const closeIconBtn = document.getElementById('evalClearCloseIcon');
+    if (closeIconBtn) {
+        closeIconBtn.addEventListener('click', closeEvalClearModal);
+    }
+
+    const saveDraftBtn = document.getElementById('evalClearSaveDraftBtn');
+    if (saveDraftBtn) {
+        saveDraftBtn.addEventListener('click', function() {
+            closeEvalClearModal();
+            // TODO: Implement save draft functionality if needed
+        });
+    }
+
+    const discardBtn = document.getElementById('evalClearDiscardBtn');
+    if (discardBtn) {
+        discardBtn.addEventListener('click', function() {
+            closeEvalClearModal();
+            // Reset the form
+            const form = document.getElementById('evaluation-form');
+            if (form) {
+                form.reset();
+                console.log('Form cleared/reset');
+            }
+        });
+    }
+});
+</script>
+
+<!-- Evaluation Success Modal -->
+<div class="eval-success-modal-overlay" id="evalSuccessModal">
+    <div class="eval-success-modal-container">
+        <div style="width: 100%; height: 100%; position: relative">
+            <div style="width: 524px; height: 457.08px; left: 0px; top: 0px; position: absolute; background: white"></div>
+            <div style="width: 484.12px; height: 254.61px; left: 19.72px; top: 17.93px; position: absolute; background: #29251D"></div>
+            <div style="width: 484.12px; height: 254.61px; left: 19.72px; top: 17.79px; position: absolute; background: #373737"></div>
+            <div style="width: 44.35px; height: 44.35px; left: 237.39px; top: 97.25px; position: absolute; border-radius: 9999px; border: 2px white solid"></div>
+            <div style="width: 16.36px; height: 8.39px; left: 238.06px; top: 179.51px; position: absolute; outline: 2px #828282 solid; outline-offset: -1px"></div>
+            <div style="width: 23.74px; height: 58.84px; left: 211.87px; top: 142.53px; position: absolute; outline: 2px #535362 solid; outline-offset: -1px"></div>
+            <div style="width: 67.93px; height: 92.81px; left: 225.60px; top: 87.35px; position: absolute; outline: 2px #FF4040 solid; outline-offset: -1px"></div>
+            <div style="width: 28.71px; height: 28.67px; left: 245.21px; top: 105.09px; position: absolute; outline: 2px #828282 solid; outline-offset: -1px"></div>
+            <div style="width: 23.73px; height: 58.83px; left: 283.55px; top: 142.50px; position: absolute; outline: 2px #535362 solid; outline-offset: -1px"></div>
+            <div style="width: 39.39px; height: 22.24px; left: 239.94px; top: 68.42px; position: absolute; outline: 2px #828282 solid; outline-offset: -1px"></div>
+            <div style="width: 16.32px; height: 8.38px; left: 264.75px; top: 179.51px; position: absolute; outline: 2px #828282 solid; outline-offset: -1px"></div>
+            <div style="width: 15.37px; height: 59.91px; left: 251.89px; top: 141.47px; position: absolute; outline: 2px #535362 solid; outline-offset: -1px"></div>
+            <div style="width: 80.67px; height: 275.96px; left: 19.78px; top: 17.93px; position: absolute; border: 0.30px #D9D9D9 solid"></div>
+            <div style="width: 80.67px; height: 254.07px; left: 100.45px; top: 17.93px; position: absolute; border: 0.30px #D9D9D9 solid"></div>
+            <div style="width: 80.67px; height: 254.67px; left: 181.12px; top: 17.93px; position: absolute; border: 0.30px #D9D9D9 solid"></div>
+            <div style="width: 80.67px; height: 254.47px; left: 261.78px; top: 17.93px; position: absolute; border: 0.30px #D9D9D9 solid"></div>
+            <div style="width: 80.67px; height: 275.96px; left: 342.45px; top: 17.93px; position: absolute; border: 0.30px #D9D9D9 solid"></div>
+            <div style="width: 80.67px; height: 275.96px; left: 423.12px; top: 17.93px; position: absolute; border: 0.30px #D9D9D9 solid"></div>
+            <div style="width: 58.34px; height: 484px; left: 503.78px; top: 39.22px; position: absolute; transform: rotate(90deg); transform-origin: top left; border: 0.30px #E5DFD3 solid"></div>
+            <div style="width: 58.34px; height: 484px; left: 503.78px; top: 97.57px; position: absolute; transform: rotate(90deg); transform-origin: top left; border: 0.30px #E5DFD3 solid"></div>
+            <div style="width: 58.34px; height: 484px; left: 503.78px; top: 155.91px; position: absolute; transform: rotate(90deg); transform-origin: top left; border: 0.30px #E5DFD3 solid"></div>
+            <div style="width: 58.34px; height: 484px; left: 503.78px; top: 214.25px; position: absolute; transform: rotate(90deg); transform-origin: top left; border: 0.30px #E5DFD3 solid"></div>
+            <div style="width: 21.29px; height: 484px; left: 503.78px; top: 272.60px; position: absolute; transform: rotate(90deg); transform-origin: top left; border: 0.30px #E5DFD3 solid"></div>
+            <div style="width: 92.74px; height: 90.37px; left: 0px; top: 208.36px; position: absolute; background: white; border-radius: 9999px"></div>
+            <div style="width: 92.74px; height: 90.37px; left: 58.90px; top: 243.86px; position: absolute; background: white; border-radius: 9999px"></div>
+            <div style="width: 89.57px; height: 90.38px; left: 379.19px; top: 219.65px; position: absolute; background: white; border-radius: 9999px"></div>
+            <div style="width: 89.57px; height: 90.38px; left: 430.26px; top: 227.35px; position: absolute; background: white; border-radius: 9999px"></div>
+            <div style="width: 92.74px; height: 90.37px; left: 427.09px; top: 174.46px; position: absolute; background: white; border-radius: 9999px"></div>
+            <div style="width: 82.80px; height: 80.69px; left: 320.57px; top: 253.55px; position: absolute; background: white; border-radius: 9999px"></div>
+            <div style="width: 468.69px; left: 30.01px; top: 302.33px; position: absolute; text-align: center; color: #29251D; font-size: 20px; font-family: Poppins; font-weight: 500; line-height: 30px; word-wrap: break-word">Evaluation submitted successfully.</div>
+            <div style="width: 429.90px; height: 46.68px; left: 51.02px; top: 348.49px; position: absolute; text-align: center; color: #4D4D4F; font-size: 12px; font-family: Poppins; font-weight: 400; line-height: 20px; word-wrap: break-word">The participant will be notified.</div>
+            <div style="left: 129px; top: 387.08px; position: absolute; justify-content: flex-start; align-items: center; gap: 15px; display: inline-flex">
+                <div style="width: 126px; height: 42px; position: relative; outline: 1.60px #4D4D4F solid; outline-offset: -1.60px; cursor: pointer;" id="evalSuccessCloseBtn">
+                    <div style="left: 46.55px; top: 11.18px; position: absolute; text-align: center; color: #364153; font-size: 12px; font-family: Poppins; font-weight: 500; line-height: 19.20px; word-wrap: break-word">Close</div>
+                </div>
+                <div style="width: 132.95px; height: 41.60px; position: relative; background: #E31837; box-shadow: 0px 0.800000011920929px 1.600000023841858px -0.800000011920929px rgba(0, 0, 0, 0.10), 0px 0.800000011920929px 2.4000000953674316px rgba(0, 0, 0, 0.10); cursor: pointer;" id="evalSuccessReviewBtn">
+                    <div style="left: 28.67px; top: 11.18px; position: absolute; text-align: center; color: white; font-size: 12px; font-family: Poppins; font-weight: 500; line-height: 19.20px; word-wrap: break-word">Review more</div>
+                </div>
+            </div>
+            <div style="width: 484.06px; height: 59.31px; left: 19.72px; top: 120.86px; position: absolute; background: linear-gradient(180deg, #D9D9D9 0%, rgba(255, 255, 255, 0) 80%)"></div>
+            <div style="width: 484px; height: 254px; left: 20.10px; top: 18px; position: absolute; overflow: hidden">
+                <div style="width: 14.41px; height: 14.41px; left: 294.13px; top: 54.95px; position: absolute; border-radius: 9999px; border: 1px #D9D9D9 solid"></div>
+                <div style="width: 6.01px; height: 4.09px; left: 298.64px; top: 60.11px; position: absolute; outline: 1px #D9D9D9 solid; outline-offset: -0.50px"></div>
+                <div style="width: 14.41px; height: 14.41px; left: 138.91px; top: 143.64px; position: absolute; border-radius: 9999px; border: 1px #D9D9D9 solid"></div>
+                <div style="width: 6.01px; height: 4.09px; left: 143.42px; top: 148.80px; position: absolute; outline: 1px #D9D9D9 solid; outline-offset: -0.50px"></div>
+                <div style="width: 14.41px; height: 14.41px; left: 328.75px; top: 173.44px; position: absolute; border-radius: 9999px; border: 1px #D9D9D9 solid"></div>
+                <div style="width: 4.19px; height: 4px; left: 333.06px; top: 182.01px; position: absolute; transform: rotate(-45deg); transform-origin: top left; outline: 1px #D9D9D9 solid; outline-offset: -0.50px"></div>
+                <div style="width: 47.58px; height: 22.82px; left: 258.74px; top: 89.55px; position: absolute; transform: rotate(-26deg); transform-origin: top left; outline: 0.40px #E5DFD3 solid; outline-offset: -0.20px"></div>
+                <div style="width: 89.41px; height: 44.97px; left: 269.26px; top: 110.15px; position: absolute; transform: rotate(30deg); transform-origin: top left; outline: 0.40px #E5DFD3 solid; outline-offset: -0.20px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Clear/Discard Confirmation Modal -->
+<div class="eval-clear-modal-overlay" id="evalClearModal">
+    <div class="eval-clear-modal-container">
+        <!-- Background shapes -->
+        <div class="eval-clear-bg-dark"></div>
+        <div class="eval-clear-bg-gray"></div>
+
+        <!-- Decorative dots -->
+        <div class="eval-clear-dot1"></div>
+        <div class="eval-clear-dot2"></div>
+        <div class="eval-clear-dot3"></div>
+        <div class="eval-clear-dot4"></div>
+        <div class="eval-clear-dot5"></div>
+        <div class="eval-clear-dot6"></div>
+        <div class="eval-clear-dot7"></div>
+        <div class="eval-clear-dot8"></div>
+        <div class="eval-clear-dot9"></div>
+        <div class="eval-clear-dot10"></div>
+        <div class="eval-clear-dot11"></div>
+        <div class="eval-clear-dot12"></div>
+        <div class="eval-clear-dot13"></div>
+        <div class="eval-clear-dot14"></div>
+        <div class="eval-clear-dot15"></div>
+        <div class="eval-clear-dot16"></div>
+        <div class="eval-clear-dot17"></div>
+        <div class="eval-clear-dot18"></div>
+        <div class="eval-clear-dot19"></div>
+        <div class="eval-clear-dot20"></div>
+        <div class="eval-clear-dot21"></div>
+        <div class="eval-clear-dot22"></div>
+        <div class="eval-clear-dot23"></div>
+        <div class="eval-clear-dot24"></div>
+        <div class="eval-clear-dot25"></div>
+        <div class="eval-clear-dot26"></div>
+        <div class="eval-clear-dot27"></div>
+        <div class="eval-clear-dot28"></div>
+        <div class="eval-clear-dot29"></div>
+        <div class="eval-clear-dot30"></div>
+
+        <!-- Title -->
+        <div class="eval-clear-title">
+            <span class="eval-clear-title-red">Exit </span>
+            <span class="eval-clear-title-white">Without Submitting?</span>
+        </div>
+
+        <!-- Subtitle -->
+        <div class="eval-clear-subtitle">Canceling will stop your submission.</div>
+
+        <!-- Buttons -->
+        <div class="eval-clear-buttons">
+            <button class="eval-clear-btn-draft" id="evalClearSaveDraftBtn">Save Draft</button>
+            <button class="eval-clear-btn-discard" id="evalClearDiscardBtn">Discard</button>
+        </div>
+
+        <!-- Decorative shapes -->
+        <div class="eval-clear-shape1"></div>
+        <div class="eval-clear-shape2"></div>
+        <div class="eval-clear-shape3"></div>
+
+        <!-- Close icon -->
+        <div class="eval-clear-close-icon" id="evalClearCloseIcon">
+            <div style="align-self: stretch; height: 24px; position: relative; overflow: hidden">
+                <div style="width: 12px; height: 12px; left: 5.71px; top: 6px; position: absolute; outline: 2px #4D4D4F solid; outline-offset: -1px"></div>
+                <div style="width: 12px; height: 12px; left: 5.71px; top: 6px; position: absolute; outline: 2px #4D4D4F solid; outline-offset: -1px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

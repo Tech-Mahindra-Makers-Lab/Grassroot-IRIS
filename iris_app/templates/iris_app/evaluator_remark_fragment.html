@@ -1,0 +1,702 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'iris_app/css/eval_modals.css' %}">
+
+<!-- ══════════════════════════════════════════════════════
+     SUCCESS MODAL — shown after evaluation is submitted
+     ══════════════════════════════════════════════════════ -->
+<div class="eval-modal-overlay" id="evalSuccessModal" role="dialog" aria-modal="true" aria-labelledby="evalSuccessTitle">
+    <div class="eval-modal-card">
+
+        <!-- Dark banner with decorative figure -->
+        <div class="eval-modal-banner">
+            <!-- Close X -->
+            <button class="eval-modal-close-x" id="evalSuccessCloseX" aria-label="Close"></button>
+
+            <!-- Decorative small circles -->
+            <div class="eval-success-deco-circle" style="width:14px;height:14px;top:55px;left:294px;"></div>
+            <div class="eval-success-deco-circle" style="width:6px;height:4px;top:60px;left:299px;border-radius:2px;"></div>
+            <div class="eval-success-deco-circle" style="width:14px;height:14px;top:144px;left:139px;"></div>
+            <div class="eval-success-deco-circle" style="width:6px;height:4px;top:149px;left:143px;border-radius:2px;"></div>
+            <div class="eval-success-deco-circle" style="width:14px;height:14px;top:173px;left:329px;"></div>
+            <!-- diagonal lines -->
+            <div style="position:absolute;width:48px;height:23px;top:90px;left:259px;transform:rotate(-26deg);border:0.4px solid #E5DFD3;pointer-events:none;"></div>
+            <div style="position:absolute;width:89px;height:45px;top:110px;left:269px;transform:rotate(30deg);border:0.4px solid #E5DFD3;pointer-events:none;"></div>
+
+            <!-- White cloud shapes at bottom -->
+            <div class="eval-modal-banner-cloud eval-success-cloud-1"></div>
+            <div class="eval-modal-banner-cloud eval-success-cloud-2"></div>
+            <div class="eval-modal-banner-cloud eval-success-cloud-3"></div>
+            <div class="eval-modal-banner-cloud eval-success-cloud-4"></div>
+            <div class="eval-modal-banner-cloud eval-success-cloud-5"></div>
+
+            <!-- CSS Person figure -->
+            <div class="eval-success-figure">
+                <div class="fig-head"></div>
+                <div class="fig-body"></div>
+                <div class="fig-arm-left"></div>
+                <div class="fig-arm-right"></div>
+                <div class="fig-leg-left"></div>
+                <div class="fig-leg-right"></div>
+                <div class="fig-doc"></div>
+            </div>
+        </div><!-- end banner -->
+
+        <!-- Body content -->
+        <div class="eval-success-body">
+            <div class="eval-success-title" id="evalSuccessTitle">Evaluation submitted successfully.</div>
+            <div class="eval-success-subtitle">The participant will be notified.</div>
+            <div class="eval-modal-btn-row">
+                <button class="eval-modal-btn-outline" id="evalSuccessClose">Close</button>
+                <button class="eval-modal-btn-red"     id="evalSuccessReviewMore">Review more</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     CANCEL MODAL — shown when user clicks Clear/Cancel
+     ══════════════════════════════════════════════════════ -->
+<div class="eval-modal-overlay" id="evalCancelModal" role="dialog" aria-modal="true" aria-labelledby="evalCancelTitle">
+    <div class="eval-modal-card">
+
+        <!-- Dark banner with scattered dots -->
+        <div class="eval-modal-banner">
+            <!-- Close X -->
+            <button class="eval-modal-close-x" id="evalCancelCloseX" aria-label="Close"></button>
+
+            <!-- Scattered decorative dots — various sizes -->
+            <div class="eval-cancel-dot" style="width:6.55px;height:6.55px;top:4px;left:229px;"></div>
+            <div class="eval-cancel-dot" style="width:10.91px;height:10.91px;top:43px;left:307px;"></div>
+            <div class="eval-cancel-dot" style="width:10.91px;height:10.91px;top:43px;left:429px;"></div>
+            <div class="eval-cancel-dot" style="width:10.91px;height:10.91px;top:43px;left:232px;"></div>
+            <div class="eval-cancel-dot" style="width:10.91px;height:10.91px;top:43px;left:435px;"></div>
+            <div class="eval-cancel-dot" style="width:6.89px;height:6.89px;top:4px;left:351px;"></div>
+            <div class="eval-cancel-dot" style="width:6.89px;height:6.89px;top:4px;left:154px;"></div>
+            <div class="eval-cancel-dot" style="width:4.36px;height:4.36px;top:14px;left:294px;"></div>
+            <div class="eval-cancel-dot" style="width:4.36px;height:4.36px;top:14px;left:175px;"></div>
+            <div class="eval-cancel-dot" style="width:4.36px;height:4.36px;top:14px;left:398px;"></div>
+            <div class="eval-cancel-dot" style="width:4.36px;height:4.36px;top:7px;left:75px;"></div>
+            <div class="eval-cancel-dot" style="width:4.36px;height:4.36px;top:7px;left:277px;"></div>
+
+            <!-- White corner cut-outs -->
+            <div class="eval-cancel-corner" style="width:71px;height:71px;bottom:0;left:0;border-radius:0 50% 0 0;"></div>
+            <div class="eval-cancel-corner" style="width:46px;height:46px;bottom:0;left:67px;border-radius:50% 0 0 0;"></div>
+            <div class="eval-cancel-corner" style="width:54px;height:54px;bottom:0;right:0;border-radius:50% 0 0 0;transform:scaleX(-1);"></div>
+
+            <!-- Banner text -->
+            <div class="eval-cancel-banner-text">
+                <div class="eval-cancel-banner-title" id="evalCancelTitle">
+                    <span class="highlight">Exit </span>
+                    <span class="normal">Without Submitting?</span>
+                </div>
+                <div class="eval-cancel-banner-subtitle">Canceling will stop your submission.</div>
+            </div>
+        </div><!-- end banner -->
+
+        <!-- Body with buttons -->
+        <div class="eval-cancel-body">
+            <div class="eval-modal-btn-row">
+                <button class="eval-modal-btn-outline" id="evalCancelContinue" style="min-width:139px;">Continue Editing</button>
+                <button class="eval-modal-btn-red"     id="evalCancelDiscard"  style="min-width:133px;">Discard</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="evaluator-wrapper">
+
+    <!-- HEADER SECTION -->
+    <div class="evaluator-header">
+
+        <div class="header-content">
+            <div class="header-left">
+                <div class="header-badges">
+                    <div class="status-badge">
+                        <div class="badge-primary">IDEA ARENA</div>
+                        <div class="status-text">{{ idea.status|default:"Submitted" }}</div>
+                    </div>
+                </div>
+                <div class="header-title">
+                    <div class="header-title-text">{{ idea.title }}</div>
+                </div>
+                <div class="header-date">
+                    <div class="header-date-text">Submitted {{ submission_date }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABS SECTION -->
+    <div class="tabs-section">
+        <div class="tabs-container">
+            <button class="tab-button tab-active" data-tab-frag="details-evaluate-frag">
+                <span class="tab-text">Details &amp; Evaluate</span>
+            </button>
+            <button class="tab-button {% if is_first_evaluator %}tab-disabled{% endif %}"
+                data-tab-frag="assessment-history-frag" {% if is_first_evaluator %}disabled{% endif %}
+                title="{% if is_first_evaluator %}Assessment history is only available for second evaluator{% endif %}">
+                <span class="tab-text">Assessment History</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTENT SECTION -->
+    <div class="evaluator-content">
+
+        <!-- TAB 1: DETAILS & EVALUATE -->
+        <div class="tab-content tab-content-active" id="details-evaluate-frag">
+            <form method="POST" action="{% url 'submit_evaluation' idea.idea_id %}" class="evaluation-form"
+                id="evaluation-form-frag" novalidate>
+                {% csrf_token %}
+
+                <!-- SUBMITTER INFORMATION -->
+                <div class="submitter-section">
+                    <div class="section-title-info">
+                        <div class="section-icon"></div>
+                        <div class="section-title-text">Submitter Information</div>
+                    </div>
+                    <div class="submitter-info-box">
+                        <div class="submitter-detail-flex">
+                            <img class="submitter-avatar" src="https://placehold.co/50x50" alt="Submitter" />
+                            <div class="submitter-info">
+                                <div>
+                                    <span class="submitter-name">{{ submitter.full_name }}</span>
+                                    <span class="submitter-email">({{ submitter.email }})</span>
+                                </div>
+                                <div class="submitter-type-text">{{ submitter.user_type|default:"N/A" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IDEA NAME -->
+                <div class="idea-name-section">
+                    <div class="idea-name-label-text">Idea Name</div>
+                    <div class="idea-name-value">{{ idea.title }}</div>
+                </div>
+
+                <!-- REVIEW PARAMETERS -->
+                <div class="review-params-section">
+                    <div class="section-title-info">
+                        <div class="section-icon"></div>
+                        <div class="section-title-text">Review Parameters</div>
+                    </div>
+                    <div class="params-list">
+                        {% for param in review_parameters %}
+                        <div class="param-row">
+                            <div class="param-name-col">
+                                <div class="param-name-text">{{ param.parameter.parameter_name }} ({{ param.weightage}}%) <span style="color: red;">*</span></div>
+                            </div>
+                            <div class="param-score-col">
+                                <input type="number" class="param-score-input"
+                                    name="param_score_{{ param.parameter.parameter_id }}" min="0" max="5"
+                                    placeholder="0-5" required />
+                            </div>
+                            <div class="param-empty-col"></div>
+                        </div>
+                        {% endfor %}
+                        <div class="params-total-row">
+                            <div class="total-name-col">
+                                <div class="total-name-text">Weighted Calculated Score</div>
+                            </div>
+                            <div class="total-score-col">
+                                <input type="number" class="param-score-input" id="total_score_frag" name="total_score"
+                                    min="0" max="5" readonly style="background-color: #f6f2ea; font-weight: 600;" />
+                            </div>
+                            <div class="total-empty-col"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RATING SECTION -->
+                <div class="rating-section">
+                    <div class="section-title-info">
+                        <div class="section-icon"></div>
+                        <div class="section-title-text">Calculated Weighted Score *</div>
+                    </div>
+                    <div class="rating-box">
+                        <div class="required-note"><span style="color: red;">*</span> Required field</div>
+                        <div class="rating-content">
+                            <input type="hidden" id="rating-value-frag" name="rating" required />
+                            <!-- Rating row: left (stars + score) | right (description) -->
+                            <div class="rating-row">
+                                <!-- Left: stars + score -->
+                                <div class="rating-left">
+                                    <div class="rating-stars-frag" id="rating-stars-frag">
+                                        <span class="star-svg" data-value="1" title="1 star">&#9733;</span>
+                                        <span class="star-svg" data-value="2" title="2 stars">&#9733;</span>
+                                        <span class="star-svg" data-value="3" title="3 stars">&#9733;</span>
+                                        <span class="star-svg" data-value="4" title="4 stars">&#9733;</span>
+                                        <span class="star-svg" data-value="5" title="5 stars">&#9733;</span>
+                                    </div>
+                                    <div class="rating-score-group">
+                                        <span class="score-label-text">Score:</span>
+                                        <span class="score-number-text" id="score-number-frag">0</span>
+                                    </div>
+                                </div>
+                                <!-- Right: title & note -->
+                                <div class="rating-right">
+                                    <div class="rating-desc-title" id="rating-description-frag">Select a rating</div>
+                                    <div class="rating-desc-note" id="rating-note-frag">Please select a rating to
+                                        continue.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REMARKS SECTION -->
+                <div class="eval-remarks-section">
+                    <div class="section-title-info">
+                        <div class="section-icon"></div>
+                        <div class="remarks-title-text"
+                            style="color: #4D4D4F; font-size: 14px; font-weight: 600; line-height: 20px;">
+                            Remarks <span style="color: red;">*</span>
+                        </div>
+                    </div>
+                    <div class="remarks-inner">
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <textarea name="remarks" class="remarks-textarea" id="remarks-frag"
+                                placeholder="Provide detailed feedback, suggestions, or concerns..." required
+                                minlength="10" maxlength="1000"></textarea>
+                            <div class="char-counter">
+                                <div class="char-count-number"><span id="char-count-frag">0</span>/1000</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form><!-- end evaluation-form-frag -->
+        </div><!-- end tab-content details-evaluate-frag -->
+
+        <!-- TAB 2: ASSESSMENT HISTORY -->
+        <div class="tab-content" id="assessment-history-frag">
+            <div class="assessment-history-container">
+                {% if assessment_history %}
+                {% for review in assessment_history %}
+                <div class="assessment-item">
+                    <div class="assessment-header">
+                        <div class="assessment-reviewer-info">
+                            <img class="reviewer-avatar" src="https://placehold.co/50x50" alt="Reviewer" />
+                            <div class="reviewer-details">
+                                <div class="reviewer-name">{{ review.reviewer.full_name }}</div>
+                                <div class="reviewer-email">{{ review.reviewer.email }}</div>
+                                <div class="review-stage">{{ review.stage }}</div>
+                            </div>
+                        </div>
+                        <div class="assessment-date">
+                            <div class="date-label">Reviewed on</div>
+                            <div class="date-value">{{ review.review_date|date:"M d, Y" }}</div>
+                        </div>
+                    </div>
+                    <div class="assessment-parameters">
+                        <div class="assessment-param-title">Parameter Scores</div>
+                        <div class="assessment-param-table">
+                            {% for rating in review.ratings.all %}
+                            <div class="assessment-param-row">
+                                <div class="assessment-param-name">{{ rating.parameter.parameter_name }}</div>
+                                <div class="assessment-param-score">{{ rating.score }}/5</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="assessment-rating-remarks">
+                        <div class="assessment-rating-stars-section">
+                            <div class="rating-stars-display" data-rating="{{ review.rating }}">
+                                <div class="star-display"></div>
+                                <div class="star-display"></div>
+                                <div class="star-display"></div>
+                                <div class="star-display"></div>
+                                <div class="star-display"></div>
+                            </div>
+                            <div class="rating-score-info">
+                                <span class="score-label">Score:</span>
+                                <span class="score-value">{{ review.rating }}.000</span>
+                            </div>
+                        </div>
+                        <div class="assessment-remarks">
+                            <div class="remarks-description-title">Meets basic expectations</div>
+                            <div class="remarks-description-text">{{ review.comments }}</div>
+                        </div>
+                    </div>
+                    <div class="assessment-divider"></div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="no-assessment-history">
+                    <div class="no-history-icon">📋</div>
+                    <div class="no-history-text">No previous assessments yet</div>
+                </div>
+                {% endif %}
+            </div>
+        </div><!-- end tab-content assessment-history-frag -->
+
+    </div><!-- end evaluator-content -->
+
+    <!-- FOOTER BUTTONS: Always visible -->
+    <div class="evaluator-footer" id="evaluator-footer-frag">
+        <div class="button-group">
+            <button type="button" class="btn-clear" id="btn-clear-frag">Clear</button>
+            <button type="submit" class="btn-submit" form="evaluation-form-frag">Submit Evaluation</button>
+        </div>
+    </div>
+
+</div><!-- end evaluator-wrapper -->
+
+<script>
+(function () {
+    // Locate the wrapper — try slide panel first, fall back to document
+    var wrapper = document.querySelector('#slidePanelContent .evaluator-wrapper')
+                  || document.querySelector('.evaluator-wrapper');
+    if (!wrapper) return;
+
+    /* ── helpers ─────────────────────────────────────────── */
+    var ratingDescriptions = {
+        1: { title: 'Poor',                  desc: 'Does not meet expectations and needs significant improvements.' },
+        2: { title: 'Below Average',          desc: 'Below expectations with considerable issues.' },
+        3: { title: 'Meets basic expectations', desc: 'Acceptable but requires refinement to move forward.' },
+        4: { title: 'Good',                   desc: 'Meets expectations with minor improvements needed.' },
+        5: { title: 'Excellent',              desc: 'Exceeds expectations and is ready to move forward.' }
+    };
+
+    // Paint exactly `n` stars filled (1-5). n=0 → all empty.
+    function updateStars(n) {
+        n = parseInt(n, 10) || 0;
+        wrapper.querySelectorAll('#rating-stars-frag .star-svg').forEach(function (span) {
+            var v = parseInt(span.getAttribute('data-value'), 10);
+            if (v <= n) {
+                span.classList.add('star-svg-filled');
+                span.classList.remove('star-svg-empty');
+            } else {
+                span.classList.add('star-svg-empty');
+                span.classList.remove('star-svg-filled');
+            }
+        });
+
+        var ratingInput = wrapper.querySelector('#rating-value-frag');
+        var scoreNumber  = wrapper.querySelector('#score-number-frag');
+        var ratingDesc   = wrapper.querySelector('#rating-description-frag');
+        var ratingNote   = wrapper.querySelector('#rating-note-frag');
+
+        if (ratingInput) ratingInput.value = n > 0 ? n : '';
+        if (scoreNumber) scoreNumber.textContent = n;
+
+        var info = ratingDescriptions[n];
+        if (info) {
+            if (ratingDesc) ratingDesc.textContent = info.title;
+            if (ratingNote) ratingNote.textContent = info.desc;
+        } else {
+            if (ratingDesc) ratingDesc.textContent = 'Select a rating';
+            if (ratingNote) ratingNote.textContent = 'Please select a rating to continue.';
+        }
+    }
+
+    /* ── star click / hover ───────────────────────────────── */
+    var starsContainer = wrapper.querySelector('#rating-stars-frag');
+    if (starsContainer) {
+        starsContainer.addEventListener('click', function (e) {
+            var star = e.target.closest('.star-svg');
+            if (!star) return;
+            var n = parseInt(star.getAttribute('data-value'), 10);
+            updateStars(n);
+        });
+
+        starsContainer.addEventListener('mouseover', function (e) {
+            var star = e.target.closest('.star-svg');
+            if (!star) return;
+            var n = parseInt(star.getAttribute('data-value'), 10);
+            wrapper.querySelectorAll('#rating-stars-frag .star-svg').forEach(function (s) {
+                s.style.color = parseInt(s.getAttribute('data-value'), 10) <= n ? '#f5a623' : '#d0cdc8';
+            });
+        });
+
+        starsContainer.addEventListener('mouseleave', function () {
+            // restore to current selection
+            var ratingInput = wrapper.querySelector('#rating-value-frag');
+            var current = ratingInput ? (parseInt(ratingInput.value, 10) || 0) : 0;
+            wrapper.querySelectorAll('#rating-stars-frag .star-svg').forEach(function (s) {
+                s.style.color = '';   // let CSS classes take over
+            });
+        });
+    }
+
+    /* ── weighted score recalculation ─────────────────────── */
+    function recalcTotal() {
+        var totalScore = 0;
+        wrapper.querySelectorAll('.param-row').forEach(function (row) {
+            var inp  = row.querySelector('.param-score-input[name^="param_score_"]');
+            var txt  = row.querySelector('.param-name-text');
+            if (!inp || !txt || inp.value === '') return;
+            var match = txt.textContent.match(/\((\d+)%\)/);
+            if (match) totalScore += (parseFloat(inp.value) * parseFloat(match[1])) / 100;
+        });
+
+        var totalField = wrapper.querySelector('#total_score_frag');
+        if (totalField) totalField.value = totalScore.toFixed(2);
+
+        // Map weighted score → star rating
+        var starRating = Math.round(totalScore);
+        if (starRating > 5) starRating = 5;
+        updateStars(starRating);
+    }
+
+    wrapper.querySelectorAll('.param-score-input[name^="param_score_"]').forEach(function (inp) {
+        ['input', 'change'].forEach(function (evt) {
+            inp.addEventListener(evt, function () {
+                var v = parseFloat(this.value);
+                if (this.value !== '' && (v < 0 || v > 5)) {
+                    this.value = '';
+                    alert('Score must be between 0 and 5');
+                    return;
+                }
+                recalcTotal();
+            });
+        });
+    });
+
+    /* ── tab switching ────────────────────────────────────── */
+    var tabButtons = wrapper.querySelectorAll('.tab-button');
+    var footer     = wrapper.querySelector('#evaluator-footer-frag');
+    tabButtons.forEach(function (button) {
+        button.addEventListener('click', function (e) {
+            if (this.hasAttribute('disabled') || this.classList.contains('tab-disabled')) {
+                e.preventDefault(); return;
+            }
+            var tabId = this.getAttribute('data-tab-frag');
+            tabButtons.forEach(function (b) { b.classList.remove('tab-active'); });
+            wrapper.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('tab-content-active'); });
+            this.classList.add('tab-active');
+            var target = wrapper.querySelector('#' + tabId);
+            if (target) target.classList.add('tab-content-active');
+            if (footer) footer.style.display = (tabId === 'details-evaluate-frag') ? 'block' : 'none';
+        });
+    });
+
+    /* ── character counter ────────────────────────────────── */
+    var remarksInput = wrapper.querySelector('#remarks-frag');
+    var charCount    = wrapper.querySelector('#char-count-frag');
+    if (remarksInput && charCount) {
+        remarksInput.addEventListener('input', function () { charCount.textContent = this.value.length; });
+    }
+
+    /* ── modal helpers ────────────────────────────────────── */
+    function openModal(id) {
+        var m = document.getElementById(id);
+        if (m) m.classList.add('eval-modal-open');
+    }
+    function closeModal(id) {
+        var m = document.getElementById(id);
+        if (m) m.classList.remove('eval-modal-open');
+    }
+
+    /* ── form submit (AJAX) ───────────────────────────────── */
+    var form = wrapper.querySelector('#evaluation-form-frag');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var remarks     = wrapper.querySelector('#remarks-frag');
+            var ratingInput = wrapper.querySelector('#rating-value-frag');
+
+            if (!remarks || !remarks.value.trim() || remarks.value.trim().length < 10) {
+                alert('Remarks are required and must be at least 10 characters');
+                if (remarks) remarks.style.borderColor = 'red';
+                return;
+            }
+            if (remarks) remarks.style.borderColor = '';
+            if (!ratingInput || !ratingInput.value) {
+                alert('Please select a rating');
+                return;
+            }
+            recalcTotal();
+            var formData = new FormData(form);
+            var csrf = form.querySelector('[name=csrfmiddlewaretoken]');
+            fetch(form.getAttribute('action'), {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': csrf ? csrf.value : '' }
+            })
+            .then(function (res) {
+                if (res.ok || res.status === 200 || res.status === 302) {
+                    openModal('evalSuccessModal');
+                } else {
+                    alert('Error submitting evaluation. Please try again.');
+                }
+            })
+            .catch(function (err) {
+                console.error('Submit error:', err);
+                alert('Error submitting evaluation. Please try again.');
+            });
+        });
+    }
+
+    /* ── clear / cancel button → open cancel modal ────────── */
+    var clearBtn = wrapper.querySelector('#btn-clear-frag');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function () {
+            openModal('evalCancelModal');
+        });
+    }
+
+    /* ── SUCCESS modal button wiring ──────────────────────── */
+    // Close
+    var sClose = document.getElementById('evalSuccessClose');
+    if (sClose) sClose.addEventListener('click', function () {
+        closeModal('evalSuccessModal');
+        if (window.closeSlideModal) window.closeSlideModal();
+    });
+    // Close X
+    var sCloseX = document.getElementById('evalSuccessCloseX');
+    if (sCloseX) sCloseX.addEventListener('click', function () {
+        closeModal('evalSuccessModal');
+        if (window.closeSlideModal) window.closeSlideModal();
+    });
+    // Review more
+    var sReview = document.getElementById('evalSuccessReviewMore');
+    if (sReview) sReview.addEventListener('click', function () {
+        closeModal('evalSuccessModal');
+        if (window.closeSlideModal) window.closeSlideModal();
+    });
+    // Clicking backdrop
+    var successOverlay = document.getElementById('evalSuccessModal');
+    if (successOverlay) successOverlay.addEventListener('click', function (e) {
+        if (e.target === this) closeModal('evalSuccessModal');
+    });
+
+    /* ── CANCEL modal button wiring ───────────────────────── */
+    // Continue Editing — just close modal, keep form
+    var cContinue = document.getElementById('evalCancelContinue');
+    if (cContinue) cContinue.addEventListener('click', function () {
+        closeModal('evalCancelModal');
+    });
+    // Close X
+    var cCloseX = document.getElementById('evalCancelCloseX');
+    if (cCloseX) cCloseX.addEventListener('click', function () {
+        closeModal('evalCancelModal');
+    });
+    // Discard — reset form and close slide panel
+    var cDiscard = document.getElementById('evalCancelDiscard');
+    if (cDiscard) cDiscard.addEventListener('click', function () {
+        closeModal('evalCancelModal');
+        if (form) form.reset();
+        updateStars(0);
+        var cc = wrapper.querySelector('#char-count-frag');
+        if (cc) cc.textContent = '0';
+        if (window.closeSlideModal) window.closeSlideModal();
+    });
+    // Clicking backdrop
+    var cancelOverlay = document.getElementById('evalCancelModal');
+    if (cancelOverlay) cancelOverlay.addEventListener('click', function (e) {
+        if (e.target === this) closeModal('evalCancelModal');
+    });
+
+})();
+
+</script>
+
+<style>
+    /* ===== Rating Row Layout ===== */
+    .rating-content {
+        width: 100%;
+    }
+
+    .rating-row {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 24px;
+        width: 100%;
+    }
+
+    /* Left: stars column + score */
+    .rating-left {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    /* Right: description */
+    .rating-right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 4px;
+        min-width: 0;
+    }
+
+    /* Stars in one row */
+    .rating-stars-frag {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: nowrap;
+    }
+
+    /* Individual star (unicode ★) */
+    .star-svg {
+        font-size: 28px;
+        line-height: 1;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: color 0.15s ease, transform 0.12s ease;
+        user-select: none;
+    }
+
+    .star-svg:hover {
+        transform: scale(1.2);
+    }
+
+    .star-svg-filled {
+        color: #f5a623;   /* vibrant orange-gold */
+    }
+
+    .star-svg-empty {
+        color: #d0cdc8;   /* light grey */
+    }
+
+    /* Score label + number */
+    .rating-score-group {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+    }
+
+    .score-label-text {
+        color: #4A453D;
+        font-size: 13px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+    }
+
+    .score-number-text {
+        color: #4A453D;
+        font-size: 14px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+    }
+
+    /* Description text */
+    .rating-desc-title {
+        color: #29251D;
+        font-size: 18px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        line-height: 24px;
+    }
+
+    .rating-desc-note {
+        color: #4A453D;
+        font-size: 12px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+        line-height: 18px;
+        word-wrap: break-word;
+    }
+</style>

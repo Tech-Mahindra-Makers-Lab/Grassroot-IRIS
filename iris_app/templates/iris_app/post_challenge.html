@@ -159,7 +159,7 @@
     .form-control,
     .form-select {
         border-radius: 6px;
-        padding: 10px 14px;
+        /*padding: 10px 14px;*/
         border: 1px solid #E2E8F0;
         color: #475569;
         background-color: #FAFBFC;
@@ -306,7 +306,78 @@
             {% csrf_token %}
 
             <!-- Step 1: Basic Information -->
+              <div class="assessment-header">
+                    <div class="assessment-header-wrapper">
+                        <div class="assessment-header-icon">
+                          <img src="{% static 'iris_app/images/accessmentchallenge.png' %}" alt="Challenge Details Icon" class="step3-section-header-icon">
+                        </div>
+                        <div class="assessment-header-title">Basic Information</div>
+                    </div>
+                    <div class="assessment-header-subtitle">Provide the fundamental details of your challenge</div>
+                </div>
+
             <div class="form-card step-content active" id="step-1">
+               <!-- Registration Required -->
+                <div class="mb-4">
+                    <label class="form-label required">Registration Required</label>
+                    <div class="registration-toggle-container">
+                        <input type="radio" name="registration_required" value="yes" id="reg-required-yes" class="d-none" checked>
+                        <input type="radio" name="registration_required" value="no" id="reg-required-no" class="d-none">
+                        <label for="reg-required-yes" class="toggle-option toggle-option-left selected">
+                            <span>Yes</span>
+                            <i class="fa-solid fa-check check-icon"></i>
+                        </label>
+                        <label for="reg-required-no" class="toggle-option toggle-option-right">
+                            <span>No</span>
+                            <i class="fa-solid fa-times check-icon"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Participation Type -->
+                <div class="mb-4">
+                    <label class="form-label required">Participation Type</label>
+                    <div class="participation-options">
+                        <input type="radio" name="participation_type" value="individual" id="participation-individual" class="d-none" checked>
+                        <input type="radio" name="participation_type" value="team" id="participation-team" class="d-none">
+                        <input type="radio" name="participation_type" value="both" id="participation-both" class="d-none" >
+
+                        <label for="participation-individual" class="participation-card selected" onclick="selectParticipation(this)">
+                            <div class="participation-radio">`
+                                <input type="radio" checked>
+                            </div>
+                            <span>Individual</span>
+                        </label>
+                        <label for="participation-team" class="participation-card" onclick="selectParticipation(this)">
+                            <div class="participation-radio">
+                                <input type="radio">
+                            </div>
+                            <span>Team</span>
+                        </label>
+                        <label for="participation-both" class="participation-card" onclick="selectParticipation(this)">
+                            <div class="participation-radio">
+                                <input type="radio" >
+                            </div>
+                            <span>Individual & Teams</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Maximum Team Size -->
+                <div class="mb-4">
+                    <label class="form-label required">Maximum Team Size</label>
+                    <div class="max-team-size-container">
+                        <div class="max-team-size-label">
+                            <span>Maximum Team Size</span>
+                            <span class="required-asterisk">*</span>
+                        </div>
+                        <div class="max-team-size-input-wrapper">
+                            <input type="number" name="max_team_size" class="form-control max-team-size-input" min="1" value="5" max="5" required>
+                        </div>
+                    </div>
+                </div>
+
+
                 <div class="mb-4">
                     <label class="form-label required">IBU Name</label>
                     <select name="ibu_name" class="form-select select2-ibu" required>
@@ -352,6 +423,7 @@
                     <label class="form-label required">Expected Business Outcome</label>
                     <textarea name="expected_outcome" class="form-control" rows="3" required></textarea>
                 </div>
+
 
                 <div class="mb-4">
                     <label class="form-label">Upload Supporting Document</label>
@@ -441,7 +513,7 @@
                 <div class="assessment-header">
                     <div class="assessment-header-wrapper">
                         <div class="assessment-header-icon">
-                            <div class="assessment-header-icon-inner"></div>
+                          <img src="{% static 'iris_app/images/accessmentchallenge.png' %}" alt="Challenge Details Icon" class="step3-section-header-icon">
                         </div>
                         <div class="assessment-header-title">Assessment Setup</div>
                     </div>
@@ -459,7 +531,7 @@
                             <div class="rounds-card-header">
                                 <div class="rounds-card-title">Single Round</div>
                                 <div class="rounds-check">
-                                    <div class="rounds-check-mark"></div>
+                                   <div class="rounds-check -mark"></div>
                                 </div>
                             </div>
                             <div class="rounds-card-description">One evaluation round for faster results</div>
@@ -734,7 +806,7 @@
                                 <small class="text-muted d-block mb-1">Email ID</small>
                                 <span id="review-r1-email" class="fw-500">-</span>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <small class="text-muted d-block mb-1">Employee ID</small>
                                 <span id="review-r1-emp-id" class="fw-500">-</span>
                             </div>
@@ -1010,6 +1082,13 @@
                 alert('Please enter weightage for all parameters.');
                 valid = false;
             }
+
+            // Validate that total weightage equals 100
+            const totalWeight = calculateTotalWeight();
+            if (totalWeight !== 100) {
+                alert('The Sum of the weightages of the Parameters selected should be 100.');
+                valid = false;
+            }
         } else {
             // Standard validation for other steps
             $(`#step-${step} [required]`).each((i, el) => {
@@ -1018,7 +1097,6 @@
             });
         }
 
-        if (step === 3 && calculateTotalWeight() !== 100) { alert('Total weightage must be 100%.'); valid = false; }
         return valid;
     }
 
@@ -1044,6 +1122,37 @@
         // Add selected class and show checkmark for clicked card
         $(el).addClass('selected').find('.check-icon').removeClass('d-none');
     }
+
+    function selectParticipation(el) {
+        // Get the associated input element using the 'for' attribute
+        const inputId = $(el).attr('for');
+        const input = $(`#${inputId}`);
+
+        // Uncheck all participation radio buttons
+        $('input[name="participation_type"]').prop('checked', false);
+
+        // Remove selected class and uncheck all radios from all participation cards
+        $('.participation-card').removeClass('selected').find('input[type="radio"]').prop('checked', false);
+
+        // Check the selected input
+        input.prop('checked', true);
+
+        // Add selected class and check the radio for clicked card
+        $(el).addClass('selected').find('input[type="radio"]').prop('checked', true);
+    }
+
+    // Handle registration toggle options
+    $(document).on('click', '.toggle-option', function() {
+        const $container = $(this).closest('.registration-toggle-container');
+        const inputId = $(this).attr('for');
+
+        // Remove selected class from all toggle options
+        $container.find('.toggle-option').removeClass('selected');
+
+        // Check the associated input
+        $(this).closest('.toggle-option').addClass('selected');
+        $(`#${inputId}`).prop('checked', true);
+    });
 
     function calculateTotalWeight() {
         // Calculate total from review parameters table (new method)

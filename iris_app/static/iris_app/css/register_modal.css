@@ -1,0 +1,348 @@
+/* ============================================
+   REGISTRATION MODAL STYLES
+   ============================================ */
+
+/* Modal Container */
+.register-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 5000;
+    animation: fadeIn 0.3s ease;
+    overflow-y: auto;
+}
+
+.register-modal-overlay.active {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+/* Modal Dialog */
+.register-modal-dialog {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+    position: relative;
+}
+
+/* Modal Header */
+.register-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 40px;
+    border-bottom: 1px solid #E5DFD3;
+    background: linear-gradient(135deg, #F6F2EA 0%, #FFFFFF 100%);
+    border-radius: 16px 16px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.register-modal-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #5F0229;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Close Button */
+.register-modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #4A5565;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.register-modal-close:hover {
+    background-color: rgba(227, 24, 55, 0.1);
+    color: #E31837;
+}
+
+/* Modal Body */
+.register-modal-body {
+    padding: 40px;
+    background: #FFFFFF;
+}
+
+/* Modal Content - Register Form */
+.register-modal-content {
+    width: 100%;
+}
+
+.register-modal-content .reg-container {
+    padding: 0;
+    outline: none;
+    outline-offset: 0;
+    background: transparent;
+    background-image: none;
+    background-attachment: scroll;
+}
+
+.register-modal-content .reg-content {
+    gap: 20px;
+}
+
+.register-modal-content .reg-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.register-modal-content .form-section {
+    gap: 8px;
+}
+
+.register-modal-content .form-input {
+    height: 45px;
+    font-size: 13px;
+}
+
+.register-modal-content .submit-btn {
+    width: 100%;
+    height: 48px;
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+/* Toggle Switch in Modal */
+.register-modal-content .toggle-switch {
+    width: 100%;
+    max-width: 221.73px;
+}
+
+/* Team Details Table in Modal */
+.register-modal-content .team-details-table {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.register-modal-content .team-details-table th,
+.register-modal-content .team-details-table td {
+    padding: 8px;
+    font-size: 13px;
+}
+
+/* Loading State */
+.register-modal-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 40px;
+    min-height: 400px;
+}
+
+.register-modal-loading .spinner-border {
+    width: 40px;
+    height: 40px;
+    color: #E31837;
+}
+
+/* Error State */
+.register-modal-error {
+    background-color: #FEE2E2;
+    border: 1px solid #FCA5A5;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    color: #991B1B;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .register-modal-overlay.active {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .register-modal-dialog {
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .register-modal-header {
+        padding: 20px 20px;
+    }
+
+    .register-modal-title {
+        font-size: 18px;
+    }
+
+    .register-modal-body {
+        padding: 20px;
+    }
+
+    .register-modal-close {
+        width: 36px;
+        height: 36px;
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .register-modal-dialog {
+        width: 100%;
+        border-radius: 16px 16px 0 0;
+        max-height: calc(100vh - 40px);
+    }
+
+    .register-modal-header {
+        padding: 16px 16px;
+    }
+
+    .register-modal-title {
+        font-size: 16px;
+    }
+
+    .register-modal-body {
+        padding: 16px;
+    }
+
+    .register-modal-content .reg-title {
+        font-size: 16px;
+    }
+
+    .register-modal-content .form-input {
+        height: 40px;
+        font-size: 12px;
+    }
+
+    .register-modal-content .toggle-switch {
+        width: 100%;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Prevent body scroll when modal is open */
+body.register-modal-open {
+    overflow: hidden;
+}
+
+/* Modal animations for closing */
+.register-modal-overlay.closing {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+.register-modal-overlay.closing .register-modal-dialog {
+    animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+}
+
+/* Form validation styles in modal */
+.register-modal-content .form-input.is-invalid {
+    border-bottom-color: #DC2626 !important;
+}
+
+.register-modal-content .form-input.is-valid {
+    border-bottom-color: #16A34A !important;
+}
+
+/* Success message styling */
+.register-modal-success {
+    background-color: #DCFCE7;
+    border: 1px solid #86EFAC;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    color: #15803D;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.register-modal-success i {
+    font-size: 18px;
+}
+
+/* Button styling in modal */
+.register-modal-content .submit-btn {
+    background: linear-gradient(135deg, #E31837 0%, #C91528 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 12px 24px;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(227, 24, 55, 0.2);
+}
+
+.register-modal-content .submit-btn:hover {
+    background: linear-gradient(135deg, #C91528 0%, #A80F1F 100%);
+    box-shadow: 0 6px 16px rgba(227, 24, 55, 0.3);
+    transform: translateY(-2px);
+}
+
+.register-modal-content .submit-btn:active {
+    transform: translateY(0);
+}
+
+.register-modal-content .submit-btn:disabled {
+    background: #D1D5DC;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}

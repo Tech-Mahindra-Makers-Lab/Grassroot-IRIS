@@ -1,0 +1,164 @@
+{% load static %}
+<div class="idea-review-container">
+    <!-- Header Section -->
+    <div class="idea-review-header">
+        <div class="header-top">
+            <div class="header-left">
+                <div class="header-badges-group">
+                    <div class="badge-primary">IDEA ARENA</div>
+                    <div class="badge-status submitted">
+                        <svg class="status-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 12L10 16L18 8" stroke="#5F0229" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Submitted</span>
+                    </div>
+                </div>
+                <h1 class="idea-title">{{ idea.title }}</h1>
+                <p class="submission-date">Submitted {{ idea.submission_date|date:"d/m/Y" }}</p>
+            </div>
+            <div class="header-actions">
+                <button class="action-btn">⋯</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="idea-review-content">
+        <!-- Submitter Information -->
+        <section class="review-section">
+            <div class="section-header">
+                <svg class="section-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="5" r="3" stroke="#4D4D4F" stroke-width="1.5"/>
+                    <path d="M2 14c0-2.5 2.69-4 6-4s6 1.5 6 4" stroke="#4D4D4F" stroke-width="1.5"/>
+                </svg>
+                <h2 class="section-title">Submitter Information</h2>
+            </div>
+            <div class="submitter-card-review">
+                <div class="submitter-info">
+                    <img src="https://placehold.co/50x50" alt="Avatar" class="submitter-avatar">
+                    <div class="submitter-details">
+                        <div class="submitter-name">{{ idea.submitter.full_name }}</div>
+                        <div class="submitter-email">{{ idea.submitter.email_id|default:"N/A" }}</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories and Themes -->
+        <section class="review-section">
+            <div class="info-rows">
+                <div class="info-row-review">
+                    <div class="row-label">Improvement Categories</div>
+                    <div class="row-value">{{ idea.improvement_category|default:"Not specified" }}</div>
+                </div>
+                <div class="info-row-review">
+                    <div class="row-label">Improvement Theme</div>
+                    <div class="row-value">{{ idea.improvement_theme|default:"Not specified" }}</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Idea Name -->
+        <section class="review-section">
+            <div class="field-item">
+                <label class="field-label">Idea Name</label>
+                <div class="field-value">{{ idea.title }}</div>
+            </div>
+        </section>
+
+        <!-- Proposed Idea -->
+        <section class="review-section">
+            <div class="field-item">
+                <label class="field-label">Proposed Idea</label>
+                <div class="field-value">
+                    {% if idea_detail and idea_detail.proposed_solution %}
+                        {{ idea_detail.proposed_solution }}
+                    {% else %}
+                        No proposed solution provided
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Keywords -->
+        <section class="review-section">
+            <div class="field-item">
+                <label class="field-label">Keywords</label>
+                <div class="tags-container">
+                    {% if keywords %}
+                        {% for keyword in keywords %}
+                            <span class="tag keyword-tag">{{ keyword }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="no-data">No keywords provided</span>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools/Technology -->
+        <section class="review-section">
+            <div class="field-item">
+                <label class="field-label">Tools/Technology used</label>
+                <div class="tags-container">
+                    {% if technologies %}
+                        {% for tech in technologies %}
+                            <span class="tag tech-tag">{{ tech }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="no-data">No technologies specified</span>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Business Value -->
+        <section class="review-section">
+            <div class="field-item">
+                <label class="field-label">Business Value</label>
+                <div class="field-value">
+                    {% if idea_detail and idea_detail.business_monetary %}
+                        {{ idea_detail.business_monetary }}
+                    {% else %}
+                        No business value description provided
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Monetary Value -->
+        {% if idea_detail and idea_detail.business_value_monetary %}
+        <section class="review-section">
+            <div class="field-item">
+                <label class="field-label">Monetary Value</label>
+                <div class="monetary-box">
+                    <div class="monetary-value">{{ idea_detail.business_value_monetary }}</div>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Additional Information -->
+        <section class="review-section">
+            <div class="field-item">
+                <label class="field-label">Additional Information</label>
+                <div class="field-value">
+                    {% if idea_detail and idea_detail.assumptions %}
+                        {{ idea_detail.assumptions }}
+                    {% else %}
+                        No additional information provided
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer with Evaluate Button -->
+    <div class="idea-review-footer">
+        <button class="evaluate-button evaluateBtn evaluate-slide-btn"
+                data-idea-id="{{ idea.idea_id }}"
+                onclick="if(window.openSlideModal){ window.openSlideModal('{{ idea.idea_id }}', 'Evaluate Idea', '/reviewer-idea-page/{{ idea.idea_id }}/'); } else { window.location.href='/reviewer-idea-page/{{ idea.idea_id }}/'; }">
+            Evaluate
+        </button>
+    </div>
+</div>

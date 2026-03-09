@@ -91,14 +91,53 @@ class ChallengeMentorAdmin(admin.ModelAdmin):
 
 @admin.register(Idea)
 class IdeaAdmin(admin.ModelAdmin):
-    list_display = ('title', 'submitter', 'status', 'sharing_scope', 'submission_date')
-    list_filter = ('status', 'sharing_scope', 'submission_date', 'is_confidential')
-    search_fields = ('title', 'submitter__email')
+    list_display = ('title', 'empcode', 'empname', 'emailid', 'ibu_name', 'service_line', 'improvement_category', 'improvement_theme', 'status', 'sharing_scope', 'is_confidential', 'submission_date')
+    list_filter = ('status', 'sharing_scope', 'submission_date', 'is_confidential', 'ibu_name', 'service_line', 'improvement_category')
+    search_fields = ('title', 'submitter__email', 'empcode', 'empname', 'emailid', 'improvement_category', 'improvement_theme')
+    readonly_fields = ('idea_id', 'submission_date', 'updated_at')
+
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('title', 'idea_id', 'submitter', 'challenge')
+        }),
+        ('Employee Information', {
+            'fields': ('empcode', 'empname', 'emailid', 'ibu_name', 'service_line')
+        }),
+        ('Idea Classification', {
+            'fields': ('improvement_category', 'improvement_theme')
+        }),
+        ('Status & Sharing', {
+            'fields': ('status', 'sharing_scope', 'is_confidential')
+        }),
+        ('Timestamps', {
+            'fields': ('submission_date', 'updated_at')
+        }),
+    )
 
 @admin.register(IdeaDetail)
 class IdeaDetailAdmin(admin.ModelAdmin):
-    list_display = ('idea', 'innovation_type')
+    list_display = ('idea', 'problem_statement', 'proposed_solution', 'keywords', 'technology', 'business_monetary', 'business_value_monetary', 'innovation_type')
     list_filter = ('innovation_type',)
+    search_fields = ('problem_statement', 'proposed_solution', 'keywords', 'technology', 'idea__title')
+    readonly_fields = ('idea',)
+
+    fieldsets = (
+        ('Idea Reference', {
+            'fields': ('idea',)
+        }),
+        ('Problem & Solution', {
+            'fields': ('problem_statement', 'proposed_solution')
+        }),
+        ('Classification', {
+            'fields': ('keywords', 'technology', 'innovation_type')
+        }),
+        ('Business Value', {
+            'fields': ('business_monetary', 'business_value_monetary')
+        }),
+        ('Risk & Analysis', {
+            'fields': ('assumptions', 'risks', 'context')
+        }),
+    )
 
 @admin.register(IdeaCategory)
 class IdeaCategoryAdmin(admin.ModelAdmin):

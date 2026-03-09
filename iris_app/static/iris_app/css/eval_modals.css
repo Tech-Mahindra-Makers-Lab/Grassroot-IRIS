@@ -1,0 +1,401 @@
+/* ============================================================
+   EVALUATOR MODALS — eval_modals.css
+   Two modals:
+   1. .eval-success-modal  → shown on "Submit Evaluation"
+   2. .eval-cancel-modal   → shown on "Clear / Cancel"
+   All styles are NEW — no edits to any existing CSS file.
+   ============================================================ */
+
+/* ── Shared overlay backdrop ────────────────────────────────── */
+.eval-modal-overlay {
+    display: none;                 /* hidden by default */
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(3px);
+    justify-content: center;
+    align-items: center;
+}
+
+.eval-modal-overlay.eval-modal-open {
+    display: flex;
+    animation: evalOverlayFadeIn 0.22s ease forwards;
+}
+
+@keyframes evalOverlayFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ── Shared modal card ──────────────────────────────────────── */
+.eval-modal-card {
+    position: relative;
+    background: #ffffff;
+    overflow: hidden;
+    animation: evalModalSlideUp 0.28s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+}
+
+@keyframes evalModalSlideUp {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* ── Decorative dark banner (top of card) ───────────────────── */
+.eval-modal-banner {
+    position: relative;
+    width: 100%;
+    background: #373737;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* grid lines overlay on banner */
+.eval-modal-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        repeating-linear-gradient(90deg, rgba(217,217,217,0.18) 0 0.5px, transparent 0.5px 80.67px),
+        repeating-linear-gradient(0deg,  rgba(229,223,211,0.14) 0 0.5px, transparent 0.5px 58.34px);
+    pointer-events: none;
+}
+
+/* white cloud / rounding shapes at bottom of banner */
+.eval-modal-banner-cloud {
+    position: absolute;
+    bottom: -45%;
+    background: #ffffff;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   1.  SUCCESS MODAL  (submit evaluation)
+   ════════════════════════════════════════════════════════════ */
+#evalSuccessModal .eval-modal-card {
+    width: 524px;
+    max-width: 95vw;
+}
+
+/* Banner */
+#evalSuccessModal .eval-modal-banner {
+    height: 272px;
+}
+
+/* gradient fade at bottom of banner */
+#evalSuccessModal .eval-modal-banner::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 60px;
+    background: linear-gradient(180deg, #D9D9D9 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+}
+
+/* person illustration built with CSS shapes */
+.eval-success-figure {
+    position: relative;
+    width: 100px;
+    height: 185px;
+    z-index: 2;
+}
+
+/* head */
+.eval-success-figure .fig-head {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    top: 10px;
+    left: 28px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    background: transparent;
+}
+
+/* torso */
+.eval-success-figure .fig-body {
+    position: absolute;
+    width: 68px;
+    height: 93px;
+    top: 49px;
+    left: 16px;
+    border: 2px solid #FF4040;
+    border-radius: 4px;
+    background: transparent;
+}
+
+/* left arm */
+.eval-success-figure .fig-arm-left {
+    position: absolute;
+    width: 24px;
+    height: 59px;
+    top: 55px;
+    left: -8px;
+    border: 2px solid #535362;
+    background: transparent;
+}
+
+/* right arm */
+.eval-success-figure .fig-arm-right {
+    position: absolute;
+    width: 24px;
+    height: 59px;
+    top: 55px;
+    right: -8px;
+    border: 2px solid #535362;
+    background: transparent;
+}
+
+/* left leg */
+.eval-success-figure .fig-leg-left {
+    position: absolute;
+    width: 16px;
+    height: 38px;
+    bottom: 0;
+    left: 20px;
+    border: 2px solid #828282;
+    background: transparent;
+}
+
+/* right leg */
+.eval-success-figure .fig-leg-right {
+    position: absolute;
+    width: 17px;
+    height: 38px;
+    bottom: 0;
+    right: 20px;
+    border: 2px solid #828282;
+    background: transparent;
+}
+
+/* floating document shape */
+.eval-success-figure .fig-doc {
+    position: absolute;
+    width: 40px;
+    height: 22px;
+    top: 32px;
+    right: -20px;
+    border: 2px solid #828282;
+    background: transparent;
+}
+
+/* small decorative circles inside banner */
+.eval-success-deco-circle {
+    position: absolute;
+    border: 1px solid #D9D9D9;
+    border-radius: 50%;
+    background: transparent;
+    pointer-events: none;
+}
+
+/* white cloud shapes at the bottom of banner */
+.eval-success-cloud-1 {
+    width: 93px; height: 90px;
+    bottom: -20px; left: -10px;
+}
+.eval-success-cloud-2 {
+    width: 93px; height: 90px;
+    bottom: -10px; left: 50px;
+}
+.eval-success-cloud-3 {
+    width: 90px; height: 90px;
+    bottom: -20px; right: 43px;
+}
+.eval-success-cloud-4 {
+    width: 90px; height: 90px;
+    bottom: -10px; right: -5px;
+}
+.eval-success-cloud-5 {
+    width: 83px; height: 81px;
+    bottom: -30px; right: 10px;
+}
+
+/* Body of success modal */
+.eval-success-body {
+    padding: 24px 30px 28px;
+    text-align: center;
+}
+
+.eval-success-title {
+    color: #29251D;
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    line-height: 30px;
+    margin-bottom: 8px;
+}
+
+.eval-success-subtitle {
+    color: #4D4D4F;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    line-height: 20px;
+    margin-bottom: 28px;
+}
+
+/* Buttons row */
+.eval-modal-btn-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: center;
+}
+
+/* Outline button (Close / Continue Editing) */
+.eval-modal-btn-outline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    padding: 0 20px;
+    background: transparent;
+    border: 1.6px solid #4D4D4F;
+    color: #364153;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    line-height: 19.2px;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease;
+    white-space: nowrap;
+}
+
+.eval-modal-btn-outline:hover {
+    background: #f0ece4;
+}
+
+/* Filled red button (Review more / Discard) */
+.eval-modal-btn-red {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 41.6px;
+    padding: 0 20px;
+    background: #E31837;
+    border: none;
+    color: #ffffff;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    line-height: 19.2px;
+    cursor: pointer;
+    box-shadow: 0px 0.8px 1.6px -0.8px rgba(0,0,0,0.10),
+                0px 0.8px 2.4px rgba(0,0,0,0.10);
+    transition: background 0.18s ease;
+    white-space: nowrap;
+}
+
+.eval-modal-btn-red:hover {
+    background: #c91530;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   2.  CANCEL / DISCARD MODAL
+   ════════════════════════════════════════════════════════════ */
+#evalCancelModal .eval-modal-card {
+    width: 524px;
+    max-width: 95vw;
+}
+
+/* Banner */
+#evalCancelModal .eval-modal-banner {
+    height: 174px;
+}
+
+/* Scattered dot decorations */
+.eval-cancel-dot {
+    position: absolute;
+    background: #D9D9D9;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* White corner cutouts at bottom of cancel banner */
+.eval-cancel-corner {
+    position: absolute;
+    background: #ffffff;
+    pointer-events: none;
+}
+
+/* Banner text */
+.eval-cancel-banner-text {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.eval-cancel-banner-title {
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    line-height: 30px;
+}
+
+.eval-cancel-banner-title .highlight {
+    color: #E31837;
+}
+
+.eval-cancel-banner-title .normal {
+    color: #ffffff;
+}
+
+.eval-cancel-banner-subtitle {
+    color: #E5DFD3;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    line-height: 20px;
+    margin-top: 6px;
+}
+
+/* Body of cancel modal */
+.eval-cancel-body {
+    padding: 32px 30px 36px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Close (X) button inside the banner */
+.eval-modal-close-x {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.eval-modal-close-x:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.eval-modal-close-x::before,
+.eval-modal-close-x::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 2px;
+    background: #4D4D4F;
+    border-radius: 1px;
+}
+
+.eval-modal-close-x::before { transform: rotate(45deg); }
+.eval-modal-close-x::after  { transform: rotate(-45deg); }

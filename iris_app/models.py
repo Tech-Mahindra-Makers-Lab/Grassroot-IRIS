@@ -76,6 +76,9 @@ class Challenge(models.Model):
     challenge_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    registration_required = models.TextField(blank=True, null=True)
+    participation_type = models.TextField(blank=True, null=True)
+    max_team_size = models.IntegerField(blank=True, null=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     created_by = models.ForeignKey(IrisUser, on_delete=models.SET_NULL, null=True, related_name='created_challenges')
@@ -84,6 +87,7 @@ class Challenge(models.Model):
     # New fields from postchalleage.docx
     keywords = models.CharField(max_length=255, blank=True, null=True)
     challenge_icon = models.ImageField(upload_to='challenge_icons/', blank=True, null=True)
+
 
     round1_eval_start = models.DateTimeField(blank=True, null=True)
     round1_eval_end = models.DateTimeField(blank=True, null=True)
@@ -158,6 +162,13 @@ class ChallengeMentor(models.Model):
 
 class Idea(models.Model):
     idea_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    empcode = models.CharField(max_length=11, blank=True, null=True)
+    empname = models.CharField(max_length=100, blank=True, null=True)
+    emailid = models.CharField(max_length=100, blank=True, null=True)
+    ibu_name = models.CharField(max_length=100, blank=True, null=True)
+    service_line = models.CharField(max_length=100, blank=True, null=True)
+    improvement_category = models.CharField(max_length=100, blank=True, null=True)
+    improvement_theme = models.CharField(max_length=100, blank=True, null=True)
     title = models.CharField(max_length=255)
     submitter = models.ForeignKey(IrisUser, on_delete=models.SET_NULL, null=True)
     challenge = models.ForeignKey(Challenge, on_delete=models.SET_NULL, null=True, blank=True)
@@ -190,8 +201,10 @@ class IdeaDetail(models.Model):
     idea = models.OneToOneField(Idea, on_delete=models.CASCADE, primary_key=True)
     problem_statement = models.TextField(blank=True, null=True)
     proposed_solution = models.TextField(blank=True, null=True)
+    keywords = models.TextField(blank=True, null=True)
+    technology = models.TextField(blank=True, null=True)
+    business_monetary = models.TextField(blank=True, null=True)
     business_value_monetary = models.TextField(blank=True, null=True)
-    business_value_non_monetary = models.TextField(blank=True, null=True)
     assumptions = models.TextField(blank=True, null=True)
     risks = models.TextField(blank=True, null=True)
     context = models.TextField(blank=True, null=True)
@@ -260,7 +273,7 @@ class Review(models.Model):
     comments = models.TextField(blank=True, null=True)
     stage = models.CharField(max_length=50, blank=True, null=True)
 
-    DECISION_CHOICES = [('APPROVE', 'Approve'), ('REJECT', 'Reject'), ('REWORK', 'Rework')]
+    DECISION_CHOICES = [('PENDING', 'Pending'), ('APPROVE', 'Approve'), ('REJECT', 'Reject'), ('REWORK', 'Rework')]
     decision = models.CharField(max_length=20, choices=DECISION_CHOICES, blank=True, null=True)
 
     review_date = models.DateTimeField(auto_now_add=True)
