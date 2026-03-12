@@ -2,15 +2,19 @@
 {% load static %}
 
 {% block content %}
+
 <!-- Innovation Dashboard -->
 <div class="innovation-page p-0">
-    <section class="innovation-header">
+
+    <section class="innovation-header" style="background: url('{% static 'iris_app/images/challenge.png' %}') no-repeat right center/contain, linear-gradient(90deg, #fff 60%, #f0f7ff 100%);">
+
         <div class="container py-4">
+
             <div class="d-flex justify-content-between align-items-center">
                 <div class="innovation-header-content">
-                    <h1 class="innovation-title m-0" style="font-size: 32px; font-weight: 700;">Innovation Challenges
+                    <h1 class="innovation-title m-0" style="font-size: 32px; font-weight: 700;">Idea Arena
                     </h1>
-                    <p class="innovation-subtitle text-muted m-0">Explore opportunities to innovate and collaborate</p>
+                    <p class="innovation-subtitle  m-0">Explore opportunities to innovate and collaborate</p>
                 </div>
                 {% if request.iris_user.is_challenge_owner %}
                 <a href="{% url 'post_challenge' %}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">📝 Post
@@ -23,25 +27,25 @@
     <div class="container">
         <!-- Tabs & Search -->
         <div class="d-flex justify-content-between align-items-center border-bottom mb-4">
-            <ul class="nav nav-tabs border-0" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link border-0 text-dark px-4 py-3 {% if current_filter == 'active' %}active fw-bold border-bottom border-primary border-3{% endif %}"
+            <ul class="nav nav-tabs1 border-0" role="tablist">
+                <li class="nav-item1">
+                    <a class="nav-link1 border-0 text-dark px-4 py-3 {% if current_filter == 'active' %}active fw-bold border-bottom border-primary border-3{% endif %}"
                         href="?filter=active">Active Challenges</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link border-0 text-dark px-4 py-3 {% if current_filter == 'draft' %}active fw-bold border-bottom border-primary border-3{% endif %}"
+                <li class="nav-item1">
+                    <a class="nav-link1 border-0 text-dark px-4 py-3 {% if current_filter == 'draft' %}active fw-bold border-bottom border-primary border-3{% endif %}"
                         href="?filter=draft">Drafts</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link border-0 text-dark px-4 py-3 {% if current_filter == 'past' %}active fw-bold border-bottom border-primary border-3{% endif %}"
+                <li class="nav-item1">
+                    <a class="nav-link1 border-0 text-dark px-4 py-3 {% if current_filter == 'past' %}active fw-bold border-bottom border-primary border-3{% endif %}"
                         href="?filter=past">Past</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link border-0 text-dark px-4 py-3 {% if current_filter == 'all' %}active fw-bold border-bottom border-primary border-3{% endif %}"
+                <li class="nav-item1">
+                    <a class="nav-link1 border-0 text-dark px-4 py-3 {% if current_filter == 'all' %}active fw-bold border-bottom border-primary border-3{% endif %}"
                         href="?filter=all">All</a>
                 </li>
             </ul>
-            <div class="search-bar position-relative search-bar-container" style="width: 300px;">
+            <div class="search-bar1 position-relative search-bar-container" style="width: 300px;">
                 <form action="{% url 'challenge_list' %}" method="GET">
                     <input type="hidden" name="filter" value="{{ current_filter }}">
                     <input type="text" name="q" id="searchInput"
@@ -52,8 +56,50 @@
                     style="display: none; max-height: 200px; overflow-y: auto;"></div>
             </div>
         </div>
+        {% if current_filter == 'active' %}
+         <div class="featured-challenge">
+                <div class="featured-challenge-banner">
+                    <img src="{% static 'iris_app/images/reward.png' %}" alt="Featured Challenge">
+                    <span class="featured-badge">Active</span>
+                    <span class="featured-tag">Sustainability</span>
+                </div>
+                <div class="featured-content">
+                    <div class="featured-label">Sustainability</div>
+                    <h2 class="featured-title">Sustainable Engineering for a Greener Future</h2>
+                    <p class="featured-description">Develop innovative approaches to re-engineer products, systems, or manufacturing processes that reduce carbon emissions, optimise energy use, and align with global sustainability standards.</p>
 
-        {% if featured_challenge and not query and current_filter == 'active' %}
+                    <div class="challenge-tags">
+                        <span class="tag">Green Tech</span>
+                        <span class="tag">Sustainability</span>
+                        <span class="tag">Innovation</span>
+                    </div>
+
+                    <div class="challenge-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">1</div>
+                            <div class="stat-label">Days Left</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">156</div>
+                            <div class="stat-label">Participants</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">43</div>
+                            <div class="stat-label">Submissions</div>
+                        </div>
+                    </div>
+
+                    <button class="view-challenge-btn">View Challenge Details</button>
+
+                    <div class="reward-box">
+                        <div class="reward-label">Reward</div>
+                        <div class="reward-amount">50,000<span class="reward-unit">pts</span></div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if featured_challenge and not query %}
         <!-- Featured Challenge -->
         <div class="card border-0 rounded-4 overflow-hidden mb-5 shadow-sm featured-challenge"
             style="background: #fff;">
@@ -106,8 +152,7 @@
                     {% else %}
                     {% if featured_challenge.registration_required|default:"No"|lower == "yes" %}
                     <a href="{% url 'challenge_register' featured_challenge.challenge_id %}"
-                        class="btn btn-primary rounded-pill px-5 py-2 fw-bold align-self-start"
-                        data-register-modal
+                        class="btn btn-primary rounded-pill px-5 py-2 fw-bold align-self-start" data-register-modal
                         data-challenge-id="{{ featured_challenge.challenge_id }}">Register Now</a>
                     {% else %}
                     <a href="{% url 'idea_details' featured_challenge.challenge_id %}"
@@ -140,14 +185,20 @@
                                 style="font-size: 12px;">{{ challenge.get_status_display }}</span>
                         </div>
                         <div class="position-absolute bottom-0 start-0 m-3">
-                            <span
-                                class="badge bg-primary rounded-pill shadow-sm px-3 py-2">{{ challenge.keywords|default:"Innovation"|truncatechars:20 }}</span>
+                            <span class="badge bg-primary rounded-pill shadow-sm px-3 py-2">{{challenge.keywords|default:"Innovation"|truncatechars:20 }}</span>
                         </div>
 
                         <!-- Hover Overlay -->
                         <div class="card-overlay d-flex flex-column justify-content-center align-items-center gap-3">
+                            {% if challenge.status == 'DRAFT' %}
+                            <a href="{% url 'post_challenge' %}?edit={{ challenge.challenge_id }}"
+                                class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">
+                                <i class="fa-solid fa-edit me-2"></i>Edit Challenge
+                            </a>
+                            {% else %}
                             <a href="{% url 'challenge_detail' challenge.challenge_id %}"
                                 class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">View Details</a>
+                            {% endif %}
                             {% if challenge.status == 'LIVE' %}
                             {% if challenge.user_idea_submitted %}
                             <!-- User has already submitted/registered -->
@@ -164,8 +215,7 @@
                             <!-- User has NOT submitted/registered yet -->
                             {% if challenge.registration_required|default:"No"|lower == "yes" %}
                             <a href="{% url 'challenge_register' challenge.challenge_id %}"
-                                class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm"
-                                data-register-modal
+                                class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" data-register-modal
                                 data-challenge-id="{{ challenge.challenge_id }}">Register Now</a>
                             {% else %}
                             <a href="{% url 'idea_details' challenge.challenge_id %}"
@@ -176,7 +226,7 @@
                         </div>
                     </div>
                     <div class="card-body p-4 d-flex flex-column">
-                        <h5 class="card-title fw-bold text-dark mb-3" style="font-size: 18px; line-height: 1.4;">{{ challenge.title }}</h5>
+                        <h5 class="card-title fw-bold text-dark mb-3" style="font-size: 18px; line-height: 1.4;">{{challenge.title }}</h5>
                         <p class="text-muted small mb-4 flex-grow-1">{{ challenge.description|truncatewords:20 }}</p>
 
                         <div class="d-flex justify-content-between align-items-center mt-auto border-top pt-3">
@@ -290,6 +340,7 @@
     .challenge-card {
         transition: all 0.3s ease;
         overflow: hidden;
+        padding-top: 20px;
     }
 
     .challenge-card:hover {
@@ -355,13 +406,17 @@
         <div class="registration-modal-tabs">
             <button class="registration-tab-btn active" data-tab="individual">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="registration-tab-icon">
-                    <path d="M8 8C9.65685 8 11 6.65685 11 5C11 3.34315 9.65685 2 8 2C6.34315 2 5 3.34315 5 5C5 6.65685 6.34315 8 8 8ZM14 14C14 11.7909 11.3726 10 8 10C4.62742 10 2 11.7909 2 14" stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path
+                        d="M8 8C9.65685 8 11 6.65685 11 5C11 3.34315 9.65685 2 8 2C6.34315 2 5 3.34315 5 5C5 6.65685 6.34315 8 8 8ZM14 14C14 11.7909 11.3726 10 8 10C4.62742 10 2 11.7909 2 14"
+                        stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
                 <span>Individual</span>
             </button>
             <button class="registration-tab-btn" data-tab="team">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="registration-tab-icon">
-                    <path d="M11 5C12.6569 5 14 3.65685 14 2C14 0.343146 12.6569 -1 11 -1C9.34315 -1 8 0.343146 8 2C8 3.65685 9.34315 5 11 5ZM5 7C6.65685 7 8 5.65685 8 4C8 2.34315 6.65685 1 5 1C3.34315 1 2 2.34315 2 4C2 5.65685 3.34315 7 5 7ZM14 7C12.3431 7 11 8.34315 11 10C11 11.6569 12.3431 13 14 13C15.6569 13 17 11.6569 17 10C17 8.34315 15.6569 7 14 7ZM6 11C2.68629 11 0 13.0294 0 16C0 16.5523 0.447715 17 1 17H11C11.5523 17 12 16.5523 12 16C12 13.0294 9.31371 11 6 11ZM14 15C13.5 13.5 12.1716 12.5 10.5 12.5" stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path
+                        d="M11 5C12.6569 5 14 3.65685 14 2C14 0.343146 12.6569 -1 11 -1C9.34315 -1 8 0.343146 8 2C8 3.65685 9.34315 5 11 5ZM5 7C6.65685 7 8 5.65685 8 4C8 2.34315 6.65685 1 5 1C3.34315 1 2 2.34315 2 4C2 5.65685 3.34315 7 5 7ZM14 7C12.3431 7 11 8.34315 11 10C11 11.6569 12.3431 13 14 13C15.6569 13 17 11.6569 17 10C17 8.34315 15.6569 7 14 7ZM6 11C2.68629 11 0 13.0294 0 16C0 16.5523 0.447715 17 1 17H11C11.5523 17 12 16.5523 12 16C12 13.0294 9.31371 11 6 11ZM14 15C13.5 13.5 12.1716 12.5 10.5 12.5"
+                        stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
                 <span>Team</span>
             </button>
@@ -380,17 +435,20 @@
 
                     <div class="registration-form-group">
                         <label class="registration-label">Full Name</label>
-                        <input type="text" id="fullNameIndividual" class="registration-input" placeholder="Enter full name" required readonly>
+                        <input type="text" id="fullNameIndividual" class="registration-input"
+                            placeholder="Enter full name" required readonly>
                     </div>
 
                     <div class="registration-form-group">
                         <label class="registration-label">Employee ID</label>
-                        <input type="text" id="employeeIdIndividual" class="registration-input" placeholder="Enter employee ID" required readonly>
+                        <input type="text" id="employeeIdIndividual" class="registration-input"
+                            placeholder="Enter employee ID" required readonly>
                     </div>
 
                     <div class="registration-form-group">
                         <label class="registration-label">Email ID (Official)</label>
-                        <input type="email" id="emailIndividual" class="registration-input" placeholder="Enter official email" required readonly>
+                        <input type="email" id="emailIndividual" class="registration-input"
+                            placeholder="Enter official email" required readonly>
                     </div>
                 </form>
             </div>
@@ -407,21 +465,25 @@
 
                     <div class="registration-form-group">
                         <label class="registration-label">Team Name</label>
-                        <input type="text" id="teamName" class="registration-input" placeholder="Enter team name" required>
+                        <input type="text" id="teamName" class="registration-input" placeholder="Enter team name"
+                            required>
                     </div>
 
                     <div class="registration-form-group">
                         <label class="registration-label">Team Lead</label>
-                        <input type="text" id="teamLead" class="registration-input" placeholder="Enter team lead name" required>
+                        <input type="text" id="teamLead" class="registration-input" placeholder="Enter team lead name"
+                            required>
                     </div>
 
                     <!-- Team Members Section -->
                     <div class="registration-team-members-section">
                         <div class="registration-team-members-header">
-                            <label class="registration-label">Team Members <span class="registration-member-count">(1)</span></label>
+                            <label class="registration-label">Team Members <span
+                                    class="registration-member-count">(1)</span></label>
                             <button type="button" class="registration-add-member-btn" id="addMemberBtn">
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                    <path d="M6 1V11M1 6H11" stroke="white" stroke-width="1.33" stroke-linecap="round"/>
+                                    <path d="M6 1V11M1 6H11" stroke="white" stroke-width="1.33"
+                                        stroke-linecap="round" />
                                 </svg>
                                 Add
                             </button>
@@ -442,92 +504,92 @@
 </div>
 
 <script>
-$(document).ready(function () {
-    // Registration Modal Variables
-    const modal = $('#registrationModal');
-    const registerButtons = $('[data-register-modal]');
-    const closeBtn = $('#closeModalBtn');
-    const backdrop = $('.registration-modal-backdrop');
-    const tabButtons = $('.registration-tab-btn');
-    const tabContents = $('.registration-tab-content');
-    const addMemberBtn = $('#addMemberBtn');
-    const membersContainer = $('#membersContainer');
-    let memberCount = 1;
-    let currentChallengeId = null;
+    $(document).ready(function () {
+        // Registration Modal Variables
+        const modal = $('#registrationModal');
+        const registerButtons = $('[data-register-modal]');
+        const closeBtn = $('#closeModalBtn');
+        const backdrop = $('.registration-modal-backdrop');
+        const tabButtons = $('.registration-tab-btn');
+        const tabContents = $('.registration-tab-content');
+        const addMemberBtn = $('#addMemberBtn');
+        const membersContainer = $('#membersContainer');
+        let memberCount = 1;
+        let currentChallengeId = null;
 
-    // Sample user data (in real app, this would come from server)
-    const userData = {
-        fullName: '{{ request.iris_user.get_full_name|default:"User Name" }}',
-        employeeId: '{{ request.iris_user.employee_id|default:"EMP001" }}',
-        email: '{{ request.iris_user.email|default:"user@company.com" }}'
-    };
+        // Sample user data (in real app, this would come from server)
+        const userData = {
+            fullName: '{{ request.iris_user.get_full_name|default:"User Name" }}',
+            employeeId: '{{ request.iris_user.employee_id|default:"EMP001" }}',
+            email: '{{ request.iris_user.email|default:"user@company.com" }}'
+        };
 
-    // Open Modal on Register Button Click
-    registerButtons.on('click', function (e) {
-        e.preventDefault();
-        currentChallengeId = $(this).data('challenge-id');
-        const challengeTitle = $(this).closest('.card').find('.card-title').text() || 'Challenge';
+        // Open Modal on Register Button Click
+        registerButtons.on('click', function (e) {
+            e.preventDefault();
+            currentChallengeId = $(this).data('challenge-id');
+            const challengeTitle = $(this).closest('.card').find('.card-title').text() || 'Challenge';
 
-        openModal(currentChallengeId, challengeTitle);
-    });
+            openModal(currentChallengeId, challengeTitle);
+        });
 
-    function openModal(challengeId, challengeTitle) {
-        // Populate challenge dropdowns
-        const selectIndividual = $('#challengeSelectIndividual');
-        const selectTeam = $('#challengeSelectTeam');
+        function openModal(challengeId, challengeTitle) {
+            // Populate challenge dropdowns
+            const selectIndividual = $('#challengeSelectIndividual');
+            const selectTeam = $('#challengeSelectTeam');
 
-        selectIndividual.html(`<option value="${challengeId}" selected>${challengeTitle}</option>`);
-        selectTeam.html(`<option value="${challengeId}" selected>${challengeTitle}</option>`);
+            selectIndividual.html(`<option value="${challengeId}" selected>${challengeTitle}</option>`);
+            selectTeam.html(`<option value="${challengeId}" selected>${challengeTitle}</option>`);
 
-        // Populate individual fields
-        $('#fullNameIndividual').val(userData.fullName);
-        $('#employeeIdIndividual').val(userData.employeeId);
-        $('#emailIndividual').val(userData.email);
+            // Populate individual fields
+            $('#fullNameIndividual').val(userData.fullName);
+            $('#employeeIdIndividual').val(userData.employeeId);
+            $('#emailIndividual').val(userData.email);
 
-        // Reset team form
-        resetTeamForm();
+            // Reset team form
+            resetTeamForm();
 
-        // Show modal
-        modal.fadeIn(300);
-        $('body').css('overflow', 'hidden');
-    }
+            // Show modal
+            modal.fadeIn(300);
+            $('body').css('overflow', 'hidden');
+        }
 
-    function resetTeamForm() {
-        $('#teamName').val('');
-        $('#teamLead').val('');
-        memberCount = 1;
-        membersContainer.html('');
-        addTeamMemberField();
-        updateMemberCount();
-    }
-
-    // Tab Switching
-    tabButtons.on('click', function () {
-        const tabName = $(this).data('tab');
-
-        // Remove active class from all buttons and contents
-        tabButtons.removeClass('active');
-        tabContents.removeClass('active');
-
-        // Add active class to clicked button and corresponding content
-        $(this).addClass('active');
-        $(`#${tabName}-tab`).addClass('active');
-    });
-
-    // Add Team Member
-    addMemberBtn.on('click', function (e) {
-        e.preventDefault();
-        if (memberCount < 5) {
-            memberCount++;
+        function resetTeamForm() {
+            $('#teamName').val('');
+            $('#teamLead').val('');
+            memberCount = 1;
+            membersContainer.html('');
             addTeamMemberField();
             updateMemberCount();
-        } else {
-            alert('Maximum 5 team members allowed');
         }
-    });
 
-    function addTeamMemberField() {
-        const memberHtml = `
+        // Tab Switching
+        tabButtons.on('click', function () {
+            const tabName = $(this).data('tab');
+
+            // Remove active class from all buttons and contents
+            tabButtons.removeClass('active');
+            tabContents.removeClass('active');
+
+            // Add active class to clicked button and corresponding content
+            $(this).addClass('active');
+            $(`#${tabName}-tab`).addClass('active');
+        });
+
+        // Add Team Member
+        addMemberBtn.on('click', function (e) {
+            e.preventDefault();
+            if (memberCount < 5) {
+                memberCount++;
+                addTeamMemberField();
+                updateMemberCount();
+            } else {
+                alert('Maximum 5 team members allowed');
+            }
+        });
+
+        function addTeamMemberField() {
+            const memberHtml = `
             <div class="registration-member-item" data-member="${memberCount}">
                 <div class="registration-member-header">
                     <span class="registration-member-label">Member ${memberCount}</span>
@@ -548,95 +610,95 @@ $(document).ready(function () {
             </div>
         `;
 
-        membersContainer.append(memberHtml);
+            membersContainer.append(memberHtml);
 
-        // Add remove handler
-        $(`[data-member="${memberCount}"] [data-remove-member]`).on('click', function (e) {
-            e.preventDefault();
-            removeMemberField(memberCount);
+            // Add remove handler
+            $(`[data-member="${memberCount}"] [data-remove-member]`).on('click', function (e) {
+                e.preventDefault();
+                removeMemberField(memberCount);
+            });
+        }
+
+        function removeMemberField(memberIndex) {
+            $(`[data-member="${memberIndex}"]`).remove();
+            updateMemberCount();
+        }
+
+        function updateMemberCount() {
+            const count = membersContainer.find('.registration-member-item').length;
+            $('.registration-member-count').text(`(${count})`);
+        }
+
+        // Close Modal
+        function closeModal() {
+            modal.fadeOut(300);
+            $('body').css('overflow', 'auto');
+        }
+
+        closeBtn.on('click', closeModal);
+        backdrop.on('click', closeModal);
+
+        // Submit Form
+        $('#submitRegistrationBtn').on('click', function () {
+            const activeTab = $('.registration-tab-btn.active').data('tab');
+
+            if (activeTab === 'individual') {
+                const form = $('#individualRegistrationForm');
+                if (form[0].checkValidity() === false) {
+                    form[0].reportValidity();
+                    return;
+                }
+                submitIndividualRegistration();
+            } else {
+                const form = $('#teamRegistrationForm');
+                if (form[0].checkValidity() === false) {
+                    form[0].reportValidity();
+                    return;
+                }
+                submitTeamRegistration();
+            }
         });
-    }
 
-    function removeMemberField(memberIndex) {
-        $(`[data-member="${memberIndex}"]`).remove();
-        updateMemberCount();
-    }
+        function submitIndividualRegistration() {
+            const data = {
+                challengeId: $('#challengeSelectIndividual').val(),
+                registrationType: 'individual',
+                fullName: $('#fullNameIndividual').val(),
+                employeeId: $('#employeeIdIndividual').val(),
+                email: $('#emailIndividual').val()
+            };
 
-    function updateMemberCount() {
-        const count = membersContainer.find('.registration-member-item').length;
-        $('.registration-member-count').text(`(${count})`);
-    }
+            console.log('Individual Registration Data:', data);
+            alert('Individual registration submitted successfully!');
+            closeModal();
+            // TODO: Send data to server via AJAX
+        }
 
-    // Close Modal
-    function closeModal() {
-        modal.fadeOut(300);
-        $('body').css('overflow', 'auto');
-    }
+        function submitTeamRegistration() {
+            const members = [];
+            membersContainer.find('.registration-member-item').each(function () {
+                const inputs = $(this).find('.registration-member-input');
+                members.push({
+                    fullName: inputs.eq(0).val(),
+                    employeeId: inputs.eq(1).val(),
+                    email: inputs.eq(2).val(),
+                    serviceLine: inputs.eq(3).val()
+                });
+            });
 
-    closeBtn.on('click', closeModal);
-    backdrop.on('click', closeModal);
+            const data = {
+                challengeId: $('#challengeSelectTeam').val(),
+                registrationType: 'team',
+                teamName: $('#teamName').val(),
+                teamLead: $('#teamLead').val(),
+                members: members
+            };
 
-    // Submit Form
-    $('#submitRegistrationBtn').on('click', function () {
-        const activeTab = $('.registration-tab-btn.active').data('tab');
-
-        if (activeTab === 'individual') {
-            const form = $('#individualRegistrationForm');
-            if (form[0].checkValidity() === false) {
-                form[0].reportValidity();
-                return;
-            }
-            submitIndividualRegistration();
-        } else {
-            const form = $('#teamRegistrationForm');
-            if (form[0].checkValidity() === false) {
-                form[0].reportValidity();
-                return;
-            }
-            submitTeamRegistration();
+            console.log('Team Registration Data:', data);
+            alert('Team registration submitted successfully!');
+            closeModal();
+            // TODO: Send data to server via AJAX
         }
     });
-
-    function submitIndividualRegistration() {
-        const data = {
-            challengeId: $('#challengeSelectIndividual').val(),
-            registrationType: 'individual',
-            fullName: $('#fullNameIndividual').val(),
-            employeeId: $('#employeeIdIndividual').val(),
-            email: $('#emailIndividual').val()
-        };
-
-        console.log('Individual Registration Data:', data);
-        alert('Individual registration submitted successfully!');
-        closeModal();
-        // TODO: Send data to server via AJAX
-    }
-
-    function submitTeamRegistration() {
-        const members = [];
-        membersContainer.find('.registration-member-item').each(function () {
-            const inputs = $(this).find('.registration-member-input');
-            members.push({
-                fullName: inputs.eq(0).val(),
-                employeeId: inputs.eq(1).val(),
-                email: inputs.eq(2).val(),
-                serviceLine: inputs.eq(3).val()
-            });
-        });
-
-        const data = {
-            challengeId: $('#challengeSelectTeam').val(),
-            registrationType: 'team',
-            teamName: $('#teamName').val(),
-            teamLead: $('#teamLead').val(),
-            members: members
-        };
-
-        console.log('Team Registration Data:', data);
-        alert('Team registration submitted successfully!');
-        closeModal();
-        // TODO: Send data to server via AJAX
-    }
-});
 </script>
 {% endblock %}

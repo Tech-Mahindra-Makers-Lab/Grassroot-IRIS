@@ -13,20 +13,16 @@ html {
 body {
     background-color: #f5f5f5;
     font-family: 'Poppins', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    display: block;
     padding: 0;
-    min-height: 100vh;
     width: 100%;
 }
 
 .evaluator-wrapper {
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
     background: white;
     box-shadow: none;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
 }
@@ -150,7 +146,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 18px;
-    overflow-y: auto;
     max-width: 900px;
     margin: 0 auto;
     width: 100%;
@@ -388,76 +383,142 @@ body {
 }
 
 .rating-content {
+    width: 100%;
+}
+
+/* Horizontal flex row: stars-left | description-right */
+.rating-row {
     display: flex;
+    flex-direction: row;
     align-items: flex-start;
-    gap: 16px;
+    gap: 24px;
+    width: 100%;
+}
+
+/* Left column: stars row + score */
+.rating-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* Right column: title + note */
+.rating-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+/* Score label + number on same line */
+.rating-score-group {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.score-label-text {
+    color: #4A453D;
+    font-size: 13px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+.score-number-text {
+    color: #4A453D;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+}
+
+/* Rating description title */
+.rating-desc-title {
+    color: #29251D;
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    line-height: 24px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Rating small note */
+.rating-desc-note {
+    color: #4A453D;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    line-height: 18px;
+    word-wrap: break-word;
 }
 
 .rating-stars {
     display: flex;
-    flex-direction: row;
-    gap: 12px;
-    align-items: center;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
 }
 
 .stars-container {
     display: flex;
-    flex-direction: row;
-    gap: 3px;
-    align-items: center;
-    justify-content: flex-start;
+    gap: 4px;
 }
 
+/* Rating stars row container */
+.rating-stars-frag {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Individual star wrapper */
 .star {
-    width: 28px;
-    height: 28px;
-    position: relative;
-    cursor: pointer;
-    display: inline-flex;
+    width: 22px;
+    height: 22px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
-    line-height: 1;
-    transition: all 0.2s ease;
-    border: none;
-    padding: 0;
-    margin: 0;
+    cursor: pointer;
     flex-shrink: 0;
+    transition: transform 0.15s ease;
 }
 
 .star:hover {
-    transform: scale(1.15);
+    transform: scale(1.2);
 }
 
-.star:hover span {
-    opacity: 0.8;
+/* Star image inside the wrapper */
+.star-img {
+    width: 18px;
+    height: 18px;
+    display: block;
+    object-fit: contain;
+    transition: filter 0.2s ease, opacity 0.2s ease;
+    cursor: pointer;
 }
 
-.star span {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    line-height: 1;
-    transition: color 0.2s ease;
-    width: 28px;
-    height: 28px;
-}
-
-.star-filled {
-    color: #F8B4A3 !important;
-}
-
+/* Empty (unselected) star: desaturated grey */
 .star-empty {
-    color: #d0d0d0 !important;
+    filter: grayscale(100%) brightness(1.4);
+    opacity: 0.55;
+}
+
+/* Filled (selected) star: warm salmon colour matching #F8B4A3 */
+.star-filled {
+    filter: invert(78%) sepia(40%) saturate(600%) hue-rotate(310deg) brightness(1.05);
+    opacity: 1;
 }
 
 .score-display {
     display: flex;
     flex-direction: row;
-    gap: 6px;
+    gap: 4px;
     align-items: center;
-    white-space: nowrap;
 }
 
 .score-label {
@@ -937,6 +998,51 @@ body {
     opacity: 0.5;
 }
 
+/* ===== REVIEW DUE BADGE ===== */
+.review-due-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #fff3f0;
+    border-left: 3px solid #e31837;
+    border-radius: 3px;
+    margin-top: 8px;
+}
+
+.review-due-label {
+    color: #29251d;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.review-due-days {
+    color: #e31837;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.review-due-badge.review-due-today {
+    background: #fef9f0;
+    border-left-color: #f59e0b;
+}
+
+.review-due-badge.review-due-today .review-due-days {
+    color: #f59e0b;
+}
+
+.review-due-badge.review-due-overdue {
+    background: #fef2f2;
+    border-left-color: #dc2626;
+}
+
+.review-due-badge.review-due-overdue .review-due-days {
+    color: #dc2626;
+}
+
 .no-history-text {
     color: #4d4d4f;
     font-size: 14px;
@@ -1005,3 +1111,139 @@ body {
         font-size: 12px;
     }
 }
+/* Card Header */
+.card-header-section {
+    background: linear-gradient(135deg, var(--color-dark) 0%, #7c0d3a 100%);
+    padding: 20px;
+    justify-content: space-between;
+    align-items: flex-start;
+    }
+
+.card-badge-red {
+    font-size: 12px;
+    font-weight: 600;
+    background: linear-gradient(to right, red 30%, black 30%, black 100%);
+    padding: 8px 12px;
+    border-radius: 4px;
+    line-height: 1.4;
+    color: white;
+
+}
+
+.card-status-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.status-icon-pending {
+    width: 8px;
+    height: 8px;
+    background-color: #FFB800;
+    border-radius: 50%;
+}
+
+.status-text-pending {
+    color: #FFB800;
+    font-weight: 600;
+}
+
+/* Card Body */
+.card-body-content {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.idea-text-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    line-height: 1.6;
+}
+
+.idea-label {
+    font-weight: 600;
+    color: var(--color-dark);
+    font-size: 14px;
+}
+
+.idea-description {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.challenge-label {
+    font-weight: 600;
+    color: var(--color-dark);
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+.challenge-description {
+    font-size: 13px;
+    color: #666;
+}
+
+.card-tags-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.tag-item {
+    display: inline-block;
+    background-color: var(--color-light);
+    color: var(--color-dark);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Card Footer */
+.card-footer-section {
+    padding: 0 20px 15px 20px;
+    border-top: 1px solid var(--color-light);
+    padding-top: 15px;
+}
+
+.review-due-text {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 15px;
+}
+
+.view-evaluate-button {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: var(--color-red);
+    color: white;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-decoration: none;
+    border: none;
+}
+
+.view-evaluate-button:hover {
+    background-color: #c41230;
+    transform: scale(1.02);
+}
+.view-evaluate-button {
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+    .card-header-section {
+        padding: 15px;
+    }
+

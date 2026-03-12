@@ -1,0 +1,606 @@
+/* ============================================
+   REVIEW DASHBOARD - NEW DESIGN
+   ============================================ */
+
+/* Root colors from design system */
+:root {
+    --dashboard-bg: #F6F2EA;
+    --dashboard-dark: #5F0229;
+    --dashboard-light: #E5DFD3;
+    --dashboard-red: #E31837;
+    --dashboard-text-primary: #29251D;
+    --dashboard-text-secondary: #4A453D;
+    --dashboard-accent: #F8B4A3;
+}
+
+/* Main dashboard container */
+.dashboard-main-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: var(--dashboard-bg);
+    overflow: hidden;
+}
+
+/* Header image */
+.dashboard-header-image {
+    width: 1440px;
+    height: 179.78px;
+    left: 10px;
+    top: 0px;
+    position: absolute;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.48) 0%, rgba(0, 0, 0, 0.48) 100%);
+}
+
+/* Header text - small */
+.dashboard-header-text-small {
+    left: 121.58px;
+    top: 99.45px;
+    position: absolute;
+    color: white;
+    font-size: 18px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    line-height: 28px;
+    word-wrap: break-word;
+}
+
+/* Header text - large */
+.dashboard-header-text-large {
+    left: 121.58px;
+    top: 51.95px;
+    position: absolute;
+    color: white;
+    font-size: 36px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: 0.37px;
+    word-wrap: break-word;
+}
+
+/* Navigation bar */
+.dashboard-nav-bar {
+    width: 1430px;
+    height: 71px;
+    padding-bottom: 1px;
+    padding-left: 140.50px;
+    padding-right: 140.50px;
+    left: 10px;
+    top: 180px;
+    position: absolute;
+    background: var(--dashboard-light);
+    border-bottom: 1px #E5E7EB solid;
+}
+
+/* Navigation inner container */
+.dashboard-nav-inner {
+    width: 1289px;
+    height: 70px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Tab group */
+.nav-tab-group {
+    display: inline-flex;
+    gap: 0;
+    align-items: center;
+}
+
+/* Navigation tab button */
+.nav-tab-button {
+    height: 54px;
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background: white;
+    border: none;
+    border-bottom: 3px transparent solid;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-tab-button:hover {
+    background: #f9f9f9;
+}
+
+.nav-tab-active,
+.nav-tab-button.active {
+    background: white;
+    border-bottom-color: var(--dashboard-red);
+}
+
+.nav-tab-button span {
+    text-align: center;
+    color: var(--dashboard-text-primary);
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+/* Search and filter section */
+.nav-search-container {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.search-input-wrapper {
+    width: 320px;
+    height: 38px;
+    padding: 8px 40px 8px 16px;
+    background: white;
+    border: 1px #E5E7EB solid;
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input-field {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--dashboard-text-primary);
+    outline: none;
+}
+
+.search-input-field::placeholder {
+    color: rgba(10, 10, 10, 0.5);
+}
+
+.filter-button-wrapper {
+    width: 97px;
+    height: 38px;
+    padding: 8px 19px;
+    background: var(--dashboard-light);
+    border: none;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--dashboard-text-secondary);
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Statistics section */
+.dashboard-stats-wrapper {
+    width: 1185px;
+    left: 153px;
+    top: 311px;
+    position: absolute;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 109px;
+}
+
+/* Individual stat card */
+.stat-item {
+    width: 310px;
+    height: 110.40px;
+    padding: 24px;
+    box-shadow: 0px 2.4px 4.8px rgba(0, 0, 0, 0.1), 0px 4.8px 7.2px rgba(0, 0, 0, 0.1);
+    border-radius: 16.80px;
+    border: 1px #E5E7EB solid;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 14.40px;
+    background: white;
+}
+
+.stat-icon-box {
+    width: 57.60px;
+    height: 57.60px;
+    padding: 14.40px;
+    background: var(--dashboard-accent);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.stat-icon {
+    width: 28.80px;
+    height: 28.80px;
+    position: relative;
+    background: transparent;
+}
+
+.stat-text-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.stat-label {
+    color: var(--dashboard-accent);
+    font-size: 16.80px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    line-height: 24px;
+    letter-spacing: 2px;
+}
+
+.stat-number {
+    color: var(--dashboard-bg);
+    font-size: 28.80px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    line-height: 38.40px;
+    letter-spacing: 0.08px;
+}
+
+/* Ideas cards container */
+.ideas-cards-container {
+    width: 1281px;
+    left: 121px;
+    top: 453px;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+/* Individual idea card */
+.idea-card-item {
+    width: 403px;
+    height: 246px;
+    position: relative;
+    background: white;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.idea-card-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Card header section */
+.card-header-section {
+    width: 100%;
+    height: 40px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+}
+
+/* Card badge */
+.card-badge-red {
+    width: 120px;
+    height: 40px;
+    padding: 22px;
+    background: var(--dashboard-red);
+    color: var(--dashboard-bg);
+    font-size: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    text-transform: uppercase;
+    line-height: 16.05px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Card status section */
+.card-status-section {
+    flex: 1;
+    height: 40px;
+    padding: 22px;
+    background: rgba(0, 0, 0, 0.86);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-icon-pending {
+    width: 16px;
+    height: 16px;
+    background: var(--dashboard-accent);
+    border-radius: 8px;
+    position: relative;
+}
+
+.status-icon-pending::before {
+    content: '';
+    position: absolute;
+    width: 6.75px;
+    height: 8.41px;
+    left: 4.5px;
+    top: 3.5px;
+    border-radius: 1px;
+    border: 0.89px var(--dashboard-dark) solid;
+}
+
+.status-text-pending {
+    color: white;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    line-height: 16.05px;
+}
+
+/* Card body content */
+.card-body-content {
+    width: 100%;
+    height: 206px;
+    padding: 12px 20.06px;
+    position: absolute;
+    top: 40px;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 16px;
+    overflow: hidden;
+}
+
+/* Idea text block */
+.idea-text-block {
+    width: 100%;
+    height: 105px;
+    position: relative;
+    overflow: hidden;
+    display: block;
+}
+
+.idea-label {
+    color: var(--dashboard-text-primary);
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    line-height: 22px;
+}
+
+.idea-description {
+    color: var(--dashboard-text-primary);
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    line-height: 22px;
+}
+
+.challenge-label {
+    color: black;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    line-height: 22px;
+}
+
+.challenge-description {
+    color: var(--dashboard-text-primary);
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    line-height: 22px;
+}
+
+/* Card tags section */
+.card-tags-section {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tag-item {
+    padding: 4px 8px;
+    background: var(--dashboard-bg);
+    border-radius: 8px;
+    color: var(--dashboard-text-secondary);
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    line-height: 16.05px;
+}
+
+/* Card footer section */
+.card-footer-section {
+    width: 100%;
+    height: 40px;
+    padding-top: 12px;
+    border-top: 1px rgba(77, 77, 79, 0.26) solid;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+.review-due-text {
+    color: rgba(74, 69, 61, 0.8);
+    font-size: 11px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+}
+
+/* View & Evaluate button */
+.view-evaluate-button {
+    width: 172.01px;
+    height: 37.51px;
+    position: absolute;
+    bottom: 0;
+    left: 230px;
+    background: white;
+    border: 1.5px white solid;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    line-height: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.view-evaluate-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Load more section */
+.load-more-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+    gap: 12px;
+}
+
+.load-more-text {
+    text-align: center;
+    color: var(--dashboard-text-secondary);
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    line-height: 24px;
+    cursor: pointer;
+}
+
+.load-more-icon {
+    width: 14.69px;
+    height: 14.69px;
+    border: 1px #4D4D4F solid;
+    border-radius: 2px;
+    transform: rotate(-6deg);
+}
+
+/* Sidebar navigation */
+.sidebar-navigation {
+    width: 90px;
+    height: 975px;
+    left: 0px;
+    top: 0px;
+    position: absolute;
+    background: white;
+    overflow: hidden;
+    border-right: 1px #E5E7EB solid;
+}
+
+/* Help widget */
+.help-widget-new {
+    width: 360px;
+    height: 696.60px;
+    left: 1073.27px;
+    top: 256.76px;
+    position: absolute;
+    box-shadow: 0px 22.5px 45px rgba(0, 0, 0, 0.25), 0px 0px 0px 0.9px #E5E7EB;
+    border-radius: 4px;
+    background: white;
+    overflow: hidden;
+}
+
+.help-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1440px) {
+    .dashboard-main-container {
+        overflow-x: auto;
+    }
+
+    .dashboard-stats-wrapper {
+        gap: 60px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .nav-tab-button {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .idea-card-item {
+        width: 350px;
+    }
+
+    .stat-item {
+        width: 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-nav-inner {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .nav-search-container {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .search-input-wrapper {
+        width: 100%;
+    }
+
+    .ideas-cards-container {
+        width: 100%;
+        left: 0;
+        padding: 0 20px;
+    }
+
+    .dashboard-stats-wrapper {
+        gap: 20px;
+        left: 20px;
+        width: calc(100% - 40px);
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-header-text-large {
+        font-size: 24px;
+    }
+
+    .dashboard-header-text-small {
+        font-size: 14px;
+    }
+
+    .idea-card-item {
+        width: 100%;
+    }
+
+    .stat-item {
+        width: 100%;
+    }
+
+    .nav-tab-button {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+}

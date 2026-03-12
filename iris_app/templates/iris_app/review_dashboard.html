@@ -6,7 +6,7 @@
 
 <div class="review-dashboard-wrapper">
     <!-- Header Section -->
-    <div class="review-header">
+    <div class="review-header" style="background-image: url('{% static 'iris_app/images/reviewarena.png' %}'); background-size: cover; background-position: center;">
 
         <div class="review-header-overlay"></div>
         <div class="review-header-content">
@@ -19,14 +19,15 @@
     <div class="review-nav-section">
         <div class="review-nav-content">
             <div class="review-tabs-wrapper">
-                <button class="review-tab-item active" data-tab="all-submissions" onclick="switchTab(event, 'all-submissions')">
-                    All Submissions
-                </button>
+
                 <button class="review-tab-item" data-tab="idea-arena" onclick="switchTab(event, 'idea-arena')">
-                    Idea Arena
+                    Pending
                 </button>
                 <button class="review-tab-item" data-tab="idea-pulse" onclick="switchTab(event, 'idea-pulse')">
-                    Idea Pulse
+                    Reviewed
+                </button>
+                 <button class="review-tab-item active" data-tab="all-submissions" onclick="switchTab(event, 'all-submissions')">
+                    All Submissions
                 </button>
             </div>
 
@@ -56,7 +57,7 @@
             <div class="stat-icon"><img src="{% static 'iris_app/images/1.png' %}"></div>
             <div class="stat-content">
                 <div class="stat-label">TOTAL SUBMISSIONS</div>
-                <div class="stat-value">{{ total_submissions }}</div>
+                <div class="stat-value">{{ pending_total|add:reviewed_total }}</div>
             </div>
 
         </div>
@@ -64,80 +65,154 @@
             <div class="stat-icon"><img src="{% static 'iris_app/images/2.png' %}"></div>
             <div class="stat-content">
                 <div class="stat-label">REVIEWED</div>
-                <div class="stat-value">{{ reviewed_count }}</div>
+                <div class="stat-value">{{ reviewed_total }}</div>
             </div>
         </div>
         <div class="stat-card">
             <div class="stat-icon"><img src="{% static 'iris_app/images/3.png' %}"></div>
             <div class="stat-content">
                 <div class="stat-label">PENDING REVIEW</div>
-                <div class="stat-value">{{ pending_count }}</div>
+                <div class="stat-value">{{ pending_total }}</div>
             </div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon"><img src="{% static 'iris_app/images/4.png' %}"></div>
+
             <div class="stat-content">
-                <div class="stat-label">SUCCESS RATE</div>
-                <div class="stat-value">{{ success_rate }}</div>
+
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="review-main-content">
-        <!-- All Submissions Tab -->
+        <!-- All Submissions Tab (Pending + Reviewed combined) -->
         <div id="all-submissions" class="tab-content active">
             <div class="cards-grid">
-                {% for idea in all_ideas %}
-                <div class="review-card">
-                    <div class="card-image-wrapper">
-                        <img class="card-image"
-                             src="{% if idea.challenge.challenge_icon %}{{ idea.challenge.challenge_icon.url }}{% else %}{% static 'iris_app/img/Rectangle 79.png' %}{% endif %}"
-                             alt="{{ idea.title }}" />
-                        <div class="card-badge">
+                <!-- Pending Ideas -->
+                {% for idea in pending_ideas %}
+                 <div class="review-card">
+                    <div class="card-image-wrapper1">
+                         <div class="card-header-section">
+                <div class="card-badge-red">IDEA ARENA<br/>#ID{{ idea.idea_id }}<span class="status-text">{{ idea.get_status_display }}</span></div>
+                          <div class="idea-text-block">
+
+                    <span class="idea-label">Idea: </span>
+                    <span class="idea-description">{{ idea.title }}<br/></span>
+                    <span class="challenge-label">Challenge:</span>
+                    <span class="challenge-description"> {{ idea.challenge.title }}</span>
+                </div>
+            </div>
+                        <!-- <div class="card-badge">
                             {% if idea.challenge.keywords %}IDEA ARENA{% else %}SUBMISSION{% endif %}
-                        </div>
-                        <div class="card-status-bar {% if idea.status == 'APPROVED' %}approved{% elif idea.status == 'UNDER_REVIEW' %}evaluated{% else %}pending{% endif %}">
+                        </div> -->
+                        <!-- <div class="card-status-bar {% if idea.status == 'APPROVED' %}approved{% elif idea.status == 'UNDER_REVIEW' %}evaluated{% else %}pending{% endif %}">
                             <div class="status-indicator {% if idea.status == 'APPROVED' %}approved{% elif idea.status == 'UNDER_REVIEW' %}evaluated{% else %}pending{% endif %}">
                                 {% if idea.status == 'APPROVED' %}<span class="status-icon">✓</span>{% else %}<span class="status-dot"></span>{% endif %}
                             </div>
-                            <span class="status-text">{{ idea.get_status_display }}</span>
-                        </div>
+
+                        </div> -->
                         <!-- Hover Overlay -->
                         <div class="card-overlay">
-                            {% if idea.idea_id in user_reviewed_ideas %}
-                                <div class="evaluated-status">Evaluation Submitted</div>
-                            {% else %}
-                                <button class="btn btn-primary rounded-pill fw-bold shadow-sm btn-overlay view-evaluate-btn" data-idea-id="{{ idea.idea_id }}" data-idea-title="{{ idea.title }}">View & Evaluate</button>
-                            {% endif %}
+                            <button class="btn btn-primary rounded-pill fw-bold shadow-sm btn-overlay view-evaluate-btn" data-idea-id="{{ idea.idea_id }}" data-idea-title="{{ idea.title }}">View & Evaluate</button>
                         </div>
                     </div>
 
                     <div class="card-content">
-                        <h3 class="card-title">{{ idea.title }}</h3>
+
 
                         <div class="card-tags">
-                            <span class="tag">QA</span>
-                            <span class="tag">Automation</span>
-                            <span class="tag">Testing</span>
+                            {% if idea.ideadetail.keywords %}
+                                {% for keyword in idea.keywords_list %}
+                                    <span class="tag">{{ keyword }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="tag">Idea</span>
+                            {% endif %}
                         </div>
 
                         <div class="card-author-section">
-                            <div class="card-author">
-                                <img class="author-avatar" src="https://placehold.co/32x32" alt="{{ idea.submitter.full_name }}">
-                                <div class="author-info">
-                                    <div class="author-name">{{ idea.submitter.full_name }}</div>
-                                    <div class="author-role">{{ idea.empcode|default:"Tech Lead" }}</div>
-                                </div>
-                            </div>
 
-                            <div class="submission-date">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                    <rect x="2" y="2" width="12" height="12" stroke="currentColor" stroke-width="1.34"/>
-                                </svg>
-                                <span>Submitted {{ idea.submission_date|date:"d-m-Y" }}</span>
-                            </div>
+
+
                         </div>
+
+                        <!-- Review Days Badge -->
+                        {% if idea.review_days_left|default:0 > 0 %}
+                        <div class="review-due-badge">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">{{ idea.review_days_left }} days left</span>
+                        </div>
+                        {% elif idea.review_days_left|default:0 == 0 and idea.review_days_left is not None %}
+                        <div class="review-due-badge review-due-today">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">Today</span>
+                        </div>
+                        {% elif idea.review_days_left|default:0 < 0 %}
+                        <div class="review-due-badge review-due-overdue">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">Overdue</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Reviewed Ideas -->
+                {% for idea in reviewed_ideas %}
+                 <div class="review-card">
+                    <div class="card-image-wrapper1">
+                         <div class="card-header-section">
+                <div class="card-badge-red">IDEA ARENA<br/>#ID{{ idea.idea_id }}<span class="status-text">{{ idea.get_status_display }}</span></div>
+                          <div class="idea-text-block">
+
+                    <span class="idea-label">Idea: </span>
+                    <span class="idea-description">{{ idea.title }}<br/></span>
+                    <span class="challenge-label">Challenge:</span>
+                    <span class="challenge-description"> {{ idea.challenge.title }}</span>
+                </div>
+            </div>
+                        <!-- Hover Overlay -->
+                        <div class="card-overlay">
+                            <div class="evaluated-status">Evaluation Submitted</div>
+                        </div>
+                    </div>
+
+                    <div class="card-content">
+
+
+                        <div class="card-tags">
+                            {% if idea.ideadetail.keywords %}
+                                {% for keyword in idea.keywords_list %}
+                                    <span class="tag">{{ keyword }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="tag">Reviewed</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-author-section">
+
+
+
+                        </div>
+
+                        <!-- Review Days Badge -->
+                        {% if idea.review_days_left|default:0 > 0 %}
+                        <div class="review-due-badge">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">{{ idea.review_days_left }} days left</span>
+                        </div>
+                        {% elif idea.review_days_left|default:0 == 0 and idea.review_days_left is not None %}
+                        <div class="review-due-badge review-due-today">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">Today</span>
+                        </div>
+                        {% elif idea.review_days_left|default:0 < 0 %}
+                        <div class="review-due-badge review-due-overdue">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">Overdue</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 {% empty %}
@@ -148,122 +223,262 @@
             </div>
         </div>
 
-        <!-- Idea Arena Tab -->
+        <!-- Pending Tab (Arena & Pulse) -->
         <div id="idea-arena" class="tab-content">
             <div class="cards-grid">
-                {% for idea in idea_arena_ideas %}
+                <!-- Pending Arena Ideas -->
+                {% for idea in pending_arena_ideas %}
                 <div class="review-card">
-                    <div class="card-image-wrapper">
-                        <img class="card-image"
-                             src="{% if idea.challenge.challenge_icon %}{{ idea.challenge.challenge_icon.url }}{% else %}{% static 'iris_app/img/Rectangle 79.png' %}{% endif %}"
-                             alt="{{ idea.title }}" />
-                        <div class="card-badge">IDEA ARENA</div>
-                        <div class="card-status-bar {% if idea.status == 'APPROVED' %}approved{% elif idea.status == 'UNDER_REVIEW' %}evaluated{% else %}pending{% endif %}">
-                            <div class="status-indicator {% if idea.status == 'APPROVED' %}approved{% elif idea.status == 'UNDER_REVIEW' %}evaluated{% else %}pending{% endif %}">
-                                {% if idea.status == 'APPROVED' %}<span class="status-icon">✓</span>{% else %}<span class="status-dot"></span>{% endif %}
-                            </div>
-                            <span class="status-text">{{ idea.get_status_display }}</span>
-                        </div>
+                    <div class="card-image-wrapper1">
+                         <div class="card-header-section">
+                <div class="card-badge-red">IDEA ARENA<br/>#ID{{ idea.idea_id }}<span class="status-text">{{ idea.get_status_display }}</span></div>
+                          <div class="idea-text-block">
+
+                    <span class="idea-label">Idea: </span>
+                    <span class="idea-description">{{ idea.title }}<br/></span>
+                    <span class="challenge-label">Challenge:</span>
+                    <span class="challenge-description"> {{ idea.challenge.title }}</span>
+                </div>
+            </div>
                         <!-- Hover Overlay -->
                         <div class="card-overlay">
-                            {% if idea.idea_id in user_reviewed_ideas %}
-                                <div class="evaluated-status">Evaluation Submitted</div>
-                            {% else %}
-                                <button class="btn btn-primary rounded-pill fw-bold shadow-sm btn-overlay view-evaluate-btn" data-idea-id="{{ idea.idea_id }}" data-idea-title="{{ idea.title }}">View & Evaluate</button>
-                            {% endif %}
+                            <button class="btn btn-primary rounded-pill fw-bold shadow-sm btn-overlay view-evaluate-btn" data-idea-id="{{ idea.idea_id }}" data-idea-title="{{ idea.title }}">View & Evaluate</button>
                         </div>
                     </div>
 
                     <div class="card-content">
-                        <h3 class="card-title">{{ idea.title }}</h3>
+
 
                         <div class="card-tags">
-                            <span class="tag">QA</span>
-                            <span class="tag">Automation</span>
-                            <span class="tag">Testing</span>
+                            {% if idea.ideadetail.keywords %}
+                                {% for keyword in idea.keywords_list %}
+                                    <span class="tag">{{ keyword }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="tag">Idea</span>
+                            {% endif %}
                         </div>
 
                         <div class="card-author-section">
-                            <div class="card-author">
+
+
+                        </div>
+
+                        <!-- Review Days Badge -->
+                        {% if idea.review_days_left|default:0 > 0 %}
+                        <div class="review-due-badge">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">{{ idea.review_days_left }} days left</span>
+                        </div>
+                        {% elif idea.review_days_left|default:0 == 0 and idea.review_days_left is not None %}
+                        <div class="review-due-badge review-due-today">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">Today</span>
+                        </div>
+                        {% elif idea.review_days_left|default:0 < 0 %}
+                        <div class="review-due-badge review-due-overdue">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">Overdue</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Pending Pulse Ideas -->
+                {% for idea in pending_pulse_ideas %}
+                <div class="review-card">
+                    <div class="card-image-wrapper1">
+                         <div class="card-header-section">
+                <div class="card-badge-red">IDEA ARENA<br/>#ID{{ idea.idea_id }}<span class="status-text">{{ idea.get_status_display }}</span></div>
+                          <div class="idea-text-block">
+
+                    <span class="idea-label">Idea: </span>
+                    <span class="idea-description">{{ idea.title }}<br/></span>
+                    <span class="challenge-label">Challenge:</span>
+                    <span class="challenge-description"> {{ idea.challenge.title }}</span>
+                </div>
+            </div>
+                        <!-- Hover Overlay -->
+                        <div class="card-overlay">
+                            <button class="btn btn-primary rounded-pill fw-bold shadow-sm btn-overlay view-evaluate-btn" data-idea-id="{{ idea.idea_id }}" data-idea-title="{{ idea.title }}">View & Evaluate</button>
+                        </div>
+                    </div>
+
+                    <div class="card-content">
+
+
+                        <div class="card-tags">
+                            {% if idea.ideadetail.keywords %}
+                                {% for keyword in idea.keywords_list %}
+                                    <span class="tag">{{ keyword }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="tag">Idea</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-author-section">
+                            <!-- <div class="card-author">
                                 <img class="author-avatar" src="https://placehold.co/32x32" alt="{{ idea.submitter.full_name }}">
                                 <div class="author-info">
                                     <div class="author-name">{{ idea.submitter.full_name }}</div>
-                                    <div class="author-role">{{ idea.ibu_name|default:"Team Lead" }}</div>
+                                    <div class="author-role">{{ idea.empcode|default:"Tech Lead" }}</div>
                                 </div>
-                            </div>
+                            </div> -->
 
-                            <div class="submission-date">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                    <rect x="2" y="2" width="12" height="12" stroke="currentColor" stroke-width="1.34"/>
-                                </svg>
-                                <span>Submitted {{ idea.submission_date|date:"d-m-Y" }}</span>
-                            </div>
+
+
+                        <!-- Review Days Badge -->
+                        {% if idea.review_days_left|default:0 > 0 %}
+                        <div class="review-due-badge">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">{{ idea.review_days_left }} days left</span>
                         </div>
+                        {% elif idea.review_days_left|default:0 == 0 and idea.review_days_left is not None %}
+                        <div class="review-due-badge review-due-today">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">Today</span>
+                        </div>
+                        {% elif idea.review_days_left|default:0 < 0 %}
+                        <div class="review-due-badge review-due-overdue">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">Overdue</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 {% empty %}
                 <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;">
-                    <p>No ideas in this category</p>
+                    <p>No pending ideas to review</p>
                 </div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- Idea Pulse Tab -->
+        <!-- Reviewed Tab (Arena & Pulse) -->
         <div id="idea-pulse" class="tab-content">
             <div class="cards-grid">
-                {% for idea in idea_pulse_ideas %}
+                <!-- Reviewed Arena Ideas -->
+                {% for idea in reviewed_arena_ideas %}
                 <div class="review-card">
-                    <div class="card-image-wrapper">
-                        <img class="card-image"
-                             src="{% if idea.challenge.challenge_icon %}{{ idea.challenge.challenge_icon.url }}{% else %}https://placehold.co/386x177{% endif %}"
-                             alt="{{ idea.title }}" />
-                        <div class="card-badge">GRASSROOT</div>
-                        <div class="card-status-bar {% if idea.status == 'APPROVED' %}approved{% elif idea.status == 'UNDER_REVIEW' %}evaluated{% else %}pending{% endif %}">
-                            <div class="status-indicator {% if idea.status == 'APPROVED' %}approved{% elif idea.status == 'UNDER_REVIEW' %}evaluated{% else %}pending{% endif %}">
-                                {% if idea.status == 'APPROVED' %}<span class="status-icon">✓</span>{% else %}<span class="status-dot"></span>{% endif %}
-                            </div>
-                            <span class="status-text">{{ idea.get_status_display }}</span>
-                        </div>
+                    <div class="card-image-wrapper1">
+                         <div class="card-header-section">
+                <div class="card-badge-red">IDEA ARENA<br/>#ID{{ idea.idea_id }}<span class="status-text">{{ idea.get_status_display }}</span></div>
+                          <div class="idea-text-block">
+
+                    <span class="idea-label">Idea: </span>
+                    <span class="idea-description">{{ idea.title }}<br/></span>
+                    <span class="challenge-label">Challenge:</span>
+                    <span class="challenge-description"> {{ idea.challenge.title }}</span>
+                </div>
+            </div>
                         <!-- Hover Overlay -->
                         <div class="card-overlay">
-                            {% if idea.idea_id in user_reviewed_ideas %}
-                                <div class="evaluated-status">Evaluation Submitted</div>
-                            {% else %}
-                                <button class="btn btn-primary rounded-pill fw-bold shadow-sm btn-overlay view-evaluate-btn" data-idea-id="{{ idea.idea_id }}" data-idea-title="{{ idea.title }}">View & Evaluate</button>
-                            {% endif %}
+                            <div class="evaluated-status">Evaluation Submitted</div>
                         </div>
                     </div>
 
                     <div class="card-content">
-                        <h3 class="card-title">{{ idea.title }}</h3>
+
 
                         <div class="card-tags">
-                            <span class="tag">Grassroot</span>
-                            <span class="tag">Innovation</span>
+                            {% if idea.ideadetail.keywords %}
+                                {% for keyword in idea.keywords_list %}
+                                    <span class="tag">{{ keyword }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="tag">Reviewed</span>
+                            {% endif %}
                         </div>
 
                         <div class="card-author-section">
-                            <div class="card-author">
-                                <img class="author-avatar" src="https://placehold.co/32x32" alt="{{ idea.submitter.full_name }}">
-                                <div class="author-info">
-                                    <div class="author-name">{{ idea.submitter.full_name }}</div>
-                                    <div class="author-role">{{ idea.service_line|default:"Employee" }}</div>
-                                </div>
-                            </div>
 
-                            <div class="submission-date">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                    <rect x="2" y="2" width="12" height="12" stroke="currentColor" stroke-width="1.34"/>
-                                </svg>
-                                <span>Submitted {{ idea.submission_date|date:"d-m-Y" }}</span>
-                            </div>
+
+
                         </div>
+
+                        <!-- Review Days Badge -->
+                        {% if idea.review_days_left|default:0 > 0 %}
+                        <div class="review-due-badge">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">{{ idea.review_days_left }} days left</span>
+                        </div>
+                        {% elif idea.review_days_left|default:0 == 0 and idea.review_days_left is not None %}
+                        <div class="review-due-badge review-due-today">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">Today</span>
+                        </div>
+                        {% elif idea.review_days_left|default:0 < 0 %}
+                        <div class="review-due-badge review-due-overdue">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">Overdue</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Reviewed Pulse Ideas -->
+                {% for idea in reviewed_pulse_ideas %}
+                <div class="review-card">
+                    <div class="card-image-wrapper1">
+                         <div class="card-header-section">
+                <div class="card-badge-red">IDEA ARENA<br/>#ID{{ idea.idea_id }}<span class="status-text">{{ idea.get_status_display }}</span></div>
+                          <div class="idea-text-block">
+
+                    <span class="idea-label">Idea: </span>
+                    <span class="idea-description">{{ idea.title }}<br/></span>
+                    <span class="challenge-label">Challenge:</span>
+                    <span class="challenge-description"> {{ idea.challenge.title }}</span>
+                </div>
+            </div>
+                        <!-- Hover Overlay -->
+                        <div class="card-overlay">
+                            <div class="evaluated-status">Evaluation Submitted</div>
+                        </div>
+                    </div>
+
+                    <div class="card-content">
+
+
+                        <div class="card-tags">
+                            {% if idea.ideadetail.keywords %}
+                                {% for keyword in idea.keywords_list %}
+                                    <span class="tag">{{ keyword }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="tag">Reviewed</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-author-section">
+
+
+                        </div>
+
+                        <!-- Review Days Badge -->
+                        {% if idea.review_days_left|default:0 > 0 %}
+                        <div class="review-due-badge">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">{{ idea.review_days_left }} days left</span>
+                        </div>
+                        {% elif idea.review_days_left|default:0 == 0 and idea.review_days_left is not None %}
+                        <div class="review-due-badge review-due-today">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">Today</span>
+                        </div>
+                        {% elif idea.review_days_left|default:0 < 0 %}
+                        <div class="review-due-badge review-due-overdue">
+                            <span class="review-due-label">Review Due:</span>
+                            <span class="review-due-days">Overdue</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 {% empty %}
                 <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;">
-                    <p>No grassroot ideas yet</p>
+                    <p>No reviewed ideas yet</p>
                 </div>
                 {% endfor %}
             </div>

@@ -143,11 +143,15 @@ def challenge_list(request):
 
     # Apply Status Filter from URL
     if status_filter == 'active':
-        challenges = challenges.filter(status='LIVE')
+        # Active challenges: end_date in the future and status is LIVE
+        today = timezone.now().date()
+        challenges = challenges.filter(status='LIVE', end_date__date__gte=today)
     elif status_filter == 'draft':
         challenges = challenges.filter(status='DRAFT')
     elif status_filter == 'past':
-        challenges = challenges.filter(status='COMPLETED')
+        # Challenges whose end_date is before today (including yesterday) are considered 'past'
+        today = timezone.now().date()
+        challenges = challenges.filter(end_date__date__lt=today)
     elif status_filter == 'all':
         # 'all' just respects the base visibility (e.g. owners see their drafts + live)
         pass
@@ -175,13 +179,40 @@ def challenge_list(request):
     }
     return render(request, 'iris_app/index.html', context)
 
+def calculate_review_days(idea):
+    """Helper function to calculate review days for an idea based on its challenge's panel dates"""
+    try:
+        if not idea.challenge:
+            idea.review_days = 0
+            idea.review_days_left = 0
+            idea.panel_end_date = None
+            return
+
+        # Get the panel(s) associated with this challenge
+        panel = ChallengePanel.objects.filter(challenge=idea.challenge).first()
+        if panel and panel.start_date and panel.end_date:
+            # Calculate the difference in days
+            review_duration = (panel.end_date - panel.start_date).days
+            idea.review_days = review_duration
+            idea.panel_end_date = panel.end_date
+            idea.review_days_left = (panel.end_date - timezone.now().date()).days
+        else:
+            idea.review_days = 0
+            idea.panel_end_date = None
+            idea.review_days_left = 0
+    except Exception as e:
+        print(f"Error calculating review days for idea {idea.title}: {str(e)}")
+        idea.review_days = 0
+        idea.panel_end_date = None
+        idea.review_days_left = 0
+
+
 def review_dashboard(request):
     user = get_context_user(request)
     if not user:
         return redirect('login')
 
     request.iris_user = user
-
 
     # Only show ideas for challenges where the current user is assigned as evaluator (ChallengePanel.emailid)
     user_email = user.email
@@ -210,54 +241,129 @@ def review_dashboard(request):
         .filter(first_review_done=True)\
         .order_by('-submission_date')
 
-    # Combine both sets as a queryset
-    all_ideas = first_reviewer_ideas | second_reviewer_ideas
+    # Combine both sets as a queryset (PENDING IDEAS - not yet reviewed by current user)
+    pending_ideas = first_reviewer_ideas | second_reviewer_ideas
+
+    # Get reviewed ideas - Ideas already reviewed by current user
+    reviewed_idea_ids = Review.objects.filter(
+        reviewer=user,
+        entity_type='IDEA'
+    ).values_list('entity_id', flat=True)
+
+    reviewed_ideas = Idea.objects.filter(
+        idea_id__in=reviewed_idea_ids
+    ).select_related('submitter', 'challenge').prefetch_related('ideadetail').order_by('-submission_date')
 
     # Check if we have any challenges with Arena or Pulse keywords
     arena_challenge_ids = Challenge.objects.filter(keywords__icontains='Arena').values_list('challenge_id', flat=True)
     pulse_challenge_ids = Challenge.objects.filter(keywords__icontains='Pulse').values_list('challenge_id', flat=True)
 
-    # Separate ideas by challenge type
-    idea_arena_ideas = all_ideas.filter(challenge_id__in=arena_challenge_ids)
-    idea_pulse_ideas = all_ideas.filter(challenge_id__in=pulse_challenge_ids)
+    # PENDING IDEAS - Separate by challenge type
+    pending_arena_ideas = pending_ideas.filter(challenge_id__in=arena_challenge_ids)
+    pending_pulse_ideas = pending_ideas.filter(challenge_id__in=pulse_challenge_ids)
+
+    # REVIEWED IDEAS - Separate by challenge type
+    reviewed_arena_ideas = reviewed_ideas.filter(challenge_id__in=arena_challenge_ids)
+    reviewed_pulse_ideas = reviewed_ideas.filter(challenge_id__in=pulse_challenge_ids)
 
     # Debug: Print counts
     print(f"Arena challenges: {arena_challenge_ids.count()}, Pulse challenges: {pulse_challenge_ids.count()}")
-    print(f"Arena ideas: {idea_arena_ideas.count()}, Pulse ideas: {idea_pulse_ideas.count()}")
+    print(f"Pending Arena ideas: {pending_arena_ideas.count()}, Pending Pulse ideas: {pending_pulse_ideas.count()}")
+    print(f"Reviewed Arena ideas: {reviewed_arena_ideas.count()}, Reviewed Pulse ideas: {reviewed_pulse_ideas.count()}")
 
     # If no challenges tagged with Arena or Pulse, use all for Arena and leave Pulse empty
     if not arena_challenge_ids.exists() and not pulse_challenge_ids.exists():
         # Fallback: If no keyword-based challenges exist, show all in Arena
-        idea_arena_ideas = all_ideas
-        idea_pulse_ideas = Idea.objects.none()
+        pending_arena_ideas = list(pending_ideas)
+        pending_pulse_ideas = Idea.objects.none()
+        reviewed_arena_ideas = list(reviewed_ideas)
+        reviewed_pulse_ideas = Idea.objects.none()
+
+        # Parse keywords and calculate review days
+        for idea in pending_arena_ideas:
+            if idea.ideadetail and idea.ideadetail.keywords:
+                idea.keywords_list = [kw.strip() for kw in idea.ideadetail.keywords.split(',')][:3]
+            else:
+                idea.keywords_list = []
+            calculate_review_days(idea)
+
+        for idea in reviewed_arena_ideas:
+            if idea.ideadetail and idea.ideadetail.keywords:
+                idea.keywords_list = [kw.strip() for kw in idea.ideadetail.keywords.split(',')][:3]
+            else:
+                idea.keywords_list = []
+            calculate_review_days(idea)
     else:
         # Convert to lists for template rendering
-        idea_arena_ideas = list(idea_arena_ideas)
-        idea_pulse_ideas = list(idea_pulse_ideas)
+        pending_arena_ideas = list(pending_arena_ideas)
+        pending_pulse_ideas = list(pending_pulse_ideas)
+        reviewed_arena_ideas = list(reviewed_arena_ideas)
+        reviewed_pulse_ideas = list(reviewed_pulse_ideas)
 
-    # Calculate statistics
-    total_submissions = all_ideas.count()
-    reviewed_count = all_ideas.filter(status__in=['APPROVED', 'REJECTED']).count()
-    pending_count = all_ideas.filter(status='SUBMITTED').count()
-    success_count = all_ideas.filter(status='APPROVED').count()
-    success_rate = f"{(success_count / total_submissions * 100):.0f}%" if total_submissions > 0 else '--'
+        # Parse keywords and calculate review days for pending ideas
+        for idea in pending_arena_ideas:
+            if idea.ideadetail and idea.ideadetail.keywords:
+                idea.keywords_list = [kw.strip() for kw in idea.ideadetail.keywords.split(',')][:3]
+            else:
+                idea.keywords_list = []
+            calculate_review_days(idea)
 
-    # Check which ideas the current user has already reviewed
-    user_reviewed_ideas = Review.objects.filter(
-        reviewer=user,
-        entity_type='IDEA'
-    ).values_list('entity_id', flat=True)
-    user_reviewed_ideas_set = set(user_reviewed_ideas)
+        for idea in pending_pulse_ideas:
+            if idea.ideadetail and idea.ideadetail.keywords:
+                idea.keywords_list = [kw.strip() for kw in idea.ideadetail.keywords.split(',')][:3]
+            else:
+                idea.keywords_list = []
+            calculate_review_days(idea)
+
+        # Parse keywords and calculate review days for reviewed ideas
+        for idea in reviewed_arena_ideas:
+            if idea.ideadetail and idea.ideadetail.keywords:
+                idea.keywords_list = [kw.strip() for kw in idea.ideadetail.keywords.split(',')][:3]
+            else:
+                idea.keywords_list = []
+            calculate_review_days(idea)
+
+        for idea in reviewed_pulse_ideas:
+            if idea.ideadetail and idea.ideadetail.keywords:
+                idea.keywords_list = [kw.strip() for kw in idea.ideadetail.keywords.split(',')][:3]
+            else:
+                idea.keywords_list = []
+            calculate_review_days(idea)
+
+    # Calculate statistics for pending ideas
+    pending_total = pending_ideas.count()
+    pending_count = pending_ideas.filter(status='SUBMITTED').count()
+
+    # Calculate statistics for reviewed ideas
+    reviewed_total = reviewed_ideas.count()
+    reviewed_approved_count = reviewed_ideas.filter(status='APPROVED').count()
+    reviewed_rejected_count = reviewed_ideas.filter(status='REJECTED').count()
+
+    # Convert querysets to lists and calculate review days for All Submissions tab
+    pending_ideas = list(pending_ideas)
+    reviewed_ideas = list(reviewed_ideas)
+
+    for idea in pending_ideas:
+        calculate_review_days(idea)
+
+    for idea in reviewed_ideas:
+        calculate_review_days(idea)
 
     context = {
-        'all_ideas': all_ideas,
-        'idea_arena_ideas': idea_arena_ideas,
-        'idea_pulse_ideas': idea_pulse_ideas,
-        'total_submissions': total_submissions,
-        'reviewed_count': reviewed_count,
+        # Pending ideas (not yet reviewed by current user)
+        'pending_ideas': pending_ideas,
+        'pending_arena_ideas': pending_arena_ideas,
+        'pending_pulse_ideas': pending_pulse_ideas,
+        'pending_total': pending_total,
         'pending_count': pending_count,
-        'success_rate': success_rate,
-        'user_reviewed_ideas': user_reviewed_ideas_set,
+
+        # Reviewed ideas (already reviewed by current user)
+        'reviewed_ideas': reviewed_ideas,
+        'reviewed_arena_ideas': reviewed_arena_ideas,
+        'reviewed_pulse_ideas': reviewed_pulse_ideas,
+        'reviewed_total': reviewed_total,
+        'reviewed_approved_count': reviewed_approved_count,
+        'reviewed_rejected_count': reviewed_rejected_count,
     }
     return render(request, 'iris_app/review_dashboard.html', context)
 
@@ -452,15 +558,19 @@ def submit_evaluation(request, idea_id):
         else:
             stage = 'FIRST EVALUATION'
 
+        # Calculate decision based on rating
+        rating_int = int(rating) if rating else 0
+        decision = 'APPROVE' if rating_int >= 3 else 'REJECT'
+
         # Create a Review record with the evaluation
         review = Review.objects.create(
             entity_type='IDEA',
             entity_id=idea_id,
             reviewer=user,
-            rating=int(rating) if rating else 0,
+            rating=rating_int,
             comments=remarks,
             stage=stage,
-            decision='PENDING'
+            decision=decision
         )
         print(f"Review created successfully: {review.review_id} with stage: {stage}")
 
@@ -625,6 +735,24 @@ def post_challenge(request):
     request.iris_user = user
     review_parameters = ReviewParameter.objects.filter(is_active=True)
 
+    # Check if editing an existing challenge
+    edit_challenge_id = request.GET.get('edit')
+    edit_challenge = None
+    challenge_data = {}
+
+    if edit_challenge_id:
+        try:
+            edit_challenge = Challenge.objects.get(challenge_id=edit_challenge_id, created_by=user)
+            # Prepare challenge data for pre-filling form
+            challenge_data = {
+                'challenge': edit_challenge,
+                'panels': ChallengePanel.objects.filter(challenge=edit_challenge).order_by('round_number'),
+                'review_params': ChallengeReviewParameter.objects.filter(challenge=edit_challenge)
+            }
+        except Challenge.DoesNotExist:
+            messages.error(request, "Challenge not found or you don't have permission to edit it.")
+            return redirect('challenge_list')
+
     if request.method == 'POST':
         # Step 1 & 2 & 4 Core Data
         title = request.POST.get('title')
@@ -640,12 +768,18 @@ def post_challenge(request):
         round1_eval_criteria = request.POST.get('round1_eval_criteria')
         num_rounds = request.POST.get('num_rounds', '1')
 
+        # Get the challenge status from the form
+        challenge_status = request.POST.get('challenge_status', 'LIVE')
+
         # New fields: Registration Required, Participation Type, Max Team Size
         registration_required = request.POST.get('registration_required')
         participation_type = request.POST.get('participation_type')
         max_team_size = request.POST.get('max_team_size')
 
-        print(f"Received POST data: title={title}, ibu_name={ibu_name}, start_date={start_date_str}, end_date={end_date_str}, num_rounds={num_rounds}, registration_required={registration_required}, participation_type={participation_type}, max_team_size={max_team_size}")
+        # Get challenge_id for editing
+        challenge_id_to_edit = request.POST.get('challenge_id_edit')
+
+        print(f"Received POST data: title={title}, ibu_name={ibu_name}, start_date={start_date_str}, end_date={end_date_str}, num_rounds={num_rounds}, registration_required={registration_required}, participation_type={participation_type}, max_team_size={max_team_size}, challenge_status={challenge_status}")
 
         # Files
        # challenge_icon = request.FILES.get('challenge_icon')
@@ -660,27 +794,57 @@ def post_challenge(request):
             start_date = timezone.make_aware(datetime.datetime.strptime(start_date_str, '%Y-%m-%d'))
             end_date = timezone.make_aware(datetime.datetime.strptime(end_date_str, '%Y-%m-%d'))
 
-            # Create Challenge
-            challenge = Challenge.objects.create(
-                title=title,
-                description=description,
-                ibu_name=ibu_name,
-                keywords=keywords,
-                start_date=start_date,
-                end_date=end_date,
-                target_audience=target_audience,
-                visibility=visibility,
-                expected_outcome=expected_outcome,
-                round1_eval_criteria=round1_eval_criteria,
-                num_rounds=int(num_rounds),
-                registration_required=registration_required,
-                participation_type=participation_type,
-                max_team_size=int(max_team_size) if max_team_size else None,
-               # challenge_icon=challenge_icon,
-                challenge_document=challenge_doc,
-                created_by=user,
-                status='LIVE'
-            )
+            # Determine the status to save - use DRAFT if selected, otherwise LIVE
+            save_status = 'DRAFT' if challenge_status == 'DRAFT' else 'LIVE'
+
+            # Create or Update Challenge
+            if challenge_id_to_edit:
+                # Editing existing challenge
+                challenge = Challenge.objects.get(challenge_id=challenge_id_to_edit, created_by=user)
+                challenge.title = title
+                challenge.description = description
+                challenge.ibu_name = ibu_name
+                challenge.keywords = keywords
+                challenge.start_date = start_date
+                challenge.end_date = end_date
+                challenge.target_audience = target_audience
+                challenge.visibility = visibility
+                challenge.expected_outcome = expected_outcome
+                challenge.round1_eval_criteria = round1_eval_criteria
+                challenge.num_rounds = int(num_rounds)
+                challenge.registration_required = registration_required
+                challenge.participation_type = participation_type
+                challenge.max_team_size = int(max_team_size) if max_team_size else None
+                if challenge_doc:
+                    challenge.challenge_document = challenge_doc
+                challenge.status = save_status
+                challenge.save()
+
+                # Delete old panels and review parameters
+                ChallengePanel.objects.filter(challenge=challenge).delete()
+                ChallengeReviewParameter.objects.filter(challenge=challenge).delete()
+            else:
+                # Creating new challenge
+                challenge = Challenge.objects.create(
+                    title=title,
+                    description=description,
+                    ibu_name=ibu_name,
+                    keywords=keywords,
+                    start_date=start_date,
+                    end_date=end_date,
+                    target_audience=target_audience,
+                    visibility=visibility,
+                    expected_outcome=expected_outcome,
+                    round1_eval_criteria=round1_eval_criteria,
+                    num_rounds=int(num_rounds),
+                    registration_required=registration_required,
+                    participation_type=participation_type,
+                    max_team_size=int(max_team_size) if max_team_size else None,
+                   # challenge_icon=challenge_icon,
+                    challenge_document=challenge_doc,
+                    created_by=user,
+                    status=save_status
+                )
 
             # Step 3: Review Parameters
             # Read selected parameter IDs and weightages from the table
@@ -776,7 +940,9 @@ def post_challenge(request):
 
     return render(request, 'iris_app/post_challenge.html', {
         'review_parameters': review_parameters,
-        'challenge_owners': challenge_owners
+        'challenge_owners': challenge_owners,
+        'edit_challenge': edit_challenge,
+        'challenge_data': challenge_data
     })
 
 def manage_panels(request, challenge_id):

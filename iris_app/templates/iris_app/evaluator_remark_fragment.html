@@ -354,6 +354,34 @@
                   || document.querySelector('.evaluator-wrapper');
     if (!wrapper) return;
 
+    /* ── IMMEDIATE: Move modals to document.body BEFORE any event listeners ─── */
+    console.log('=== MODAL INITIALIZATION START ===');
+    
+    var evalSuccessModal = document.getElementById('evalSuccessModal');
+    var evalCancelModal = document.getElementById('evalCancelModal');
+    
+    if (evalSuccessModal) {
+        console.log('SUCCESS modal found, parent before move:', evalSuccessModal.parentElement.className);
+        if (evalSuccessModal.parentElement !== document.body) {
+            document.body.appendChild(evalSuccessModal);
+            console.log('SUCCESS modal moved to body, new parent:', evalSuccessModal.parentElement.tagName);
+        }
+    } else {
+        console.error('SUCCESS modal NOT found!');
+    }
+    
+    if (evalCancelModal) {
+        console.log('CANCEL modal found, parent before move:', evalCancelModal.parentElement.className);
+        if (evalCancelModal.parentElement !== document.body) {
+            document.body.appendChild(evalCancelModal);
+            console.log('CANCEL modal moved to body, new parent:', evalCancelModal.parentElement.tagName);
+        }
+    } else {
+        console.error('CANCEL modal NOT found!');
+    }
+    
+    console.log('=== MODAL INITIALIZATION END ===');
+
     /* ── helpers ─────────────────────────────────────────── */
     var ratingDescriptions = {
         1: { title: 'Poor',                  desc: 'Does not meet expectations and needs significant improvements.' },
@@ -486,11 +514,28 @@
     /* ── modal helpers ────────────────────────────────────── */
     function openModal(id) {
         var m = document.getElementById(id);
-        if (m) m.classList.add('eval-modal-open');
+        if (m) {
+            console.log('openModal called for:', id);
+            console.log('Modal element found:', m);
+            m.classList.add('eval-modal-open');
+            console.log('Class added. Current classes:', m.classList.toString());
+            console.log('Computed display:', window.getComputedStyle(m).display);
+            return true;
+        } else {
+            console.error('openModal: Modal element not found for id:', id);
+            return false;
+        }
     }
     function closeModal(id) {
         var m = document.getElementById(id);
-        if (m) m.classList.remove('eval-modal-open');
+        if (m) {
+            console.log('closeModal called for:', id);
+            m.classList.remove('eval-modal-open');
+            return true;
+        } else {
+            console.error('closeModal: Modal element not found for id:', id);
+            return false;
+        }
     }
 
     /* ── form submit (AJAX) ───────────────────────────────── */
@@ -498,6 +543,8 @@
     if (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
+            console.log('Form submit triggered');
+            
             var remarks     = wrapper.querySelector('#remarks-frag');
             var ratingInput = wrapper.querySelector('#rating-value-frag');
 
@@ -511,18 +558,24 @@
                 alert('Please select a rating');
                 return;
             }
+            
             recalcTotal();
             var formData = new FormData(form);
             var csrf = form.querySelector('[name=csrfmiddlewaretoken]');
+            
+            console.log('Submitting form data...');
             fetch(form.getAttribute('action'), {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-CSRFToken': csrf ? csrf.value : '' }
             })
             .then(function (res) {
+                console.log('Response status:', res.status);
                 if (res.ok || res.status === 200 || res.status === 302) {
+                    console.log('Opening success modal');
                     openModal('evalSuccessModal');
                 } else {
+                    console.error('Non-success response:', res.status);
                     alert('Error submitting evaluation. Please try again.');
                 }
             })
@@ -562,9 +615,14 @@
     });
     // Clicking backdrop
     var successOverlay = document.getElementById('evalSuccessModal');
-    if (successOverlay) successOverlay.addEventListener('click', function (e) {
-        if (e.target === this) closeModal('evalSuccessModal');
-    });
+    if (successOverlay) {
+        successOverlay.addEventListener('click', function (e) {
+            if (e.target === this) closeModal('evalSuccessModal');
+        });
+        console.log('evalSuccessModal element found and ready');
+    } else {
+        console.error('evalSuccessModal element not found');
+    }
 
     /* ── CANCEL modal button wiring ───────────────────────── */
     // Continue Editing — just close modal, keep form

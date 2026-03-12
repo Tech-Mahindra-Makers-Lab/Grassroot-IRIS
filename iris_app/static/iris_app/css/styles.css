@@ -2035,7 +2035,7 @@ td img {
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
-    border: 8px solid var(--primary-color);
+
 }
 
 .registration-modal-header {
@@ -2689,11 +2689,10 @@ td img {
 }
 
 .innovation-header {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%),
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 200"><defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FF6B35;stop-opacity:0.3" /><stop offset="100%" style="stop-color:%23004E89;stop-opacity:0.2" /></linearGradient></defs><path d="M0,50 Q360,0 720,50 T1440,50 L1440,200 L0,200 Z" fill="url(%23g1)" /><circle cx="1200" cy="20" r="150" fill="%23FFB627" opacity="0.15" /><circle cx="200" cy="150" r="100" fill="%234E89AE" opacity="0.1" /></svg>');
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     background-size: cover;
     background-position: center;
-    padding: 40px 0;
+    padding: 63px 0;
     color: var(--white);
 }
 
@@ -2890,8 +2889,8 @@ td img {
     border-radius: 14px;
     padding: 12px 16px;
     position: absolute;
-    bottom: -40px;
-    left: 60px;
+    bottom: 4px;
+    left: -648px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -5343,7 +5342,7 @@ body {
 }
 
 .achievements-bg-image {
-    width: 1571.51px;
+    width: 1966.51px;
     height: 642.95px;
     left: -65.76px;
     top: -75.38px;
@@ -5457,7 +5456,8 @@ body {
 
 .idea-details-page {
     min-height: 100vh;
-    background-color: #f8f9fa;
+    /* background-color: #f8f9fa; */
+    background-color: #f7e1b6;
 }
 
 .challenge-hero-banner {
@@ -7523,7 +7523,11 @@ body {
     position: relative;
     height: 200px;
     overflow: hidden;
-    background: #F6F2EA;
+
+}
+.card-image-wrapper1 {
+    overflow: hidden;
+
 }
 
 /* Card Overlay - Hover Functionality */
@@ -12176,4 +12180,129 @@ body {
 
 button[disabled] {
     cursor: not-allowed;
+}
+.featured-label {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 300;
+    text-transform: uppercase;
+    color: var(--white);
+    border-bottom: 1px solid #F8B4A3;
+    padding-bottom: 9px;
+    margin-bottom: 24px;
+    font-family: 'Poppins', sans-serif;
+    width: fit-content;
+}
+
+.featured-title {
+    font-size: 40px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 47px;
+    margin-bottom: 24px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.featured-description {
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--white);
+    line-height: 23px;
+    margin-bottom: 30px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.challenge-tags {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    padding: 6px 12px;
+    background: rgba(248, 180, 163, 0.2);
+    border-radius: 20px;
+    font-size: 14px;
+    color: var(--beige);
+    font-family: 'Inter', sans-serif;
+}
+.challenge-stats {
+    display: flex;
+    gap: 60px;
+    margin-bottom: 30px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: #E5DFD3;
+    font-family: 'Inter', sans-serif;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #F8B4A3;
+    margin-top: 8px;
+    font-family: 'Inter', sans-serif;
+}
+.nav-tabs1 {
+    display: flex;
+    border-bottom: none;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+}
+
+.nav-item1 {
+    padding: 0;
+}
+
+.nav-lin1 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid #D0C5BC;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+}
+
+.nav-link1:hover {
+    background: #E5DFD3;
+    border-color: var(--primary-color);
+}
+
+.nav-tabs1 .nav-link1.active {
+    background: var(--white);
+    color: var(--text-dark);
+    border: 2px solid var(--primary-color);
+    border-radius: 20px;
+}
+
+.search-bar1 {
+    flex: 0 1 250px;
+    display: flex;
+    align-items: center;
+    background: var(--white);
+    border: 1px solid #D0C5BC;
+    border-radius: 6px;
+    padding: 8px 12px;
+    gap: 8px;
 }

@@ -998,6 +998,48 @@ body {
     opacity: 0.5;
 }
 
+/* ===== REVIEW DUE BADGE ===== */
+.review-due-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 3px;
+    margin-top: 8px;
+}
+
+.review-due-label {
+    color: #29251d;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.review-due-days {
+    color: #e31837;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.review-due-badge.review-due-today {
+    border-left-color: #f59e0b;
+}
+
+.review-due-badge.review-due-today .review-due-days {
+    color: #f59e0b;
+}
+
+.review-due-badge.review-due-overdue {
+    background: #fef2f2;
+    border-left-color: #dc2626;
+}
+
+.review-due-badge.review-due-overdue .review-due-days {
+    color: #dc2626;
+}
+
 .no-history-text {
     color: #4d4d4f;
     font-size: 14px;
@@ -1066,3 +1108,139 @@ body {
         font-size: 12px;
     }
 }
+/* Card Header */
+.card-header-section {
+    background: linear-gradient(135deg, var(--color-dark) 0%, #7c0d3a 100%);
+    padding: 20px;
+    justify-content: space-between;
+    align-items: flex-start;
+    }
+
+.card-badge-red {
+    font-size: 12px;
+    font-weight: 600;
+    background: linear-gradient(to right, red 30%, black 30%, black 100%);
+    padding: 8px 12px;
+    border-radius: 4px;
+    line-height: 1.4;
+    color: white;
+
+}
+
+.card-status-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.status-icon-pending {
+    width: 8px;
+    height: 8px;
+    background-color: #FFB800;
+    border-radius: 50%;
+}
+
+.status-text-pending {
+    color: #FFB800;
+    font-weight: 600;
+}
+
+/* Card Body */
+.card-body-content {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.idea-text-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    line-height: 1.6;
+}
+
+.idea-label {
+    font-weight: 600;
+    color: var(--color-dark);
+    font-size: 14px;
+}
+
+.idea-description {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.challenge-label {
+    font-weight: 600;
+    color: var(--color-dark);
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+.challenge-description {
+    font-size: 13px;
+    color: #666;
+}
+
+.card-tags-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.tag-item {
+    display: inline-block;
+    background-color: var(--color-light);
+    color: var(--color-dark);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Card Footer */
+.card-footer-section {
+    padding: 0 20px 15px 20px;
+    border-top: 1px solid var(--color-light);
+    padding-top: 15px;
+}
+
+.review-due-text {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 15px;
+}
+
+.view-evaluate-button {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: var(--color-red);
+    color: white;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-decoration: none;
+    border: none;
+}
+
+.view-evaluate-button:hover {
+    background-color: #c41230;
+    transform: scale(1.02);
+}
+.view-evaluate-button {
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+    .card-header-section {
+        padding: 15px;
+    }
+

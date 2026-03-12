@@ -258,6 +258,42 @@
         padding: 12px 0;
         border-bottom: 1px solid #F1F5F9;
     }
+
+    /* Button Group Styling */
+    .btn-group {
+        display: flex;
+        gap: 0;
+    }
+
+    #mainSubmitBtn {
+        border-radius: 6px 0 0 6px;
+        min-width: 150px;
+    }
+
+    #statusDropdown {
+        border-radius: 0 6px 6px 0;
+        border-left: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .dropdown-menu {
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-item {
+        padding: 10px 16px;
+        transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+        background-color: #F8FAFC;
+        color: #E31837;
+    }
+
+    .dropdown-divider {
+        margin: 5px 0;
+    }
 </style>
 {% endblock %}
 
@@ -266,10 +302,10 @@
     <section class="post-challenge-header">
         <div class="header-content">
             <div class="header-text">
-                <h1 class="fw-bold mb-1" style="font-size: 32px;">Post New Challenges</h1>
-                <p class="mb-0 opacity-90" style="font-size: 14px;">Create and configure your innovation challenge</p>
+                <h1 class="fw-bold mb-1" style="font-size: 32px;">{% if edit_challenge %}Edit Challenge{% else %}Post New Challenges{% endif %}</h1>
+                <p class="mb-0 opacity-90" style="font-size: 14px;">{% if edit_challenge %}Update and modify your draft challenge{% else %}Create and configure your innovation challenge{% endif %}</p>
             </div>
-            <button type="button" class="btn-save-draft">
+            <button type="button" class="btn-save-draft" onclick="updateStatusAndSubmit('DRAFT', event)">
                 <i class="fa-regular fa-floppy-disk"></i> Save Draft
             </button>
         </div>
@@ -304,6 +340,9 @@
 
         <form method="POST" enctype="multipart/form-data" id="multiStepForm">
             {% csrf_token %}
+            {% if edit_challenge %}
+            <input type="hidden" name="challenge_id_edit" value="{{ edit_challenge.challenge_id }}">
+            {% endif %}
 
             <!-- Step 1: Basic Information -->
               <div class="assessment-header">
@@ -372,7 +411,7 @@
                             <span class="required-asterisk">*</span>
                         </div>
                         <div class="max-team-size-input-wrapper">
-                            <input type="number" name="max_team_size" class="form-control max-team-size-input" min="1" value="5" max="5" required>
+                            <input type="number" name="max_team_size" class="form-control max-team-size-input" min="1" value="{% if edit_challenge %}{{ edit_challenge.max_team_size }}{% else %}5{% endif %}" max="5" required>
                         </div>
                     </div>
                 </div>
@@ -381,20 +420,21 @@
                 <div class="mb-4">
                     <label class="form-label required">IBU Name</label>
                     <select name="ibu_name" class="form-select select2-ibu" required>
-                        <option value="" disabled selected>Search for an IBU...</option>
+                        <option value="" disabled {% if not edit_challenge %}selected{% endif %}>Search for an IBU...</option>
+                        {% if edit_challenge %}<option value="{{ edit_challenge.ibu_name }}" selected>{{ edit_challenge.ibu_name }}</option>{% endif %}
                     </select>
                 </div>
 
                 <div class="mb-4">
                     <label class="form-label required">Challenge Name</label>
                     <input type="text" name="title" class="form-control" placeholder="Enter a name for your Challenge"
-                        required>
+                        value="{% if edit_challenge %}{{ edit_challenge.title }}{% endif %}" required>
                 </div>
 
                 <div class="mb-4">
                     <label class="form-label required">Description</label>
                     <textarea name="description" class="form-control" rows="5"
-                        placeholder="Describe your Challenge in detail..." id="description" required></textarea>
+                        placeholder="Describe your Challenge in detail..." id="description" required>{% if edit_challenge %}{{ edit_challenge.description }}{% endif %}</textarea>
                     <div class="d-flex justify-content-between mt-1">
                         <small class="text-warning" id="char-warning"><i
                                 class="fa-solid fa-circle-exclamation me-1"></i> Minimum 1000 characters (1000 more
@@ -406,22 +446,22 @@
                 <div class="mb-4">
                     <label class="form-label required">Keywords</label>
                     <input type="text" name="keywords" class="form-control"
-                        placeholder="e.g., AI, Cloud, Innovation, 5G" required>
+                        placeholder="e.g., AI, Cloud, Innovation, 5G" value="{% if edit_challenge %}{{ edit_challenge.keywords }}{% endif %}" required>
                 </div>
 
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <label class="form-label required">Start Date</label>
-                        <input type="date" name="chan_start_date" class="form-control" required>
+                        <input type="date" name="chan_start_date" class="form-control" value="{% if edit_challenge %}{{ edit_challenge.start_date|date:'Y-m-d' }}{% endif %}" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label required">End Date</label>
-                        <input type="date" name="chan_end_date" class="form-control" required>
+                        <input type="date" name="chan_end_date" class="form-control" value="{% if edit_challenge %}{{ edit_challenge.end_date|date:'Y-m-d' }}{% endif %}" required>
                     </div>
                 </div>
                 <div class="mb-4">
                     <label class="form-label required">Expected Business Outcome</label>
-                    <textarea name="expected_outcome" class="form-control" rows="3" required></textarea>
+                    <textarea name="expected_outcome" class="form-control" rows="3" required>{% if edit_challenge %}{{ edit_challenge.expected_outcome }}{% endif %}</textarea>
                 </div>
 
 
@@ -584,7 +624,7 @@
                         </div>
                     </div>
 
-                    <div class="date-fields-container">
+                    <!-- <div class="date-fields-container">
                         <div class="date-field">
                             <label class="form-label date-field-label required">Start Date</label>
                             <input type="date" name="round1_start_date" class="form-control date-field-input">
@@ -593,7 +633,18 @@
                             <label class="form-label date-field-label required">End Date</label>
                             <input type="date" name="round1_end_date" class="form-control date-field-input">
                         </div>
+                    </div> -->
+
+                     <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label required">Start Date</label>
+                        <input type="date" name="round1_start_date" class="form-control" required>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label required">End Date</label>
+                        <input type="date" name="round1_end_date" class="form-control" required>
+                    </div>
+                </div>
                 </div>
 
                 <!-- Round 02 Section (Shown conditionally) -->
@@ -629,7 +680,7 @@
                         </div>
                     </div>
 
-                    <div class="date-fields-container">
+                    <!-- <div class="date-fields-container">
                         <div class="date-field">
                             <label class="form-label date-field-label required">Start Date</label>
                             <input type="date" name="round2_start_date" class="form-control date-field-input">
@@ -638,7 +689,18 @@
                             <label class="form-label date-field-label required">End Date</label>
                             <input type="date" name="round2_end_date" class="form-control date-field-input">
                         </div>
+                    </div> -->
+
+                    <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label required">Start Date</label>
+                        <input type="date" name="round2_start_date" class="form-control" required>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label required">End Date</label>
+                        <input type="date" name="round2_end_date" class="form-control" required>
+                    </div>
+                </div>
                 </div>
 
                 <!-- Review Parameters Section -->
@@ -874,7 +936,23 @@
                 <div class="footer-actions">
                     <button type="button" class="btn btn-prev" onclick="goToStep(2)"><i
                             class="fa-solid fa-chevron-left me-2"></i> Prev</button>
-                    <button type="submit" class="btn btn-danger px-5 fw-bold" id="mainSubmitBtn">Challenge Live</button>
+                    <input type="hidden" name="challenge_status" id="challengeStatus" value="LIVE">
+                    <div class="btn-group" role="group">
+                        <button type="submit" class="btn btn-danger px-5 fw-bold" id="mainSubmitBtn" onclick="setStatus('LIVE')">
+                            <span id="buttonStatusText"><i class="fa-solid fa-rocket me-2"></i>Challenge Live</span>
+                        </button>
+                        <button type="button" class="btn btn-danger px-3 fw-bold dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" id="statusDropdown">
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" onclick="updateStatusAndSubmit('DRAFT', event)">
+                                <i class="fa-regular fa-floppy-disk me-2"></i>Save as Draft
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="updateStatusAndSubmit('LIVE', event)">
+                                <i class="fa-solid fa-rocket me-2"></i>Challenge Live
+                            </a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </form>
@@ -886,9 +964,11 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body text-center p-5">
-                <div class="rocket-container">🚀</div>
-                <h3 class="fw-bold mb-3">Your <span class="text-danger">challenge</span> has been posted successfully!
+                <div class="rocket-container" id="modalIcon">🚀</div>
+                <h3 class="fw-bold mb-3">
+                    <span id="modalTitle">Your <span class="text-danger">challenge</span> has been posted successfully!</span>
                 </h3>
+                <p id="modalMessage" class="text-muted mb-4" style="display: none;"></p>
                 <div class="mt-4"><a href="{% url 'challenge_list' %}" class="btn btn-danger px-4 rounded-pill">Done</a>
                 </div>
             </div>
@@ -1425,6 +1505,51 @@ $('#review-dates').text(`${startDate} to ${endDate}`);
         });
     }
 
+    // Function to set status and update button text
+    function setStatus(status) {
+        $('#challengeStatus').val(status);
+        updateButtonDisplay(status);
+    }
+
+    // Function to update button display based on selected status
+    function updateButtonDisplay(status) {
+        const btnText = $('#buttonStatusText');
+        let displayText = 'Challenge Live';
+        let icon = '<i class="fa-solid fa-rocket me-2"></i>';
+
+        if (status === 'DRAFT') {
+            displayText = 'Save as Draft';
+            icon = '<i class="fa-regular fa-floppy-disk me-2"></i>';
+        }
+
+        // Update text content with icon and text
+        btnText.html(icon + displayText);
+    }
+
+    // Function to submit with specific status from dropdown
+    function updateStatusAndSubmit(status, event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Update the hidden field and button display immediately
+        $('#challengeStatus').val(status);
+        updateButtonDisplay(status);
+
+        // Close the dropdown menu
+        const dropdownButton = document.getElementById('statusDropdown');
+        if (dropdownButton && dropdownButton.classList.contains('show')) {
+            const bsDropdown = bootstrap.Dropdown.getInstance(dropdownButton);
+            if (bsDropdown) {
+                bsDropdown.hide();
+            }
+        }
+
+        // Submit the form
+        setTimeout(function() {
+            $('#multiStepForm').submit();
+        }, 150);
+    }
+
     $(document).ready(function () {
         // Initialize round selection based on active card
         const activeRoundCard = document.querySelector('.rounds-card.active');
@@ -1432,6 +1557,100 @@ $('#review-dates').text(`${startDate} to ${endDate}`);
             const roundType = activeRoundCard.getAttribute('onclick').match(/selectRound\('(\d+)'\)/)[1];
             selectRound(roundType);
         }
+
+        // Pre-fill form if editing an existing challenge
+        {% if edit_challenge %}
+        // Pre-fill registration required
+        const regRequired = '{{ edit_challenge.registration_required }}';
+        if (regRequired === 'yes') {
+            $('#reg-required-yes').prop('checked', true);
+            $('label[for="reg-required-yes"]').addClass('selected');
+        } else if (regRequired === 'no') {
+            $('#reg-required-no').prop('checked', true);
+            $('label[for="reg-required-no"]').addClass('selected');
+        }
+
+        // Pre-fill participation type
+        const participationType = '{{ edit_challenge.participation_type }}';
+        if (participationType) {
+            $(`#participation-${participationType}`).prop('checked', true);
+            $(`#participation-${participationType}`).closest('label').addClass('selected');
+        }
+
+        // Pre-fill target audience
+        const targetAudience = '{{ edit_challenge.target_audience }}';
+        if (targetAudience) {
+            $(`#audience-${targetAudience.toLowerCase()}`).prop('checked', true);
+            $(`#audience-${targetAudience.toLowerCase()}`).closest('label').addClass('selected').find('.check-icon').removeClass('d-none');
+        }
+
+        // Pre-fill visibility/view mode
+        const visibility = '{{ edit_challenge.visibility }}';
+        if (visibility) {
+            $(`#view-${visibility.toLowerCase()}`).prop('checked', true);
+            $(`#view-${visibility.toLowerCase()}`).closest('label').addClass('selected').find('.check-icon').removeClass('d-none');
+        }
+
+        // Pre-fill num_rounds
+        const numRounds = '{{ edit_challenge.num_rounds }}';
+        if (numRounds === '2') {
+            $('#rounds-2').prop('checked', true);
+            $('#rounds-1').prop('checked', false);
+            selectRound('2');
+        } else {
+            $('#rounds-1').prop('checked', true);
+            $('#rounds-2').prop('checked', false);
+            selectRound('1');
+        }
+
+        // Pre-fill evaluator details for Round 1
+        {% for panel in challenge_data.panels %}
+            {% if panel.round_number == 1 %}
+                $('[name="round1_employee_name"]').val('{{ panel.panel_name }}');
+                $('[name="round1_employee_email"]').val('{{ panel.emailid }}');
+                $('[name="round1_employee_id"]').val('{{ panel.emp_id }}');
+                $('[name="round1_start_date"]').val('{{ panel.start_date|date:"Y-m-d" }}');
+                $('[name="round1_end_date"]').val('{{ panel.end_date|date:"Y-m-d" }}');
+            {% elif panel.round_number == 2 %}
+                $('[name="round2_employee_name"]').val('{{ panel.panel_name }}');
+                $('[name="round2_employee_email"]').val('{{ panel.emailid }}');
+                $('[name="round2_employee_id"]').val('{{ panel.emp_id }}');
+                $('[name="round2_start_date"]').val('{{ panel.start_date|date:"Y-m-d" }}');
+                $('[name="round2_end_date"]').val('{{ panel.end_date|date:"Y-m-d" }}');
+            {% endif %}
+        {% endfor %}
+
+        // Pre-fill review parameters
+        {% for review_param in challenge_data.review_params %}
+            // Add parameter to table
+            addParameterToTable('{{ review_param.parameter.parameter_id }}', '{{ review_param.parameter.parameter_name }}');
+            // Set the weightage value for the last added row
+            setTimeout(function() {
+                const lastRow = $('#parameters-tbody tr:last');
+                lastRow.find('[name="param_weightages[]"]').val('{{ review_param.weightage }}');
+                lastRow.find('.param-weightage-display').text('{{ review_param.weightage }}%');
+                calculateParameterTotal();
+            }, 50);
+        {% endfor %}
+
+        // Set challenge status if it's a draft
+        const challengeStatus = '{{ edit_challenge.status }}';
+        if (challengeStatus === 'DRAFT') {
+            $('#challengeStatus').val('DRAFT');
+            updateButtonDisplay('DRAFT');
+        }
+        {% endif %}
+
+        // Initialize button display with icon
+        updateButtonDisplay('LIVE');
+
+        // Handle main button click to ensure LIVE status
+        $('#mainSubmitBtn').on('click', function(e) {
+            // Only set status if not clicking the dropdown toggle
+            if (!$(e.target).closest('.dropdown-toggle').length) {
+                setStatus('LIVE');
+            }
+        });
 
         // Handle Review Parameters dropdown change
         $('#review-parameters-dropdown').on('change', function() {
@@ -1575,17 +1794,57 @@ $('#review-dates').text(`${startDate} to ${endDate}`);
         });
 
         $('#multiStepForm').on('submit', function (e) {
-            console.log('Form submitted');
+            console.log('Form submitted with status:', $('#challengeStatus').val());
             e.preventDefault();
             const btn = $('#mainSubmitBtn');
-            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Publishing...');
+            const currentStatus = $('#challengeStatus').val();
+
+            btn.prop('disabled', true);
+
+            if (currentStatus === 'DRAFT') {
+                btn.html('<span class="spinner-border spinner-border-sm"></span> Saving Draft...');
+            } else {
+                btn.html('<span class="spinner-border spinner-border-sm"></span> Publishing...');
+            }
+
             $.ajax({
-                url: window.location.href, type: 'POST', data: new FormData(this), processData: false, contentType: false,
+                url: window.location.href,
+                type: 'POST',
+                data: new FormData(this),
+                processData: false,
+                contentType: false,
                 success: function (resp) {
-                    if (resp.status === 'success') new bootstrap.Modal(document.getElementById('successModal')).show();
-                    else { alert(resp.message); btn.prop('disabled', false).text('Challenge Live'); }
+                    console.log('Response:', resp);
+                    if (resp.status === 'success') {
+                        // Update modal based on status
+                        if (currentStatus === 'DRAFT') {
+                            $('#modalIcon').text('💾');
+                            $('#modalTitle').html('Your <span class="text-danger">challenge</span> has been saved as <strong>DRAFT</strong>!');
+                            $('#modalMessage').text('You can edit and publish it later.').show();
+                        } else {
+                            $('#modalIcon').text('🚀');
+                            $('#modalTitle').html('Your <span class="text-danger">challenge</span> has been published <strong>LIVE</strong>!');
+                            $('#modalMessage').text('It is now visible to participants.').show();
+                        }
+
+                        new bootstrap.Modal(document.getElementById('successModal')).show();
+
+                        // Redirect after 3 seconds
+                        setTimeout(function() {
+                            window.location.href = "{% url 'challenge_list' %}";
+                        }, 3000);
+                    } else {
+                        alert(resp.message);
+                        btn.prop('disabled', false);
+                        updateButtonDisplay(currentStatus);
+                    }
                 },
-                error: function () { alert('Registration failed.'); btn.prop('disabled', false).text('Challenge Live'); }
+                error: function (err) {
+                    console.error('Error:', err);
+                    alert('An error occurred while submitting the form.');
+                    btn.prop('disabled', false);
+                    updateButtonDisplay(currentStatus);
+                }
             });
         });
     });
