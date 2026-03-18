@@ -4,493 +4,234 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'iris_app/css/evaluator_remark_new.css' %}">
 
-<div class="review-dashboard-wrapper">
-    <!-- Header Section -->
-    <div class="review-header" style="background-image: url('{% static 'iris_app/images/reviewarena.png' %}'); background-size: cover; background-position: center;">
+<div class="rd-v2-container">
+    <!-- Sidebar -->
 
-        <div class="review-header-overlay"></div>
-        <div class="review-header-content">
-            <h1 class="review-header-title">Review - Challenges</h1>
-            <p class="review-header-subtitle">Track your submissions and earn rewards</p>
-        </div>
-    </div>
+    <!-- Main Content Area -->
+    <main class="rd-v2-main">
+        <!-- Header -->
+        <header class="rd-v2-header">
+            <img class="rd-v2-header-img" src="{% static 'iris_app/images/reviewarena.png' %}"
+                alt="Header Background" />
+            <div class="rd-v2-header-content">
+                <h1 class="rd-v2-header-title">Review - Idea Arena</h1>
+                <p class="rd-v2-header-subtitle">Track your submissions and earn rewards</p>
+            </div>
+        </header>
 
-    <!-- Navigation & Search Bar -->
-    <div class="review-nav-section">
-        <div class="review-nav-content">
-            <div class="review-tabs-wrapper">
-
-                <button class="review-tab-item" data-tab="idea-arena" onclick="switchTab(event, 'idea-arena')">
+        <!-- Navigation & Search Section -->
+        <section class="rd-v2-nav-section">
+            <div class="rd-v2-tabs">
+                <button class="rd-v2-tab-item active" data-tab="all-submissions"
+                    onclick="switchTab(event, 'all-submissions')">
+                    All Submissions
+                </button>
+                <button class="rd-v2-tab-item" data-tab="pending" onclick="switchTab(event, 'pending')">
                     Pending
                 </button>
-                <button class="review-tab-item" data-tab="idea-pulse" onclick="switchTab(event, 'idea-pulse')">
+                <button class="rd-v2-tab-item" data-tab="reviewed" onclick="switchTab(event, 'reviewed')">
                     Reviewed
-                </button>
-                 <button class="review-tab-item active" data-tab="all-submissions" onclick="switchTab(event, 'all-submissions')">
-                    All Submissions
                 </button>
             </div>
 
-            <div class="review-search-filter">
-                <div class="review-search-box">
-                    <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.33"/>
-                        <line x1="11" y1="11" x2="14" y2="14" stroke="currentColor" stroke-width="1.33"/>
-                    </svg>
-                    <input type="text" class="search-input" placeholder="Search by title, category, or submitter..." />
+            <div class="rd-v2-nav-right">
+                <div class="rd-v2-search-wrapper">
+                    <span class="rd-v2-search-icon">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.33" />
+                            <line x1="11" y1="11" x2="14" y2="14" stroke="currentColor" stroke-width="1.33" />
+                        </svg>
+                    </span>
+                    <input type="text" class="rd-v2-search-input"
+                        placeholder="Search by title, category, or submitter..." />
                 </div>
-                <button class="review-filter-btn">
+                <button class="rd-v2-filter-btn">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <line x1="3" y1="3" x2="3" y2="4" stroke="currentColor" stroke-width="1.33"/>
-                        <line x1="10" y1="8" x2="10" y2="9" stroke="currentColor" stroke-width="1.33"/>
-                        <line x1="13" y1="13" x2="13" y2="14" stroke="currentColor" stroke-width="1.33"/>
+                        <path d="M1 4L8 11L15 4" stroke="currentColor" stroke-width="2" />
                     </svg>
                     Filter
                 </button>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Statistics Section -->
-    <div class="review-stats-section">
-        <div class="stat-card">
-            <div class="stat-icon"><img src="{% static 'iris_app/images/1.png' %}"></div>
-            <div class="stat-content">
-                <div class="stat-label">TOTAL SUBMISSIONS</div>
-                <div class="stat-value">{{ pending_total|add:reviewed_total }}</div>
-            </div>
-
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon"><img src="{% static 'iris_app/images/2.png' %}"></div>
-            <div class="stat-content">
-                <div class="stat-label">REVIEWED</div>
-                <div class="stat-value">{{ reviewed_total }}</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon"><img src="{% static 'iris_app/images/3.png' %}"></div>
-            <div class="stat-content">
-                <div class="stat-label">PENDING REVIEW</div>
-                <div class="stat-value">{{ pending_total }}</div>
-            </div>
-        </div>
-        <div class="stat-card">
-
-            <div class="stat-content">
-
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="review-main-content">
-        <!-- All Submissions Tab (Pending + Reviewed combined) -->
-        <div id="all-submissions" class="tab-content active">
-            <div class="cards-grid">
-                <!-- Pending Ideas -->
-                {% for idea in pending_ideas %}
-                 <div class="review-card">
-                    <div class="card-image-wrapper1">
-                         <div class="card-header-section">
-                <div class="card-badge-red">IDEA ARENA<br/>#ID{{ idea.idea_id }}<span class="status-text">{{ idea.get_status_display }}</span></div>
-                          <div class="idea-text-block">
-
-                    <span class="idea-label">Idea: </span>
-                    <span class="idea-description">{{ idea.title }}<br/></span>
-                    <span class="challenge-label">Challenge:</span>
-                    <span class="challenge-description"> {{ idea.challenge.title }}</span>
+        <!-- Stats Section -->
+        <section class="rd-v2-stats-container">
+            <div class="rd-v2-stat-card">
+                <div class="rd-v2-stat-icon-wrapper">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5F0229" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    </svg>
+                </div>
+                <div class="rd-v2-stat-content">
+                    <div class="rd-v2-stat-label">Total Submissions</div>
+                    <div class="rd-v2-stat-value">{{ pending_total|add:reviewed_total }}</div>
                 </div>
             </div>
-                        <!-- <div class="card-badge">
-                            {% if idea.challenge.keywords %}IDEA ARENA{% else %}SUBMISSION{% endif %}
-                        </div> -->
-                        <!-- <div class="card-status-bar {% if idea.status == 'APPROVED' %}approved{% elif idea.status == 'UNDER_REVIEW' %}evaluated{% else %}pending{% endif %}">
-                            <div class="status-indicator {% if idea.status == 'APPROVED' %}approved{% elif idea.status == 'UNDER_REVIEW' %}evaluated{% else %}pending{% endif %}">
-                                {% if idea.status == 'APPROVED' %}<span class="status-icon">✓</span>{% else %}<span class="status-dot"></span>{% endif %}
+            <div class="rd-v2-stat-card">
+                <div class="rd-v2-stat-icon-wrapper">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5F0229" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    </svg>
+                </div>
+                <div class="rd-v2-stat-content">
+                    <div class="rd-v2-stat-label">Reviewed</div>
+                    <div class="rd-v2-stat-value">{{ reviewed_total }}</div>
+                </div>
+            </div>
+            <div class="rd-v2-stat-card">
+                <div class="rd-v2-stat-icon-wrapper">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5F0229" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <div class="rd-v2-stat-content">
+                    <div class="rd-v2-stat-label">Pending Review</div>
+                    <div class="rd-v2-stat-value">{{ pending_total }}</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Grid Sections -->
+        <section class="rd-v2-grid-section">
+            <!-- All Submissions Tab -->
+            <div id="all-submissions" class="tab-content active">
+                <div class="rd-v2-grid">
+                    {% for idea in pending_ideas %}
+                    <div class="rd-v2-card" data-status="pending">
+                        <div class="rd-v2-card-header">
+                            <div class="rd-v2-card-badge">IDEA ARENA<br />
+                                #ID{{idea.idea_id|stringformat:"d"|slice:"-5:"}}</div>
+                            <div class="rd-v2-card-status-bar">
+                                <div class="rd-v2-status-dot"></div>
+                                Pending
                             </div>
-
-                        </div> -->
-                        <!-- Hover Overlay -->
-                        <div class="card-overlay">
-                            <button class="btn btn-primary rounded-pill fw-bold shadow-sm btn-overlay view-evaluate-btn" data-idea-id="{{ idea.idea_id }}" data-idea-title="{{ idea.title }}">View & Evaluate</button>
                         </div>
-                    </div>
-
-                    <div class="card-content">
-
-
-                        <div class="card-tags">
-                            {% if idea.ideadetail.keywords %}
+                        <div class="rd-v2-card-overlay">
+                            <button class="rd-v2-evaluate-btn view-evaluate-btn" data-idea-id="{{ idea.idea_id }}"
+                                data-idea-title="{{ idea.title }}">View & Evaluate</button>
+                        </div>
+                        <div class="rd-v2-card-body">
+                            <div class="rd-v2-card-idea-info">
+                                <span class="rd-v2-card-idea-label">Idea: </span>
+                                <span class="rd-v2-card-idea-text">{{ idea.title }}</span>
+                            </div>
+                            <div class="rd-v2-card-challenge-info">
+                                <span class="rd-v2-card-challenge-label">Challenge:</span>
+                                <span class="rd-v2-card-challenge-text">{{ idea.challenge.title }}</span>
+                            </div>
+                            <div class="rd-v2-card-tags">
                                 {% for keyword in idea.keywords_list %}
-                                    <span class="tag">{{ keyword }}</span>
+                                <span class="rd-v2-tag">{{ keyword }}</span>
                                 {% endfor %}
-                            {% else %}
-                                <span class="tag">Idea</span>
-                            {% endif %}
-                        </div>
-
-                        <div class="card-author-section">
-
-
-
-                        </div>
-
-                        <!-- Review Days Badge -->
-                        {% if idea.review_days_left|default:0 > 0 %}
-                        <div class="review-due-badge">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">{{ idea.review_days_left }} days left</span>
-                        </div>
-                        {% elif idea.review_days_left|default:0 == 0 and idea.review_days_left is not None %}
-                        <div class="review-due-badge review-due-today">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">Today</span>
-                        </div>
-                        {% elif idea.review_days_left|default:0 < 0 %}
-                        <div class="review-due-badge review-due-overdue">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">Overdue</span>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endfor %}
-
-                <!-- Reviewed Ideas -->
-                {% for idea in reviewed_ideas %}
-                 <div class="review-card">
-                    <div class="card-image-wrapper1">
-                         <div class="card-header-section">
-                <div class="card-badge-red">IDEA ARENA<br/>#ID{{ idea.idea_id }}<span class="status-text">{{ idea.get_status_display }}</span></div>
-                          <div class="idea-text-block">
-
-                    <span class="idea-label">Idea: </span>
-                    <span class="idea-description">{{ idea.title }}<br/></span>
-                    <span class="challenge-label">Challenge:</span>
-                    <span class="challenge-description"> {{ idea.challenge.title }}</span>
-                </div>
-            </div>
-                        <!-- Hover Overlay -->
-                        <div class="card-overlay">
-                            <div class="evaluated-status">Evaluation Submitted</div>
-                        </div>
-                    </div>
-
-                    <div class="card-content">
-
-
-                        <div class="card-tags">
-                            {% if idea.ideadetail.keywords %}
-                                {% for keyword in idea.keywords_list %}
-                                    <span class="tag">{{ keyword }}</span>
-                                {% endfor %}
-                            {% else %}
-                                <span class="tag">Reviewed</span>
-                            {% endif %}
-                        </div>
-
-                        <div class="card-author-section">
-
-
-
-                        </div>
-
-                        <!-- Review Days Badge -->
-                        {% if idea.review_days_left|default:0 > 0 %}
-                        <div class="review-due-badge">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">{{ idea.review_days_left }} days left</span>
-                        </div>
-                        {% elif idea.review_days_left|default:0 == 0 and idea.review_days_left is not None %}
-                        <div class="review-due-badge review-due-today">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">Today</span>
-                        </div>
-                        {% elif idea.review_days_left|default:0 < 0 %}
-                        <div class="review-due-badge review-due-overdue">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">Overdue</span>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% empty %}
-                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;">
-                    <p>No submissions yet</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- Pending Tab (Arena & Pulse) -->
-        <div id="idea-arena" class="tab-content">
-            <div class="cards-grid">
-                <!-- Pending Arena Ideas -->
-                {% for idea in pending_arena_ideas %}
-                <div class="review-card">
-                    <div class="card-image-wrapper1">
-                         <div class="card-header-section">
-                <div class="card-badge-red">IDEA ARENA<br/>#ID{{ idea.idea_id }}<span class="status-text">{{ idea.get_status_display }}</span></div>
-                          <div class="idea-text-block">
-
-                    <span class="idea-label">Idea: </span>
-                    <span class="idea-description">{{ idea.title }}<br/></span>
-                    <span class="challenge-label">Challenge:</span>
-                    <span class="challenge-description"> {{ idea.challenge.title }}</span>
-                </div>
-            </div>
-                        <!-- Hover Overlay -->
-                        <div class="card-overlay">
-                            <button class="btn btn-primary rounded-pill fw-bold shadow-sm btn-overlay view-evaluate-btn" data-idea-id="{{ idea.idea_id }}" data-idea-title="{{ idea.title }}">View & Evaluate</button>
-                        </div>
-                    </div>
-
-                    <div class="card-content">
-
-
-                        <div class="card-tags">
-                            {% if idea.ideadetail.keywords %}
-                                {% for keyword in idea.keywords_list %}
-                                    <span class="tag">{{ keyword }}</span>
-                                {% endfor %}
-                            {% else %}
-                                <span class="tag">Idea</span>
-                            {% endif %}
-                        </div>
-
-                        <div class="card-author-section">
-
-
-                        </div>
-
-                        <!-- Review Days Badge -->
-                        {% if idea.review_days_left|default:0 > 0 %}
-                        <div class="review-due-badge">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">{{ idea.review_days_left }} days left</span>
-                        </div>
-                        {% elif idea.review_days_left|default:0 == 0 and idea.review_days_left is not None %}
-                        <div class="review-due-badge review-due-today">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">Today</span>
-                        </div>
-                        {% elif idea.review_days_left|default:0 < 0 %}
-                        <div class="review-due-badge review-due-overdue">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">Overdue</span>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endfor %}
-
-                <!-- Pending Pulse Ideas -->
-                {% for idea in pending_pulse_ideas %}
-                <div class="review-card">
-                    <div class="card-image-wrapper1">
-                         <div class="card-header-section">
-                <div class="card-badge-red">IDEA ARENA<br/>#ID{{ idea.idea_id }}<span class="status-text">{{ idea.get_status_display }}</span></div>
-                          <div class="idea-text-block">
-
-                    <span class="idea-label">Idea: </span>
-                    <span class="idea-description">{{ idea.title }}<br/></span>
-                    <span class="challenge-label">Challenge:</span>
-                    <span class="challenge-description"> {{ idea.challenge.title }}</span>
-                </div>
-            </div>
-                        <!-- Hover Overlay -->
-                        <div class="card-overlay">
-                            <button class="btn btn-primary rounded-pill fw-bold shadow-sm btn-overlay view-evaluate-btn" data-idea-id="{{ idea.idea_id }}" data-idea-title="{{ idea.title }}">View & Evaluate</button>
-                        </div>
-                    </div>
-
-                    <div class="card-content">
-
-
-                        <div class="card-tags">
-                            {% if idea.ideadetail.keywords %}
-                                {% for keyword in idea.keywords_list %}
-                                    <span class="tag">{{ keyword }}</span>
-                                {% endfor %}
-                            {% else %}
-                                <span class="tag">Idea</span>
-                            {% endif %}
-                        </div>
-
-                        <div class="card-author-section">
-                            <!-- <div class="card-author">
-                                <img class="author-avatar" src="https://placehold.co/32x32" alt="{{ idea.submitter.full_name }}">
-                                <div class="author-info">
-                                    <div class="author-name">{{ idea.submitter.full_name }}</div>
-                                    <div class="author-role">{{ idea.empcode|default:"Tech Lead" }}</div>
+                            </div>
+                            <div class="rd-v2-card-footer">
+                                <div class="rd-v2-due-date">
+                                    Review Due: {{ idea.review_days_left|default:"-" }} days left
                                 </div>
-                            </div> -->
-
-
-
-                        <!-- Review Days Badge -->
-                        {% if idea.review_days_left|default:0 > 0 %}
-                        <div class="review-due-badge">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">{{ idea.review_days_left }} days left</span>
-                        </div>
-                        {% elif idea.review_days_left|default:0 == 0 and idea.review_days_left is not None %}
-                        <div class="review-due-badge review-due-today">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">Today</span>
-                        </div>
-                        {% elif idea.review_days_left|default:0 < 0 %}
-                        <div class="review-due-badge review-due-overdue">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">Overdue</span>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% empty %}
-                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;">
-                    <p>No pending ideas to review</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- Reviewed Tab (Arena & Pulse) -->
-        <div id="idea-pulse" class="tab-content">
-            <div class="cards-grid">
-                <!-- Reviewed Arena Ideas -->
-                {% for idea in reviewed_arena_ideas %}
-                <div class="review-card">
-                    <div class="card-image-wrapper1">
-                         <div class="card-header-section">
-                <div class="card-badge-red">IDEA ARENA<br/>#ID{{ idea.idea_id }}<span class="status-text">{{ idea.get_status_display }}</span></div>
-                          <div class="idea-text-block">
-
-                    <span class="idea-label">Idea: </span>
-                    <span class="idea-description">{{ idea.title }}<br/></span>
-                    <span class="challenge-label">Challenge:</span>
-                    <span class="challenge-description"> {{ idea.challenge.title }}</span>
-                </div>
-            </div>
-                        <!-- Hover Overlay -->
-                        <div class="card-overlay">
-                            <div class="evaluated-status">Evaluation Submitted</div>
+                            </div>
                         </div>
                     </div>
+                    {% endfor %}
 
-                    <div class="card-content">
-
-
-                        <div class="card-tags">
-                            {% if idea.ideadetail.keywords %}
+                    {% for idea in reviewed_ideas %}
+                    <div class="rd-v2-card" data-status="reviewed">
+                        <div class="rd-v2-card-header">
+                            <div class="rd-v2-card-badge">IDEA ARENA<br />
+                                #ID{{idea.idea_id|stringformat:"d"|slice:"-5:"}}</div>
+                            <div class="rd-v2-card-status-bar">
+                                <div class="rd-v2-status-dot" style="background: #0284c7;"></div>
+                                Reviewed
+                            </div>
+                        </div>
+                        <div class="rd-v2-card-overlay">
+                            <div style="color: white; font-weight: 500;">Evaluation Submitted</div>
+                        </div>
+                        <div class="rd-v2-card-body">
+                            <div class="rd-v2-card-idea-info">
+                                <span class="rd-v2-card-idea-label">Idea: </span>
+                                <span class="rd-v2-card-idea-text">{{ idea.title }}</span>
+                            </div>
+                            <div class="rd-v2-card-challenge-info">
+                                <span class="rd-v2-card-challenge-label">Challenge:</span>
+                                <span class="rd-v2-card-challenge-text">{{ idea.challenge.title }}</span>
+                            </div>
+                            <div class="rd-v2-card-tags">
                                 {% for keyword in idea.keywords_list %}
-                                    <span class="tag">{{ keyword }}</span>
+                                <span class="rd-v2-tag">{{ keyword }}</span>
                                 {% endfor %}
-                            {% else %}
-                                <span class="tag">Reviewed</span>
-                            {% endif %}
+                            </div>
                         </div>
-
-                        <div class="card-author-section">
-
-
-
-                        </div>
-
-                        <!-- Review Days Badge -->
-                        {% if idea.review_days_left|default:0 > 0 %}
-                        <div class="review-due-badge">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">{{ idea.review_days_left }} days left</span>
-                        </div>
-                        {% elif idea.review_days_left|default:0 == 0 and idea.review_days_left is not None %}
-                        <div class="review-due-badge review-due-today">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">Today</span>
-                        </div>
-                        {% elif idea.review_days_left|default:0 < 0 %}
-                        <div class="review-due-badge review-due-overdue">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">Overdue</span>
-                        </div>
-                        {% endif %}
                     </div>
-                </div>
-                {% endfor %}
-
-                <!-- Reviewed Pulse Ideas -->
-                {% for idea in reviewed_pulse_ideas %}
-                <div class="review-card">
-                    <div class="card-image-wrapper1">
-                         <div class="card-header-section">
-                <div class="card-badge-red">IDEA ARENA<br/>#ID{{ idea.idea_id }}<span class="status-text">{{ idea.get_status_display }}</span></div>
-                          <div class="idea-text-block">
-
-                    <span class="idea-label">Idea: </span>
-                    <span class="idea-description">{{ idea.title }}<br/></span>
-                    <span class="challenge-label">Challenge:</span>
-                    <span class="challenge-description"> {{ idea.challenge.title }}</span>
+                    {% endfor %}
                 </div>
             </div>
-                        <!-- Hover Overlay -->
-                        <div class="card-overlay">
-                            <div class="evaluated-status">Evaluation Submitted</div>
+
+            <!-- Pending Tab -->
+            <div id="pending" class="tab-content">
+                <div class="rd-v2-grid">
+                    {% for idea in pending_arena_ideas %}
+                    <!-- Same card structure as above -->
+                    <div class="rd-v2-card" data-status="pending">
+                        <div class="rd-v2-card-header">
+                            <div class="rd-v2-card-badge">IDEA ARENA<br />
+                                ID{{idea.idea_id|stringformat:"d"|slice:"-5:"}}</div>
+                            <div class="rd-v2-card-status-bar">
+                                <div class="rd-v2-status-dot"></div>Pending
+                            </div>
+                        </div>
+                        <div class="rd-v2-card-overlay">
+                            <button class="rd-v2-evaluate-btn view-evaluate-btn" data-idea-id="{{ idea.idea_id }}"
+                                data-idea-title="{{ idea.title }}">View & Evaluate</button>
+                        </div>
+                        <div class="rd-v2-card-body">
+                            <div class="rd-v2-card-idea-info"><span class="rd-v2-card-idea-label">Idea: </span><span
+                                    class="rd-v2-card-idea-text">{{ idea.title }}</span></div>
+                            <div class="rd-v2-card-challenge-info"><span
+                                    class="rd-v2-card-challenge-label">Challenge:</span><span
+                                    class="rd-v2-card-challenge-text">{{ idea.challenge.title }}</span></div>
+                            <div class="rd-v2-card-tags">{% for keyword in idea.keywords_list %}<span
+                                    class="rd-v2-tag">{{ keyword }}</span>{% endfor %}</div>
                         </div>
                     </div>
-
-                    <div class="card-content">
-
-
-                        <div class="card-tags">
-                            {% if idea.ideadetail.keywords %}
-                                {% for keyword in idea.keywords_list %}
-                                    <span class="tag">{{ keyword }}</span>
-                                {% endfor %}
-                            {% else %}
-                                <span class="tag">Reviewed</span>
-                            {% endif %}
-                        </div>
-
-                        <div class="card-author-section">
-
-
-                        </div>
-
-                        <!-- Review Days Badge -->
-                        {% if idea.review_days_left|default:0 > 0 %}
-                        <div class="review-due-badge">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">{{ idea.review_days_left }} days left</span>
-                        </div>
-                        {% elif idea.review_days_left|default:0 == 0 and idea.review_days_left is not None %}
-                        <div class="review-due-badge review-due-today">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">Today</span>
-                        </div>
-                        {% elif idea.review_days_left|default:0 < 0 %}
-                        <div class="review-due-badge review-due-overdue">
-                            <span class="review-due-label">Review Due:</span>
-                            <span class="review-due-days">Overdue</span>
-                        </div>
-                        {% endif %}
-                    </div>
+                    {% endfor %}
                 </div>
-                {% empty %}
-                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #999;">
-                    <p>No reviewed ideas yet</p>
-                </div>
-                {% endfor %}
             </div>
-        </div>
-    </div>
+
+            <!-- Reviewed Tab -->
+            <div id="reviewed" class="tab-content">
+                <div class="rd-v2-grid">
+                    {% for idea in reviewed_arena_ideas %}
+                    <div class="rd-v2-card" data-status="reviewed">
+                        <div class="rd-v2-card-header">
+                            <div class="rd-v2-card-badge">IDEA ARENA<br />
+                                #ID{{idea.idea_id|stringformat:"d"|slice:"-5:" }}</div>
+                            <div class="rd-v2-card-status-bar">
+                                <div class="rd-v2-status-dot" style="background: #0284c7;"></div>Reviewed
+                            </div>
+                        </div>
+                        <div class="rd-v2-card-overlay">
+                            <div style="color: white; font-weight: 500;">Evaluation Submitted</div>
+                        </div>
+                        <div class="rd-v2-card-body">
+                            <div class="rd-v2-card-idea-info"><span class="rd-v2-card-idea-label">Idea: </span><span
+                                    class="rd-v2-card-idea-text">{{ idea.title }}</span></div>
+                            <div class="rd-v2-card-challenge-info"><span
+                                    class="rd-v2-card-challenge-label">Challenge:</span><span
+                                    class="rd-v2-card-challenge-text">{{ idea.challenge.title }}</span></div>
+                            <div class="rd-v2-card-tags">{% for keyword in idea.keywords_list %}<span
+                                    class="rd-v2-tag">{{ keyword }}</span>{% endfor %}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
 
     <!-- Help Widget -->
-    <div class="help-widget">
-        <div class="help-widget-content">
-            <div class="help-icon">?</div>
-            <p class="help-text">Need help!</p>
-        </div>
+    <div class="rd-v2-help-widget">
+        <div class="rd-v2-help-icon"></div>
     </div>
 </div>
 
@@ -509,204 +250,202 @@
 </div>
 
 <script>
-// Direct tab switching function
-function switchTab(event, tabName) {
-    event.preventDefault();
-    event.stopPropagation();
+    // Direct tab switching function
+    function switchTab(event, tabName) {
+        event.preventDefault();
+        event.stopPropagation();
 
-    console.log('switchTab called with:', tabName);
+        console.log('switchTab called with:', tabName);
 
-    // Hide all tab contents
-    var allContents = document.querySelectorAll('.tab-content');
-    allContents.forEach(function(content) {
-        content.classList.remove('active');
-        content.style.display = 'none';
-    });
+        // Hide all tab contents
+        var allContents = document.querySelectorAll('.tab-content');
+        allContents.forEach(function (content) {
+            content.classList.remove('active');
+            content.style.display = 'none';
+        });
 
-    // Remove active class from all tabs
-    var allTabs = document.querySelectorAll('.review-tab-item');
-    allTabs.forEach(function(tab) {
-        tab.classList.remove('active');
-    });
+        // Remove active class from all tabs
+        var allTabs = document.querySelectorAll('.rd-v2-tab-item');
+        allTabs.forEach(function (tab) {
+            tab.classList.remove('active');
+        });
 
-    // Show the selected tab content
-    var selectedContent = document.getElementById(tabName);
-    if (selectedContent) {
-        selectedContent.classList.add('active');
-        selectedContent.style.display = 'block';
-        console.log('Showing tab:', tabName);
+        // Show the selected tab content
+        var selectedContent = document.getElementById(tabName);
+        if (selectedContent) {
+            selectedContent.classList.add('active');
+            selectedContent.style.display = 'block';
+            console.log('Showing tab:', tabName);
+        }
+
+        // Add active class to clicked button
+        event.currentTarget.classList.add('active');
+
+        return false;
     }
 
-    // Add active class to clicked button
-    event.target.classList.add('active');
+    // ============================================
+    // SLIDE MODAL FUNCTIONALITY
+    // ============================================
 
-    return false;
-}
+    // Function to open slide modal
+    // customUrl: optional URL to load (defaults to idea detail page)
+    function openSlideModal(ideaId, ideaTitle, customUrl) {
+        const backdrop = document.getElementById('slideModalBackdrop');
+        const container = document.getElementById('slideModalContainer');
+        const panel = document.getElementById('slidePanel');
+        const content = document.getElementById('slidePanelContent');
+        const title = document.getElementById('slidePanelTitle');
 
-// ============================================
-// SLIDE MODAL FUNCTIONALITY
-// ============================================
+        // Set title
+        title.textContent = ideaTitle || 'Review Idea Details';
 
-// Function to open slide modal
-// customUrl: optional URL to load (defaults to idea detail page)
-function openSlideModal(ideaId, ideaTitle, customUrl) {
-    const backdrop = document.getElementById('slideModalBackdrop');
-    const container = document.getElementById('slideModalContainer');
-    const panel = document.getElementById('slidePanel');
-    const content = document.getElementById('slidePanelContent');
-    const title = document.getElementById('slidePanelTitle');
+        // Show loading state
+        content.innerHTML = '<div class="slide-panel-loading"><div class="spinner"></div></div>';
 
-    // Set title
-    title.textContent = ideaTitle || 'Review Idea Details';
+        // Show modal with animation (only trigger open if not already open)
+        if (!container.classList.contains('active')) {
+            backdrop.classList.add('active');
+            container.classList.add('active');
+            setTimeout(() => panel.classList.add('show'), 10);
+        }
 
-    // Show loading state
-    content.innerHTML = '<div class="slide-panel-loading"><div class="spinner"></div></div>';
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
 
-    // Show modal with animation (only trigger open if not already open)
-    if (!container.classList.contains('active')) {
-        backdrop.classList.add('active');
-        container.classList.add('active');
-        setTimeout(() => panel.classList.add('show'), 10);
-    }
-
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden';
-
-    // Use customUrl if provided, otherwise use idea-detail URL
-    const urlPattern = customUrl || ('/review-dashboard/idea-detail/' + ideaId + '/');
-    fetch(urlPattern, {
+        // Use customUrl if provided, otherwise use idea-detail URL
+        const urlPattern = customUrl || ('/review-dashboard/idea-detail/' + ideaId + '/');
+        fetch(urlPattern, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(response => response.text())
-        .then(html => {
-            // Backend now returns clean fragment HTML — inject directly
-            content.innerHTML = html;
+            .then(response => response.text())
+            .then(html => {
+                // Backend now returns clean fragment HTML — inject directly
+                content.innerHTML = html;
 
-            // Re-run any inline scripts from the loaded fragment
-            content.querySelectorAll('script').forEach(oldScript => {
-                const newScript = document.createElement('script');
-                if (oldScript.src) {
-                    newScript.src = oldScript.src;
-                } else {
-                    newScript.textContent = oldScript.textContent;
-                }
-                document.body.appendChild(newScript);
-                oldScript.remove();
+                // Re-run any inline scripts from the loaded fragment
+                content.querySelectorAll('script').forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) {
+                        newScript.src = oldScript.src;
+                    } else {
+                        newScript.textContent = oldScript.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                    oldScript.remove();
+                });
+            })
+            .catch(error => {
+                console.error('Error loading page:', error);
+                content.innerHTML = '<div style="padding: 40px; text-align: center; color: #666;">Error loading content. Please try again.</div>';
             });
-        })
-        .catch(error => {
-            console.error('Error loading page:', error);
-            content.innerHTML = '<div style="padding: 40px; text-align: center; color: #666;">Error loading content. Please try again.</div>';
-        });
-}
+    }
 
-// Expose globally so dynamically injected content (e.g. Evaluate button) can call it
-window.openSlideModal = openSlideModal;
+    // Expose globally so dynamically injected content (e.g. Evaluate button) can call it
+    window.openSlideModal = openSlideModal;
 
-// Function to close slide modal
-function closeSlideModal() {
-    const backdrop = document.getElementById('slideModalBackdrop');
-    const container = document.getElementById('slideModalContainer');
-    const panel = document.getElementById('slidePanel');
+    // Function to close slide modal
+    function closeSlideModal() {
+        const backdrop = document.getElementById('slideModalBackdrop');
+        const container = document.getElementById('slideModalContainer');
+        const panel = document.getElementById('slidePanel');
 
-    // Remove animation classes
-    panel.classList.remove('show');
+        // Remove animation classes
+        panel.classList.remove('show');
 
-    // Wait for animation to complete before hiding
-    setTimeout(() => {
-        backdrop.classList.remove('active');
-        container.classList.remove('active');
-        document.body.style.overflow = 'auto';
-    }, 400);
-}
+        // Wait for animation to complete before hiding
+        setTimeout(() => {
+            backdrop.classList.remove('active');
+            container.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }, 400);
+    }
 
-// Also expose closeSlideModal globally
-window.closeSlideModal = closeSlideModal;
+    // Also expose closeSlideModal globally
+    window.closeSlideModal = closeSlideModal;
 
-// Event listeners for slide modal
-document.addEventListener('DOMContentLoaded', function() {
-    // Click handlers for "View & Evaluate" buttons
-    const viewEvaluateBtns = document.querySelectorAll('.view-evaluate-btn');
-    viewEvaluateBtns.forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const ideaId = this.getAttribute('data-idea-id');
-            const ideaTitle = this.getAttribute('data-idea-title');
-            openSlideModal(ideaId, ideaTitle);
-        });
-    });
-
-    // Event delegation: handle "Evaluate" button inside the slide panel content
-    // (the button is dynamically loaded, so we need event delegation on the panel content wrapper)
-    const slidePanelContent = document.getElementById('slidePanelContent');
-    if (slidePanelContent) {
-        slidePanelContent.addEventListener('click', function(e) {
-            const evaluateBtn = e.target.closest('.evaluate-slide-btn');
-            if (evaluateBtn) {
+    // Event listeners for slide modal
+    document.addEventListener('DOMContentLoaded', function () {
+        // Click handlers for "View & Evaluate" buttons
+        const viewEvaluateBtns = document.querySelectorAll('.view-evaluate-btn');
+        viewEvaluateBtns.forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
                 e.preventDefault();
-                const ideaId = evaluateBtn.getAttribute('data-idea-id');
-                const evaluatorUrl = '/reviewer-idea-page/' + ideaId + '/';
-                // Update title and reload content with the evaluator page
-                const title = document.getElementById('slidePanelTitle');
-                if (title) title.textContent = 'Evaluate Idea';
-                openSlideModal(ideaId, 'Evaluate Idea', evaluatorUrl);
+                const ideaId = this.getAttribute('data-idea-id');
+                const ideaTitle = this.getAttribute('data-idea-title');
+                openSlideModal(ideaId, ideaTitle);
+            });
+        });
+
+        // Event delegation: handle "Evaluate" button inside the slide panel content
+        // (the button is dynamically loaded, so we need event delegation on the panel content wrapper)
+        const slidePanelContent = document.getElementById('slidePanelContent');
+        if (slidePanelContent) {
+            slidePanelContent.addEventListener('click', function (e) {
+                const evaluateBtn = e.target.closest('.evaluate-slide-btn');
+                if (evaluateBtn) {
+                    e.preventDefault();
+                    const ideaId = evaluateBtn.getAttribute('data-idea-id');
+                    const evaluatorUrl = '/reviewer-idea-page/' + ideaId + '/';
+                    // Update title and reload content with the evaluator page
+                    const title = document.getElementById('slidePanelTitle');
+                    if (title) title.textContent = 'Evaluate Idea';
+                    openSlideModal(ideaId, 'Evaluate Idea', evaluatorUrl);
+                }
+            });
+        }
+
+        // Close button handler
+        const closeBtn = document.getElementById('slideModalCloseBtn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeSlideModal);
+        }
+
+        // Backdrop click handler
+        const backdrop = document.getElementById('slideModalBackdrop');
+        if (backdrop) {
+            backdrop.addEventListener('click', closeSlideModal);
+        }
+
+        // Keyboard escape key handler
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const container = document.getElementById('slideModalContainer');
+                if (container && container.classList.contains('active')) {
+                    closeSlideModal();
+                }
             }
         });
-    }
 
-    // Close button handler
-    const closeBtn = document.getElementById('slideModalCloseBtn');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeSlideModal);
-    }
+        // Search functionality
+        var searchInput = document.querySelector('.rd-v2-search-input');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function (e) {
+                var searchTerm = this.value.toLowerCase();
+                var activeTab = document.querySelector('.tab-content.active');
 
-    // Backdrop click handler
-    const backdrop = document.getElementById('slideModalBackdrop');
-    if (backdrop) {
-        backdrop.addEventListener('click', closeSlideModal);
-    }
+                if (activeTab) {
+                    var cards = activeTab.querySelectorAll('.rd-v2-card');
+                    cards.forEach(function (card) {
+                        var titleElement = card.querySelector('.rd-v2-card-idea-text');
 
-    // Keyboard escape key handler
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const container = document.getElementById('slideModalContainer');
-            if (container && container.classList.contains('active')) {
-                closeSlideModal();
-            }
+                        if (titleElement) {
+                            var title = titleElement.textContent.toLowerCase();
+
+                            if (title.includes(searchTerm) || searchTerm === '') {
+                                card.style.display = 'flex';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        }
+                    });
+                }
+            });
         }
     });
-
-    // Search functionality
-    var searchInput = document.querySelector('.search-input');
-    if (searchInput) {
-        searchInput.addEventListener('keyup', function(e) {
-            var searchTerm = this.value.toLowerCase();
-            var activeTab = document.querySelector('.tab-content.active');
-
-            if (activeTab) {
-                var cards = activeTab.querySelectorAll('.review-card');
-                cards.forEach(function(card) {
-                    var titleElement = card.querySelector('.card-title');
-                    var authorElement = card.querySelector('.author-name');
-
-                    if (titleElement && authorElement) {
-                        var title = titleElement.textContent.toLowerCase();
-                        var author = authorElement.textContent.toLowerCase();
-
-                        if (title.includes(searchTerm) || author.includes(searchTerm) || searchTerm === '') {
-                            card.style.display = 'block';
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    }
-                });
-            }
-        });
-    }
-});
 </script>
 
 {% endblock %}

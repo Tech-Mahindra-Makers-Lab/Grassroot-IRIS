@@ -18,10 +18,20 @@ urlpatterns = [
     path('review-dashboard/idea-detail/<uuid:idea_id>/', views.idea_detail, name='view_idea_detail'),
     path('reviewer-idea-page/<uuid:idea_id>/', views.reviewer_idea_page, name='reviewer_idea_page'),
     path('submit-evaluation/<uuid:idea_id>/', views.submit_evaluation, name='submit_evaluation'),
+    # Admin Dashboard
+    path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('challenge-view/<uuid:challenge_id>/', views.view_challenge_admin, name='view_challenge_admin'),
+    path('update-challenge-admin/<uuid:challenge_id>/', views.updateChallengeByAdmin, name='updateChallengeByAdmin'),
+    path('delete-challenge-admin/<uuid:challenge_id>/', views.deleteChallengeByAdmin, name='deleteChallengeByAdmin'),
+
+    path('manage-panel/<uuid:challenge_id>/', views.managepanel, name='managepanel'),
+    path('download-challenge-summary/<uuid:challenge_id>/', views.download_challenge_summary, name='download_challenge_summary'),
+
     path('idea-details/<uuid:challenge_id>/', views.idea_details, name='idea_details'),
     path('submit-idea/<uuid:challenge_id>/', views.submit_idea, name='submit_idea'),
     path('challenge-register/<uuid:challenge_id>/', views.challenge_register, name='challenge_register'),
     path('submit-registration/<uuid:challenge_id>/', views.submit_registration, name='submit_registration'),
+    path('registernow/<uuid:challenge_id>/', views.registernow, name='registernow'),
     path('employee_search/', views.employee_search, name='employee_search'),
 
     # Grassroot Idea Flow
@@ -37,6 +47,8 @@ urlpatterns = [
     path('ibu-search/', views.ibu_search, name='ibu_search'),
     path('notifications/', views.notification_list, name='notification_list'),
     path('notifications/mark-read/<uuid:notification_id>/', views.mark_notification_as_read, name='mark_notification_as_read'),
+    path('notifications/mark-all-read/', views.mark_all_notifications_as_read, name='mark_all_notifications_as_read'),
     path('reports/', views.reports_view, name='reports_view'),
     path('reports/export/', views.export_report_csv, name='export_report_csv'),
+    path('view-user-idea/<uuid:idea_id>/', views.viewuseridea, name='viewuseridea'),
 ]

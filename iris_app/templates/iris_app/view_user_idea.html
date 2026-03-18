@@ -1,0 +1,323 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block title %}View Idea | {{ idea.title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'iris_app/css/viewUser_idea.css' %}">
+<link rel="stylesheet" href="{% static 'iris_app/css/user_dashboard.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    body {
+        background-color: #F6F2EA;
+    }
+    .main-content {
+        margin-left: 0;
+        padding: 40px;
+    }
+    /* Simple Sidebar for consistency */
+    .view-sidebar {
+        width: 90px;
+        background: white;
+        border-right: 1px solid #F1F1F1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        position: fixed;
+        height: 100vh;
+        left: 0;
+        top: 0;
+        z-index: 100;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="view-container">
+        <!-- Header -->
+        <div class="header-section">
+            <div class="badge-row">
+                <div class="category-badge">
+                    {% if idea.challenge %}Idea Arena{% else %}GRASSROOT{% endif %}
+                </div>
+                <div class="status-row">
+                    <div class="status-icon" style="background: {% if idea.status == 'SUBMITTED' %}#F8B4A3{% elif idea.status == 'APPROVED' %}#31D586{% elif idea.status == 'IMPLEMENTED' %}#31D586{% else %}#F6F2EA{% endif %};">
+                        <i class="fa-solid fa-check" style="font-size: 10px;"></i>
+                    </div>
+                    <div class="status-text">{{ idea.get_status_display }}</div>
+                </div>
+            </div>
+
+            <h1 class="idea-title">{{ idea.title }}</h1>
+            <p class="submission-date">Submitted {{ idea.submission_date|date:"d/m/Y" }}</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content-section" style="background: white; gap: 24px; padding: 24px 32px;">
+            <!-- Points Card (Kept from original design) -->
+            <div class="points-card">
+                <div class="points-icon">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <span class="points-value">+{{ reward_points }}</span>
+                    <span class="points-label">IRIS Points Earned</span>
+                </div>
+            </div>
+
+            <!-- Key Focus Area -->
+            <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 12px; display: flex">
+                <div style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+                    <i class="fa-solid fa-bullseye" style="color: #E31837; font-size: 16px;"></i>
+                    <div style="color: #E31837; font-size: 14px; font-family: Poppins; font-weight: 500; line-height: 20px;">Key Focus Area</div>
+                </div>
+                <div style="align-self: stretch; justify-content: flex-start; align-items: flex-start; gap: 12px; display: inline-flex">
+                    <div style="flex: 1 1 0; padding: 13px 24px; background: #F6F2EA; box-shadow: 0px 0px 0px 1px #FEE685; border-radius: 6px; display: flex; align-items: center;">
+                        <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                            <div style="color: #4A453D; font-size: 12px; font-family: Poppins; font-weight: 400;">Improvement Category</div>
+                            <div style="color: #101828; font-size: 14px; font-family: Poppins; font-weight: 600;">{{ idea.improvement_category|default:"N/A" }}</div>
+                        </div>
+                    </div>
+                    <div style="flex: 1 1 0; padding: 13px 24px; background: #F6F2EA; box-shadow: 0px 0px 0px 1px #FEE685; border-radius: 6px; display: flex; align-items: center;">
+                        <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                            <div style="color: #4A453D; font-size: 12px; font-family: Poppins; font-weight: 400;">Improvement Theme</div>
+                            <div style="color: #101828; font-size: 14px; font-family: Poppins; font-weight: 600;">{{ idea.improvement_theme|default:"N/A" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Idea Name -->
+            <div style="align-self: stretch; flex-direction: column; gap: 8px; display: flex">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-lightbulb" style="color: #E31837; font-size: 16px;"></i>
+                    <div style="color: #E31837; font-size: 14px; font-family: Poppins; font-weight: 500;">Idea Name</div>
+                </div>
+                <div style="color: #4D4D4F; font-size: 14px; font-family: Poppins; font-weight: 400; line-height: 1.6;">{{ idea.title }}</div>
+            </div>
+
+            <!-- Proposed Idea -->
+            <div style="align-self: stretch; flex-direction: column; gap: 8px; display: flex">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-file-contract" style="color: #E31837; font-size: 16px;"></i>
+                    <div style="color: #E31837; font-size: 14px; font-family: Poppins; font-weight: 500;">Proposed Idea</div>
+                </div>
+                <div style="color: #4D4D4F; font-size: 14px; font-family: Poppins; font-weight: 400; line-height: 1.6;">
+                    {% if detail.proposed_solution %}
+                        {{ detail.proposed_solution|linebreaks }}
+                    {% else %}
+                        No solution details provided.
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Keywords -->
+            <div style="align-self: stretch; flex-direction: column; gap: 8px; display: flex">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-tags" style="color: #E31837; font-size: 16px;"></i>
+                    <div style="color: #E31837; font-size: 14px; font-family: Poppins; font-weight: 500;">Keywords</div>
+                </div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    {% for kw in keywords_list %}
+                        <div style="padding: 8px 12px; background: #F6F2EA; border-radius: 8px; color: #4D4D4F; font-size: 12px; font-family: Poppins; font-weight: 500;">{{ kw }}</div>
+                    {% empty %}
+                        <div style="color: #999; font-size: 12px;">No keywords listed.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Tools/Technology -->
+            <div style="align-self: stretch; flex-direction: column; gap: 8px; display: flex">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-microchip" style="color: #E31837; font-size: 16px;"></i>
+                    <div style="color: #E31837; font-size: 14px; font-family: Poppins; font-weight: 500;">Tools/Technology used</div>
+                </div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    {% for tool in tools_list %}
+                        <div style="padding: 8px 12px; background: #F6F2EA; border-radius: 8px; color: #4D4D4F; font-size: 12px; font-family: Poppins; font-weight: 500;">{{ tool }}</div>
+                    {% empty %}
+                        <div style="color: #999; font-size: 12px;">No technology listed.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Business Value -->
+            <div style="align-self: stretch; flex-direction: column; gap: 8px; display: flex">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-chart-line" style="color: #E31837; font-size: 16px;"></i>
+                    <div style="color: #E31837; font-size: 14px; font-family: Poppins; font-weight: 500;">Business Value</div>
+                </div>
+                <div style="color: #4D4D4F; font-size: 14px; font-family: Poppins; font-weight: 400; line-height: 1.6;">
+                    {% if detail.business_value_monetary %}
+                        {{ detail.business_value_monetary|linebreaks }}
+                    {% else %}
+                        No business impact details provided.
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Monetary Value -->
+            <div style="align-self: stretch; flex-direction: column; gap: 8px; display: flex">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-comments-dollar" style="color: #E31837; font-size: 16px;"></i>
+                    <div style="color: #E31837; font-size: 14px; font-family: Poppins; font-weight: 500;">Monetary Value</div>
+                </div>
+                <div style="padding: 16px; background: #F6F2EA; border: 1px solid #BEDBFF; border-radius: 6px; color: black; font-size: 14px; font-family: Poppins;">
+                    {% if detail.business_monetary %}
+                        {{ detail.business_monetary }}
+                    {% else %}
+                        No monetary value specified.
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div style="align-self: stretch; flex-direction: column; gap: 8px; display: flex">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-circle-info" style="color: #E31837; font-size: 16px;"></i>
+                    <div style="color: #E31837; font-size: 14px; font-family: Poppins; font-weight: 500;">Additional Information</div>
+                </div>
+                <div style="color: #4D4D4F; font-size: 14px; font-family: Poppins; font-weight: 400; line-height: 1.6;">
+                    {% if detail.context %}
+                        {{ detail.context|linebreaks }}
+                    {% else %}
+                        No additional information provided.
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Supporting Documents -->
+            <div style="align-self: stretch; display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-file-pdf" style="color: #E31837; font-size: 16px;"></i>
+                    <div style="color: #E31837; font-size: 14px; font-family: Poppins; font-weight: 500;">Supporting Documents</div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    {% for doc in idea.ideadocument_set.all %}
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border: 1px solid #E5DFD3; border-radius: 8px;">
+                        <span style="font-size: 14px; color: #5F0229; font-weight: 500;">{{ doc.file_name }}</span>
+                        <div style="display: flex; gap: 15px;">
+                            <a href="{{ doc.file_url.url }}" target="_blank" style="text-decoration: none; color: #5F0229; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-eye"></i> Preview
+                            </a>
+                            <a href="{{ doc.file_url.url }}" download style="text-decoration: none; color: #5F0229; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-download"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                        <div style="color: #999; font-size: 14px;">No supporting documents attached.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Progress Timeline -->
+            <div style="margin-top: 10px;">
+                <div class="section-label">
+                    <i class="fa-solid fa-timeline"></i>
+                    Progress Timeline
+                </div>
+
+                <div class="timeline">
+                    <!-- Submitted -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-circle {% if current_status_index >= 0 %}completed{% endif %}">
+                                <i class="fa-solid fa-check" style="font-size: 10px;"></i>
+                            </div>
+                            <div class="timeline-line"></div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-status">Submitted</div>
+                            <div class="timeline-date">{{ idea.submission_date|date:"d/m/Y" }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Under Review -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-circle {% if current_status_index > 0 %}completed{% elif current_status_index == 1 %}active{% endif %}">
+                                {% if current_status_index > 0 %}<i class="fa-solid fa-check" style="font-size: 10px;"></i>{% endif %}
+                            </div>
+                            <div class="timeline-line"></div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-status">Under Review</div>
+                            <div class="timeline-date">{% if current_status_index >= 1 %}Processed{% else %}Pending{% endif %}</div>
+                        </div>
+                    </div>
+
+                    <!-- Approved -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-circle {% if current_status_index >= 2 %}completed{% elif current_status_index == 2 %}active{% endif %}">
+                                {% if current_status_index >= 2 %}<i class="fa-solid fa-check" style="font-size: 10px;"></i>{% endif %}
+                            </div>
+                            <div class="timeline-line"></div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-status">Approved</div>
+                            <div class="timeline-date">{% if current_status_index >= 2 %}Processed{% else %}Pending{% endif %}</div>
+                        </div>
+                    </div>
+
+                    <!-- Implemented -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-circle {% if current_status_index == 3 %}completed{% endif %}">
+                                {% if current_status_index == 3 %}<i class="fa-solid fa-check" style="font-size: 10px;"></i>{% endif %}
+                            </div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-status">Implemented</div>
+                            <div class="timeline-date">{% if current_status_index == 3 %}Completed{% else %}Pending{% endif %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback & Comments -->
+            <div class="feedback-container">
+                <div class="section-label">
+                    <i class="fa-regular fa-comments"></i>
+                    Feedback & Comments ({{ reviews.count }})
+                </div>
+
+                {% for review in reviews %}
+                <div class="comment-card">
+                    <div class="comment-header">
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <div style="display: flex; flex-direction: column;">
+                                <span class="user-name">{{ review.reviewer.full_name }}</span>
+                                <span class="user-role">{{ review.stage|default:"Reviewer" }}</span>
+                            </div>
+                        </div>
+                        <span class="comment-date">{{ review.review_date|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="comment-text">
+                        {{ review.comments|linebreaks }}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="comment-card" style="text-align: center; color: #666;">
+                    <p>No feedback available yet. Your idea is waiting for review.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="footer-section">
+
+            <a href="{% url 'user_dashboard' %}" class="btn-close-view" style="text-decoration: none; text-align: center;">
+                Close
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

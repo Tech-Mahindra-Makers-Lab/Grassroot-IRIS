@@ -1,243 +1,218 @@
 {% extends 'iris_app/base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'iris_app/css/arena_v2.css' %}">
+{% endblock %}
+
 {% block content %}
 
-<!-- Innovation Dashboard -->
-<div class="innovation-page p-0">
+<div class="arena-v2-container">
+    <!-- Background Depth Shapes (Requested Mockup Elements) -->
+    <div class="depth-lines-container">
+        <!-- Specific geometric shapes from user snippet -->
+        <div style="width: 1841.21px; height: 658.34px; left: 200.01px; top: 394.08px; position: absolute; outline: 1px #E31837 solid; outline-offset: -0.50px; opacity: 0.05; transform: rotate(-5deg);"></div>
+        <div style="width: 1118.82px; height: 400.17px; left: 200.01px; top: 652.23px; position: absolute; outline: 1px #E31837 solid; outline-offset: -0.50px; opacity: 0.05; transform: rotate(-5deg);"></div>
+        <div style="width: 680.14px; height: 243.27px; left: 200.01px; top: 809.12px; position: absolute; outline: 1px #E31837 solid; outline-offset: -0.50px; opacity: 0.05; transform: rotate(-5deg);"></div>
+        <div style="width: 992.83px; height: 355.03px; left: 1048.33px; top: 697.38px; position: absolute; outline: 1px #E31837 solid; outline-offset: -0.50px; opacity: 0.05; transform: rotate(-5deg);"></div>
+    </div>
 
-    <section class="innovation-header" style="background: url('{% static 'iris_app/images/challenge.png' %}') no-repeat right center/contain, linear-gradient(90deg, #fff 60%, #f0f7ff 100%);">
-
-        <div class="container py-4">
-
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="innovation-header-content">
-                    <h1 class="innovation-title m-0" style="font-size: 32px; font-weight: 700;">Idea Arena
-                    </h1>
-                    <p class="innovation-subtitle  m-0">Explore opportunities to innovate and collaborate</p>
-                </div>
-                {% if request.iris_user.is_challenge_owner %}
-                <a href="{% url 'post_challenge' %}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">📝 Post
-                    New Challenge</a>
-                {% endif %}
-            </div>
+    <!-- Hero Header -->
+    <div style="width: 100%; height: 180px; position: relative; background: #5F0229; overflow: hidden; z-index: 5;">
+        <img style="width: 100%; height: 100%; object-fit: cover; opacity: 0.3;" src="{% static 'iris_app/images/challenge.png' %}" alt="Header background" />
+        <div style="position: absolute; left: 120px; top: 50px;">
+            <h1 style="color: white; font-size: 36px; font-family: Poppins; font-weight: 700; margin: 0;">Idea Arena</h1>
+            <p style="color: white; font-size: 18px; font-family: Poppins; font-weight: 400; margin-top: 5px;">Explore opportunities to innovate and collaborate</p>
         </div>
-    </section>
-
-    <div class="container">
-        <!-- Tabs & Search -->
-        <div class="d-flex justify-content-between align-items-center border-bottom mb-4">
-            <ul class="nav nav-tabs1 border-0" role="tablist">
-                <li class="nav-item1">
-                    <a class="nav-link1 border-0 text-dark px-4 py-3 {% if current_filter == 'active' %}active fw-bold border-bottom border-primary border-3{% endif %}"
-                        href="?filter=active">Active Challenges</a>
-                </li>
-                <li class="nav-item1">
-                    <a class="nav-link1 border-0 text-dark px-4 py-3 {% if current_filter == 'draft' %}active fw-bold border-bottom border-primary border-3{% endif %}"
-                        href="?filter=draft">Drafts</a>
-                </li>
-                <li class="nav-item1">
-                    <a class="nav-link1 border-0 text-dark px-4 py-3 {% if current_filter == 'past' %}active fw-bold border-bottom border-primary border-3{% endif %}"
-                        href="?filter=past">Past</a>
-                </li>
-                <li class="nav-item1">
-                    <a class="nav-link1 border-0 text-dark px-4 py-3 {% if current_filter == 'all' %}active fw-bold border-bottom border-primary border-3{% endif %}"
-                        href="?filter=all">All</a>
-                </li>
-            </ul>
-            <div class="search-bar1 position-relative search-bar-container" style="width: 300px;">
-                <form action="{% url 'challenge_list' %}" method="GET">
-                    <input type="hidden" name="filter" value="{{ current_filter }}">
-                    <input type="text" name="q" id="searchInput"
-                        class="form-control rounded-pill bg-light border-0 px-4" placeholder="🔍 Search challenges..."
-                        value="{{ query }}">
-                </form>
-                <div id="searchSuggestions" class="dropdown-menu w-100 shadow-sm border-0 mt-1"
-                    style="display: none; max-height: 200px; overflow-y: auto;"></div>
-            </div>
+        {% if request.iris_user.is_challenge_owner %}
+        <div style="position: absolute; right: 120px; top: 70px;">
+             <a href="{% url 'post_challenge' %}" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">Post New Challenge</a>
         </div>
-        {% if current_filter == 'active' %}
-         <div class="featured-challenge">
-                <div class="featured-challenge-banner">
-                    <img src="{% static 'iris_app/images/reward.png' %}" alt="Featured Challenge">
-                    <span class="featured-badge">Active</span>
-                    <span class="featured-tag">Sustainability</span>
-                </div>
-                <div class="featured-content">
-                    <div class="featured-label">Sustainability</div>
-                    <h2 class="featured-title">Sustainable Engineering for a Greener Future</h2>
-                    <p class="featured-description">Develop innovative approaches to re-engineer products, systems, or manufacturing processes that reduce carbon emissions, optimise energy use, and align with global sustainability standards.</p>
-
-                    <div class="challenge-tags">
-                        <span class="tag">Green Tech</span>
-                        <span class="tag">Sustainability</span>
-                        <span class="tag">Innovation</span>
-                    </div>
-
-                    <div class="challenge-stats">
-                        <div class="stat-item">
-                            <div class="stat-number">1</div>
-                            <div class="stat-label">Days Left</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">156</div>
-                            <div class="stat-label">Participants</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">43</div>
-                            <div class="stat-label">Submissions</div>
-                        </div>
-                    </div>
-
-                    <button class="view-challenge-btn">View Challenge Details</button>
-
-                    <div class="reward-box">
-                        <div class="reward-label">Reward</div>
-                        <div class="reward-amount">50,000<span class="reward-unit">pts</span></div>
-                    </div>
-                </div>
-            </div>
         {% endif %}
+    </div>
+
+    <!-- Sub-Header / Filters -->
+    <div style="width: 100%; height: 71px; padding-left: 120px; background: #E5DFD3; border-bottom: 1px #E5E7EB solid; display: flex; align-items: flex-end; position: relative; z-index: 5;">
+        <div style="display: flex; gap: 0;">
+            <a href="?filter=active" style="text-decoration: none;">
+                <div style="padding: 16px 30px; background: {% if current_filter == 'active' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'active' %}#E31837{% else %}transparent{% endif %} solid;">
+                    <span style="color: #29251D; font-size: 14px; font-family: Poppins; font-weight: 500;">Active Challenges</span>
+                </div>
+            </a>
+            <a href="?filter=draft" style="text-decoration: none;">
+                <div style="padding: 16px 30px; background: {% if current_filter == 'draft' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'draft' %}#E31837{% else %}transparent{% endif %} solid;">
+                    <span style="color: #4A5565; font-size: 14px; font-family: Poppins; font-weight: 500;">Drafts</span>
+                </div>
+            </a>
+            <a href="?filter=past" style="text-decoration: none;">
+                <div style="padding: 16px 30px; background: {% if current_filter == 'past' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'past' %}#E31837{% else %}transparent{% endif %} solid;">
+                    <span style="color: #4A5565; font-size: 14px; font-family: Poppins; font-weight: 500;">Past</span>
+                </div>
+            </a>
+            <a href="?filter=all" style="text-decoration: none;">
+                <div style="padding: 16px 30px; background: {% if current_filter == 'all' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'all' %}#E31837{% else %}transparent{% endif %} solid;">
+                    <span style="color: #4A5565; font-size: 14px; font-family: Poppins; font-weight: 500;">All</span>
+                </div>
+            </a>
+        </div>
+        
+        <div style="margin-left: auto; margin-right: 60px; margin-bottom: 16px;">
+            <div style="width: 300px; height: 38px; background: white; border: 1px #E5E7EB solid; display: flex; align-items: center; padding: 0 12px; border-radius: 20px;">
+                <i class="fa-solid fa-magnifying-glass" style="color: #99A1AF; margin-right: 10px;"></i>
+                <form action="{% url 'challenge_list' %}" method="GET" style="flex: 1;">
+                    <input type="hidden" name="filter" value="{{ current_filter }}">
+                    <input type="text" name="q" placeholder="Search challenges..." value="{{ query }}" style="border: none; outline: none; width: 100%; font-family: Poppins; font-size: 14px;">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5" style="position: relative; z-index: 10;">
+        
+        <!-- Featured Section Header -->
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 30px;">
+            <i class="fa-solid fa-fire-flame-curved" style="color: #ED1B32; font-size: 20px;"></i>
+            <h2 style="color: #101828; font-size: 20px; font-family: Poppins; font-weight: 600; margin: 0;">Featured Challenge</h2>
+        </div>
 
         {% if featured_challenge and not query %}
-        <!-- Featured Challenge -->
-        <div class="card border-0 rounded-4 overflow-hidden mb-5 shadow-sm featured-challenge"
-            style="background: #fff;">
-            <div class="row g-0">
-                <div class="col-md-5 position-relative">
-                    {% if featured_challenge.challenge_icon %}
-                    <img src="{{ featured_challenge.challenge_icon.url }}" class="img-fluid h-100 w-100"
-                        style="object-fit: cover;" alt="{{ featured_challenge.title }}">
-                    {% else %}
-                    <img src="{% static 'iris_app/img/Rectangle 79.png' %}" class="img-fluid h-100 w-100"
-                        style="object-fit: cover;" alt="Default">
-                    {% endif %}
-                    <span
-                        class="badge bg-success position-absolute top-0 start-0 m-3 rounded-pill px-3 py-2">Active</span>
+        <div class="featured-card-wrapper">
+            <!-- Left: Image Section -->
+            <div class="featured-card-image">
+                {% if featured_challenge.challenge_icon %}
+                <img src="{{ featured_challenge.challenge_icon.url }}" alt="{{ featured_challenge.title }}" />
+                {% else %}
+                <img src="{% static 'iris_app/images/challenge.png' %}" alt="Featured Challenge" />
+                {% endif %}
+                
+                <!-- Reward Badge -->
+                <div class="reward-badge-modern">
+                    <div class="label">Reward</div>
+                    <div class="value">500 <span class="unit">pts</span></div>
                 </div>
-                <div class="col-md-7 p-5 d-flex flex-column justify-content-center">
-                    <div class="text-primary fw-bold mb-2 text-uppercase small">
-                        {% if featured_challenge and featured_challenge.keywords %}
-                        {{ featured_challenge.keywords }}
-                        {% else %}
-                        Sustainability
-                        {% endif %}
-                    </div>
-                    <h2 class="fw-bold mb-3">{{ featured_challenge.title }}</h2>
-                    <p class="text-secondary mb-4">{{ featured_challenge.description|truncatewords:40 }}</p>
+            </div>
+            
+            <!-- Floating Intersection Badges -->
+            <div class="floating-status-group">
+                <div class="floating-circle-r">R</div>
+                <div class="floating-tag-orange">1303</div>
+            </div>
+            
+            <!-- Right: Content -->
+            <div class="featured-card-content">
+                <div class="category-underline">
+                    <span>{{ featured_challenge.keywords|default:"Sustainability"|truncatechars:20 }}</span>
+                </div>
 
-                    <div class="d-flex gap-5 mb-4">
-                        <div>
-                            <div class="fs-4 fw-bold">{% with days=featured_challenge.end_date|timeuntil %}{{
-                                days|slice:":2" }}{% endwith %}</div>
-                            <div class="small text-muted text-uppercase">Days Left</div>
-                        </div>
-                        <div>
-                            <div class="fs-4 fw-bold">{{ featured_challenge.idea_set.count }}</div>
-                            <div class="small text-muted text-uppercase">Submissions</div>
-                        </div>
-                    </div>
+                <h2>{{ featured_challenge.title }}</h2>
+                <p>{{ featured_challenge.description|truncatewords:40 }}</p>
 
+                <div class="pill-tags-row">
+                    {% if featured_challenge.keywords %}
+                        <div class="pill-tag">{{ featured_challenge.keywords|truncatechars:30 }}</div>
+                    {% else %}
+                        <div class="pill-tag">Green Tech</div>
+                        <div class="pill-tag">Innovation</div>
+                    {% endif %}
+                </div>
+
+                <div class="stats-row-modern">
+                    <div class="stat-group-modern">
+                        <div class="number">1</div>
+                        <div class="label"><i class="fa-regular fa-clock"></i> Days Left</div>
+                    </div>
+                    <div class="stat-group-modern">
+                        <div class="number">156</div>
+                        <div class="label"><i class="fa-solid fa-users"></i> Participants</div>
+                    </div>
+                    <div class="stat-group-modern">
+                        <div class="number">{{ featured_challenge.idea_set.count }}</div>
+                        <div class="label"><i class="fa-solid fa-lightbulb"></i> Submissions</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: auto; display: flex; gap: 15px;">
                     {% if featured_challenge.status == 'LIVE' %}
-                    {% if featured_challenge.user_idea_submitted %}
-                    {% if featured_challenge.registration_required|default:"No"|lower == "yes" %}
-                    <button class="btn btn-secondary rounded-pill px-5 py-2 fw-bold align-self-start" disabled>
-                        <i class="fas fa-check me-2"></i>Registered
-                    </button>
-                    {% else %}
-                    <button class="btn btn-secondary rounded-pill px-5 py-2 fw-bold align-self-start" disabled>
-                        <i class="fas fa-check me-2"></i>Idea Submitted
-                    </button>
+                        {% if featured_challenge.user_submitted %}
+                            <div class="user-submitted-badge" style="flex: 1; height: 48px; background: #00C950; color: white; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-weight: 600; border-radius: 4px; gap: 8px;">
+                                <i class="fa-solid fa-circle-check"></i> Idea Submitted
+                            </div>
+                        {% elif featured_challenge.registration_required|default:"No"|lower == "yes" %}
+                            {% if featured_challenge.user_registered %}
+                                <a href="{% url 'idea_details' featured_challenge.challenge_id %}" class="btn-arena-primary" style="flex: 1;">Submit Idea</a>
+                            {% else %}
+                                <button type="button" class="btn-arena-primary" data-register-modal data-challenge-id="{{ featured_challenge.challenge_id }}" data-challenge-title="{{ featured_challenge.title }}" data-participation-type="{{ featured_challenge.participation_type }}" style="flex: 1; border: none; outline: none; cursor: pointer;">Register Now</button>
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'idea_details' featured_challenge.challenge_id %}" class="btn-arena-primary" style="flex: 1;">Submit Idea</a>
+                        {% endif %}
                     {% endif %}
-                    {% else %}
-                    {% if featured_challenge.registration_required|default:"No"|lower == "yes" %}
-                    <a href="{% url 'challenge_register' featured_challenge.challenge_id %}"
-                        class="btn btn-primary rounded-pill px-5 py-2 fw-bold align-self-start" data-register-modal
-                        data-challenge-id="{{ featured_challenge.challenge_id }}">Register Now</a>
-                    {% else %}
-                    <a href="{% url 'idea_details' featured_challenge.challenge_id %}"
-                        class="btn btn-primary rounded-pill px-5 py-2 fw-bold align-self-start">Submit Idea</a>
-                    {% endif %}
-                    {% endif %}
-                    {% endif %}
+                    <a href="{% url 'challenge_detail' featured_challenge.challenge_id %}" class="btn-arena-outline" style="{% if featured_challenge.status != 'LIVE' or featured_challenge.user_submitted %}flex: 1;{% else %}width: 40%;{% endif %}">View Details</a>
                 </div>
             </div>
         </div>
         {% endif %}
 
         <!-- Challenges Grid -->
+        <h3 class="mb-4" style="font-family: Poppins; font-weight: 600; font-size: 20px;">{% if query %}Search Results{% else %}Active Challenges{% endif %}</h3>
         <div class="row g-4 mb-5">
             {% for challenge in challenges %}
             {% if query or challenge != featured_challenge %}
             <div class="col-md-4">
-                <div
-                    class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden challenge-card position-relative group">
-                    <div class="position-relative" style="height: 220px;">
+                <div class="arena-v2-card-grid-item" style="background: white; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; height: 100%; display: flex; flex-direction: column; transition: transform 0.3s ease; border-bottom: 4px solid #F3F4F6;">
+                    <div style="height: 180px; position: relative; overflow: hidden;">
                         {% if challenge.challenge_icon %}
-                        <img src="{{ challenge.challenge_icon.url }}" class="card-img-top h-100 w-100"
-                            style="object-fit: cover;" alt="{{ challenge.title }}">
+                        <img src="{{ challenge.challenge_icon.url }}" style="width: 100%; height: 100%; object-fit: cover;" alt="{{ challenge.title }}">
                         {% else %}
-                        <img src="{% static 'iris_app/img/Container-1.png' %}" class="card-img-top h-100 w-100"
-                            style="object-fit: cover;" alt="Default">
+                        <img src="{% static 'iris_app/images/challenge.png' %}" style="width: 100%; height: 100%; object-fit: cover;" alt="Challenge">
                         {% endif %}
-                        <div class="position-absolute top-0 end-0 m-3">
-                            <span class="badge bg-white text-dark rounded-pill shadow-sm px-3 py-2 border fw-bold"
-                                style="font-size: 12px;">{{ challenge.get_status_display }}</span>
-                        </div>
-                        <div class="position-absolute bottom-0 start-0 m-3">
-                            <span class="badge bg-primary rounded-pill shadow-sm px-3 py-2">{{challenge.keywords|default:"Innovation"|truncatechars:20 }}</span>
-                        </div>
-
-                        <!-- Hover Overlay -->
-                        <div class="card-overlay d-flex flex-column justify-content-center align-items-center gap-3">
-                            {% if challenge.status == 'DRAFT' %}
-                            <a href="{% url 'post_challenge' %}?edit={{ challenge.challenge_id }}"
-                                class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">
-                                <i class="fa-solid fa-edit me-2"></i>Edit Challenge
-                            </a>
-                            {% else %}
-                            <a href="{% url 'challenge_detail' challenge.challenge_id %}"
-                                class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">View Details</a>
-                            {% endif %}
-                            {% if challenge.status == 'LIVE' %}
-                            {% if challenge.user_idea_submitted %}
-                            <!-- User has already submitted/registered -->
-                            {% if challenge.registration_required|default:"No"|lower == "yes" %}
-                            <button class="btn btn-secondary rounded-pill px-4 fw-bold shadow-sm" disabled>
-                                <i class="fas fa-check me-2"></i>Registered
-                            </button>
-                            {% else %}
-                            <button class="btn btn-secondary rounded-pill px-4 fw-bold shadow-sm" disabled>
-                                <i class="fas fa-check me-2"></i>Idea Submitted
-                            </button>
-                            {% endif %}
-                            {% else %}
-                            <!-- User has NOT submitted/registered yet -->
-                            {% if challenge.registration_required|default:"No"|lower == "yes" %}
-                            <a href="{% url 'challenge_register' challenge.challenge_id %}"
-                                class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" data-register-modal
-                                data-challenge-id="{{ challenge.challenge_id }}">Register Now</a>
-                            {% else %}
-                            <a href="{% url 'idea_details' challenge.challenge_id %}"
-                                class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Submit Idea</a>
-                            {% endif %}
-                            {% endif %}
-                            {% endif %}
+                        
+                        <div style="position: absolute; top: 12px; left: 12px; padding: 4px 12px; background: #00C950; border-radius: 100px; color: white; font-size: 11px; font-family: Poppins; font-weight: 600;">
+                            {{ challenge.get_status_display }}
                         </div>
                     </div>
-                    <div class="card-body p-4 d-flex flex-column">
-                        <h5 class="card-title fw-bold text-dark mb-3" style="font-size: 18px; line-height: 1.4;">{{challenge.title }}</h5>
-                        <p class="text-muted small mb-4 flex-grow-1">{{ challenge.description|truncatewords:20 }}</p>
+                    
+                    <div style="padding: 20px; flex: 1; display: flex; flex-direction: column;">
+                        <h4 style="color: #101828; font-size: 18px; font-family: Poppins; font-weight: 600; line-height: 1.4; margin-bottom: 12px; min-height: 50px;">{{ challenge.title }}</h4>
+                        
+                        <!-- Tags -->
+                        <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
+                            {% if challenge.keywords %}
+                                <span style="padding: 4px 10px; background: #F6F2EA; border-radius: 6px; color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 500;">{{ challenge.keywords|truncatechars:30 }}</span>
+                            {% else %}
+                                <span style="padding: 4px 10px; background: #F6F2EA; border-radius: 6px; color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 500;">Innovation</span>
+                            {% endif %}
+                        </div>
 
-                        <div class="d-flex justify-content-between align-items-center mt-auto border-top pt-3">
-                            <div class="small text-muted d-flex align-items-center">
-                                <i class="far fa-clock me-2 text-primary"></i>
-                                <span class="fw-bold text-dark">{{ challenge.end_date|timeuntil }}</span>&nbsp;left
+                        <div style="margin-top: auto; padding-top: 15px; border-top: 1px #F3F4F6 solid; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 6px; color: rgba(77, 77, 79, 0.7); font-size: 12px; font-family: Poppins;">
+                                <i class="fa-regular fa-clock"></i>
+                                <span>{{ challenge.end_date|timeuntil }} left</span>
                             </div>
-                            <div class="small text-muted d-flex align-items-center">
-                                <i class="far fa-lightbulb me-2 text-warning"></i>
-                                <span class="fw-bold text-dark">{{ challenge.idea_set.count }}</span>
+                            <div style="display: flex; align-items: center; gap: 6px; color: rgba(77, 77, 79, 0.7); font-size: 12px; font-family: Poppins;">
+                                <i class="fa-solid fa-users"></i>
+                                <span>{{ challenge.idea_set.count }}</span>
                             </div>
+                        </div>
+
+                        <!-- Card Buttons -->
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            {% if challenge.status == 'LIVE' %}
+                                {% if challenge.user_submitted %}
+                                    <div style="flex: 1; height: 36px; background: #00C950; color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: Poppins; font-weight: 600; border-radius: 4px; gap: 5px;">
+                                        <i class="fa-solid fa-circle-check"></i> Submitted
+                                    </div>
+                                {% elif challenge.registration_required|default:"No"|lower == "yes" %}
+                                    {% if challenge.user_registered %}
+                                        <a href="{% url 'idea_details' challenge.challenge_id %}" style="flex: 1; height: 36px; background: #E31837; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: Poppins; font-weight: 600; text-decoration: none; border-radius: 4px;">Submit Idea</a>
+                                    {% else %}
+                                        <button type="button" class="btn-register" data-register-modal data-challenge-id="{{ challenge.challenge_id }}" data-challenge-title="{{ challenge.title }}" data-participation-type="{{ challenge.participation_type }}" style="flex: 1; height: 36px; background: #E31837; color: white; outline: none; border: none; font-size: 12px; font-family: Poppins; font-weight: 600; border-radius: 4px; cursor: pointer;">Register Now</button>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{% url 'idea_details' challenge.challenge_id %}" style="flex: 1; height: 36px; background: #E31837; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: Poppins; font-weight: 600; text-decoration: none; border-radius: 4px;">Submit Idea</a>
+                                {% endif %}
+                            {% endif %}
+                            <a href="{% url 'challenge_detail' challenge.challenge_id %}" style="{% if challenge.status != 'LIVE' or challenge.user_submitted %}flex: 1;{% else %}width: 45%;{% endif %} height: 36px; border: 1.5px solid #E31837; color: #E31837; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: Poppins; font-weight: 600; text-decoration: none; border-radius: 4px;">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -245,22 +220,30 @@
             {% endif %}
             {% empty %}
             <div class="col-12 text-center py-5">
-                <div class="py-5">
-                    <i class="fas fa-search fa-4x text-light mb-4"></i>
-                    <h4 class="text-muted fw-bold">No challenges found</h4>
-                    <p class="text-muted">Try adjusting your search or filters to find what you're looking for.</p>
-                    <a href="{% url 'challenge_list' %}" class="btn btn-outline-primary rounded-pill px-4 mt-3">Clear
-                        Filters</a>
-                </div>
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No challenges found</h4>
+                <a href="{% url 'challenge_list' %}" class="btn btn-outline-danger btn-sm mt-2 rounded-pill">Clear Filters</a>
             </div>
             {% endfor %}
         </div>
 
         {% if challenges.count > 9 %}
         <div class="text-center pb-5">
-            <button class="btn btn-outline-dark rounded-pill px-5 py-2 fw-bold">Load More</button>
+            <button class="btn btn-outline-dark rounded-pill px-5 py-2 fw-bold" style="font-family: Poppins;">Load More</button>
         </div>
         {% endif %}
+    </div>
+
+    <!-- Mockup Chatbot / Help Icon (As requested in the snippet) -->
+    <div style="position: fixed; right: 40px; bottom: 40px; z-index: 1000; cursor: pointer;">
+        <div style="width: 80px; height: 80px; background: #E31837; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(227, 24, 55, 0.4); border: 4px solid white;">
+            <i class="fa-solid fa-headset" style="color: white; font-size: 32px;"></i>
+        </div>
+        <!-- Tooltip -->
+        <div style="position: absolute; right: 95px; top: 50%; transform: translateY(-50%); background: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); white-space: nowrap; font-family: Poppins; font-weight: 600; color: #5F0229;">
+            Need help?
+            <div style="position: absolute; right: -8px; top: 50%; transform: translateY(-50%) rotate(45deg); width: 16px; height: 16px; background: white;"></div>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -393,312 +376,6 @@
     }
 </style>
 
-<!-- Registration Modal -->
-<div id="registrationModal" class="registration-modal" style="display: none;">
-    <div class="registration-modal-backdrop"></div>
-    <div class="registration-modal-dialog">
-        <div class="registration-modal-header">
-            <h2 class="registration-modal-title">Register Now</h2>
-            <button type="button" class="registration-modal-close" id="closeModalBtn">&times;</button>
-        </div>
-
-        <!-- Tab Navigation -->
-        <div class="registration-modal-tabs">
-            <button class="registration-tab-btn active" data-tab="individual">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="registration-tab-icon">
-                    <path
-                        d="M8 8C9.65685 8 11 6.65685 11 5C11 3.34315 9.65685 2 8 2C6.34315 2 5 3.34315 5 5C5 6.65685 6.34315 8 8 8ZM14 14C14 11.7909 11.3726 10 8 10C4.62742 10 2 11.7909 2 14"
-                        stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                <span>Individual</span>
-            </button>
-            <button class="registration-tab-btn" data-tab="team">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="registration-tab-icon">
-                    <path
-                        d="M11 5C12.6569 5 14 3.65685 14 2C14 0.343146 12.6569 -1 11 -1C9.34315 -1 8 0.343146 8 2C8 3.65685 9.34315 5 11 5ZM5 7C6.65685 7 8 5.65685 8 4C8 2.34315 6.65685 1 5 1C3.34315 1 2 2.34315 2 4C2 5.65685 3.34315 7 5 7ZM14 7C12.3431 7 11 8.34315 11 10C11 11.6569 12.3431 13 14 13C15.6569 13 17 11.6569 17 10C17 8.34315 15.6569 7 14 7ZM6 11C2.68629 11 0 13.0294 0 16C0 16.5523 0.447715 17 1 17H11C11.5523 17 12 16.5523 12 16C12 13.0294 9.31371 11 6 11ZM14 15C13.5 13.5 12.1716 12.5 10.5 12.5"
-                        stroke="currentColor" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                <span>Team</span>
-            </button>
-        </div>
-
-        <div class="registration-modal-body">
-            <!-- Individual Tab Content -->
-            <div class="registration-tab-content active" id="individual-tab">
-                <form id="individualRegistrationForm" class="registration-form">
-                    <div class="registration-form-group">
-                        <label class="registration-label">Challenge</label>
-                        <select id="challengeSelectIndividual" class="registration-input registration-select" required>
-                            <option value="">Select a challenge</option>
-                        </select>
-                    </div>
-
-                    <div class="registration-form-group">
-                        <label class="registration-label">Full Name</label>
-                        <input type="text" id="fullNameIndividual" class="registration-input"
-                            placeholder="Enter full name" required readonly>
-                    </div>
-
-                    <div class="registration-form-group">
-                        <label class="registration-label">Employee ID</label>
-                        <input type="text" id="employeeIdIndividual" class="registration-input"
-                            placeholder="Enter employee ID" required readonly>
-                    </div>
-
-                    <div class="registration-form-group">
-                        <label class="registration-label">Email ID (Official)</label>
-                        <input type="email" id="emailIndividual" class="registration-input"
-                            placeholder="Enter official email" required readonly>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Team Tab Content -->
-            <div class="registration-tab-content" id="team-tab">
-                <form id="teamRegistrationForm" class="registration-form">
-                    <div class="registration-form-group">
-                        <label class="registration-label">Challenge</label>
-                        <select id="challengeSelectTeam" class="registration-input registration-select" required>
-                            <option value="">Select a challenge</option>
-                        </select>
-                    </div>
-
-                    <div class="registration-form-group">
-                        <label class="registration-label">Team Name</label>
-                        <input type="text" id="teamName" class="registration-input" placeholder="Enter team name"
-                            required>
-                    </div>
-
-                    <div class="registration-form-group">
-                        <label class="registration-label">Team Lead</label>
-                        <input type="text" id="teamLead" class="registration-input" placeholder="Enter team lead name"
-                            required>
-                    </div>
-
-                    <!-- Team Members Section -->
-                    <div class="registration-team-members-section">
-                        <div class="registration-team-members-header">
-                            <label class="registration-label">Team Members <span
-                                    class="registration-member-count">(1)</span></label>
-                            <button type="button" class="registration-add-member-btn" id="addMemberBtn">
-                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                    <path d="M6 1V11M1 6H11" stroke="white" stroke-width="1.33"
-                                        stroke-linecap="round" />
-                                </svg>
-                                Add
-                            </button>
-                        </div>
-
-                        <div class="registration-members-container" id="membersContainer">
-                            <!-- Members will be added dynamically -->
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="registration-modal-footer">
-            <button type="button" class="registration-btn-submit" id="submitRegistrationBtn">Register Now</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    $(document).ready(function () {
-        // Registration Modal Variables
-        const modal = $('#registrationModal');
-        const registerButtons = $('[data-register-modal]');
-        const closeBtn = $('#closeModalBtn');
-        const backdrop = $('.registration-modal-backdrop');
-        const tabButtons = $('.registration-tab-btn');
-        const tabContents = $('.registration-tab-content');
-        const addMemberBtn = $('#addMemberBtn');
-        const membersContainer = $('#membersContainer');
-        let memberCount = 1;
-        let currentChallengeId = null;
-
-        // Sample user data (in real app, this would come from server)
-        const userData = {
-            fullName: '{{ request.iris_user.get_full_name|default:"User Name" }}',
-            employeeId: '{{ request.iris_user.employee_id|default:"EMP001" }}',
-            email: '{{ request.iris_user.email|default:"user@company.com" }}'
-        };
-
-        // Open Modal on Register Button Click
-        registerButtons.on('click', function (e) {
-            e.preventDefault();
-            currentChallengeId = $(this).data('challenge-id');
-            const challengeTitle = $(this).closest('.card').find('.card-title').text() || 'Challenge';
-
-            openModal(currentChallengeId, challengeTitle);
-        });
-
-        function openModal(challengeId, challengeTitle) {
-            // Populate challenge dropdowns
-            const selectIndividual = $('#challengeSelectIndividual');
-            const selectTeam = $('#challengeSelectTeam');
-
-            selectIndividual.html(`<option value="${challengeId}" selected>${challengeTitle}</option>`);
-            selectTeam.html(`<option value="${challengeId}" selected>${challengeTitle}</option>`);
-
-            // Populate individual fields
-            $('#fullNameIndividual').val(userData.fullName);
-            $('#employeeIdIndividual').val(userData.employeeId);
-            $('#emailIndividual').val(userData.email);
-
-            // Reset team form
-            resetTeamForm();
-
-            // Show modal
-            modal.fadeIn(300);
-            $('body').css('overflow', 'hidden');
-        }
-
-        function resetTeamForm() {
-            $('#teamName').val('');
-            $('#teamLead').val('');
-            memberCount = 1;
-            membersContainer.html('');
-            addTeamMemberField();
-            updateMemberCount();
-        }
-
-        // Tab Switching
-        tabButtons.on('click', function () {
-            const tabName = $(this).data('tab');
-
-            // Remove active class from all buttons and contents
-            tabButtons.removeClass('active');
-            tabContents.removeClass('active');
-
-            // Add active class to clicked button and corresponding content
-            $(this).addClass('active');
-            $(`#${tabName}-tab`).addClass('active');
-        });
-
-        // Add Team Member
-        addMemberBtn.on('click', function (e) {
-            e.preventDefault();
-            if (memberCount < 5) {
-                memberCount++;
-                addTeamMemberField();
-                updateMemberCount();
-            } else {
-                alert('Maximum 5 team members allowed');
-            }
-        });
-
-        function addTeamMemberField() {
-            const memberHtml = `
-            <div class="registration-member-item" data-member="${memberCount}">
-                <div class="registration-member-header">
-                    <span class="registration-member-label">Member ${memberCount}</span>
-                    ${memberCount > 1 ? '<button type="button" class="registration-remove-member-btn" data-remove-member><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 3L3 13M3 3L13 13" stroke="currentColor" stroke-width="1.33" stroke-linecap="round"/></svg></button>' : ''}
-                </div>
-                <div class="registration-member-fields">
-                    <input type="text" class="registration-input registration-member-input" placeholder="Full name" required>
-                    <input type="text" class="registration-input registration-member-input" placeholder="Employee ID" required>
-                    <input type="email" class="registration-input registration-member-input" placeholder="Email" required>
-                    <select class="registration-input registration-member-input">
-                        <option value="">Service Line</option>
-                        <option value="Engineering">Engineering</option>
-                        <option value="Design">Design</option>
-                        <option value="Product">Product</option>
-                        <option value="Sales">Sales</option>
-                    </select>
-                </div>
-            </div>
-        `;
-
-            membersContainer.append(memberHtml);
-
-            // Add remove handler
-            $(`[data-member="${memberCount}"] [data-remove-member]`).on('click', function (e) {
-                e.preventDefault();
-                removeMemberField(memberCount);
-            });
-        }
-
-        function removeMemberField(memberIndex) {
-            $(`[data-member="${memberIndex}"]`).remove();
-            updateMemberCount();
-        }
-
-        function updateMemberCount() {
-            const count = membersContainer.find('.registration-member-item').length;
-            $('.registration-member-count').text(`(${count})`);
-        }
-
-        // Close Modal
-        function closeModal() {
-            modal.fadeOut(300);
-            $('body').css('overflow', 'auto');
-        }
-
-        closeBtn.on('click', closeModal);
-        backdrop.on('click', closeModal);
-
-        // Submit Form
-        $('#submitRegistrationBtn').on('click', function () {
-            const activeTab = $('.registration-tab-btn.active').data('tab');
-
-            if (activeTab === 'individual') {
-                const form = $('#individualRegistrationForm');
-                if (form[0].checkValidity() === false) {
-                    form[0].reportValidity();
-                    return;
-                }
-                submitIndividualRegistration();
-            } else {
-                const form = $('#teamRegistrationForm');
-                if (form[0].checkValidity() === false) {
-                    form[0].reportValidity();
-                    return;
-                }
-                submitTeamRegistration();
-            }
-        });
-
-        function submitIndividualRegistration() {
-            const data = {
-                challengeId: $('#challengeSelectIndividual').val(),
-                registrationType: 'individual',
-                fullName: $('#fullNameIndividual').val(),
-                employeeId: $('#employeeIdIndividual').val(),
-                email: $('#emailIndividual').val()
-            };
-
-            console.log('Individual Registration Data:', data);
-            alert('Individual registration submitted successfully!');
-            closeModal();
-            // TODO: Send data to server via AJAX
-        }
-
-        function submitTeamRegistration() {
-            const members = [];
-            membersContainer.find('.registration-member-item').each(function () {
-                const inputs = $(this).find('.registration-member-input');
-                members.push({
-                    fullName: inputs.eq(0).val(),
-                    employeeId: inputs.eq(1).val(),
-                    email: inputs.eq(2).val(),
-                    serviceLine: inputs.eq(3).val()
-                });
-            });
-
-            const data = {
-                challengeId: $('#challengeSelectTeam').val(),
-                registrationType: 'team',
-                teamName: $('#teamName').val(),
-                teamLead: $('#teamLead').val(),
-                members: members
-            };
-
-            console.log('Team Registration Data:', data);
-            alert('Team registration submitted successfully!');
-            closeModal();
-            // TODO: Send data to server via AJAX
-        }
-    });
-</script>
+<!-- Registration Modal Container -->
+{% include 'iris_app/registration_modal_fragment.html' %}
 {% endblock %}

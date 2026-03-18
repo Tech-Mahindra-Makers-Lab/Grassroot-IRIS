@@ -1,0 +1,299 @@
+/* Challenge Detail Styles */
+:root {
+    --impact-red: #5F0229;
+    --vibrant-red: #E31837;
+    --bg-cream: #F6F2EA;
+    --text-dark: #29251D;
+    --label-grey: rgba(74, 69, 61, 0.80);
+}
+
+.challenge-detail-wrapper {
+    background: #E5DFD3;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    padding-left: 90px; /* Space for the sidebar from base.html if applicable, but the design shows its own */
+}
+
+/* Hero Section */
+.detail-hero {
+    height: 490px;
+    width: 100%;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 60px 80px;
+}
+
+.detail-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.70) 0%, rgba(0, 0, 0, 0.30) 100%);
+    z-index: 1;
+}
+
+.hero-top-info {
+    position: absolute;
+    top: 30px;
+    left: 80px;
+    right: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+.id-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.id-icon {
+    width: 36px;
+    height: 36px;
+    background: #00BC7D;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1.5px solid rgba(255,255,255,0.3);
+}
+
+.id-text {
+    font-size: 12px;
+    color: white;
+    opacity: 0.9;
+}
+
+.owner-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.owner-text {
+    text-align: right;
+}
+
+.owner-label {
+    font-size: 12px;
+    opacity: 0.8;
+    display: block;
+}
+
+.owner-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.status-badge {
+    background: #ADEC8B;
+    color: black;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.detail-category-tag {
+    background: #4A453D;
+    color: white;
+    padding: 6px 20px;
+    border-radius: 40px;
+    font-size: 14px;
+    font-weight: 300;
+    display: inline-block;
+    margin-bottom: 20px;
+    z-index: 10;
+    position: relative;
+}
+
+.detail-title {
+    font-size: 44px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    max-width: 800px;
+    z-index: 10;
+    position: relative;
+}
+
+.detail-subline {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.4;
+    max-width: 700px;
+    z-index: 10;
+    position: relative;
+    opacity: 0.9;
+}
+
+/* Main Content Area */
+.detail-main-container {
+    max-width: 1100px;
+    margin: -60px auto 0;
+    background: white;
+    position: relative;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 40px;
+    padding: 50px 60px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+
+.content-section {
+    margin-bottom: 40px;
+}
+
+.section-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--label-grey);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+}
+
+.description-text {
+    font-size: 16px;
+    color: black;
+    line-height: 1.6;
+}
+
+.outcome-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.outcome-item {
+    padding-left: 16px;
+    border-left: 3px solid var(--vibrant-red);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Sidebar Info */
+.sidebar-box {
+    background: var(--bg-cream);
+    padding: 24px;
+    border-radius: 4px;
+}
+
+.sidebar-section {
+    margin-bottom: 30px;
+}
+
+.sidebar-label {
+    font-size: 12px;
+    color: var(--text-dark);
+    opacity: 0.8;
+    margin-bottom: 4px;
+}
+
+.sidebar-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: black;
+    margin-bottom: 16px;
+}
+
+.days-remaining {
+    font-size: 32px;
+    font-weight: 600;
+    color: black;
+}
+
+.doc-link-card {
+    border: 1px solid #E5DFD3;
+    padding: 12px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--impact-red);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.doc-link-card:hover {
+    background: rgba(95, 2, 41, 0.05);
+}
+
+/* Review Parameters */
+.param-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.param-name { font-size: 16px; }
+.param-weight { font-weight: 500; }
+
+/* Footer CTA Area */
+.detail-cta-banner {
+    background: var(--impact-red);
+    margin: 40px auto;
+    max-width: 1100px;
+    padding: 40px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.detail-cta-banner::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; width: 100px; height: 100%;
+    background-image: linear-gradient(90deg, transparent, rgba(227, 24, 55, 0.2));
+}
+
+.cta-text h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.cta-text p {
+    font-size: 18px;
+    opacity: 0.8;
+}
+
+.btn-detail-register {
+    background: var(--vibrant-red);
+    color: white;
+    border: none;
+    padding: 14px 40px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s;
+    z-index: 10;
+}
+
+.btn-detail-register:hover {
+    transform: scale(1.05);
+}
+
+/* Sidebar overrides from design */
+.challenge-detail-wrapper .sidebar-nav {
+    position: fixed;
+    top: 0; left: 0; width: 90px; height: 100vh;
+    background: white;
+    z-index: 1000;
+    border-right: 1px solid #EEE;
+}

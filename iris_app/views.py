@@ -2,7 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 import csv
+import traceback
 from .models import (
     Challenge, Idea, IrisUser, UserRole, ChallengePanel, ChallengeMentor, Role,
     ReviewParameter, ChallengeReviewParameter, Reward, IdeaDetail, CoIdeator, IdeaDocument,
@@ -10,9 +12,13 @@ from .models import (
     Notification, UserLoginLog, IrisClusterIbgIbu, IrisEmployeeMaster, Review, ReviewRating
 )
 from django.db import models, transaction
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.utils import timezone
 import datetime
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+import json
+
 
 def get_context_user(request):
     user_id = request.session.get('iris_user_id')
@@ -40,6 +46,9 @@ def notification_list(request):
     request.iris_user = user
     notifications = Notification.objects.filter(recipient=user).order_by('-created_at')
 
+    if request.GET.get('fragment') == 'true':
+        return render(request, 'iris_app/notification_panel_items.html', {'notifications': notifications})
+
     return render(request, 'iris_app/notifications.html', {'notifications': notifications})
 
 def mark_notification_as_read(request, notification_id):
@@ -51,6 +60,15 @@ def mark_notification_as_read(request, notification_id):
     notification.is_read = True
     notification.save()
 
+    return JsonResponse({'status': 'success'})
+
+def mark_all_notifications_as_read(request):
+    user = get_context_user(request)
+    if not user:
+        return JsonResponse({'status': 'error', 'message': 'Not logged in'}, status=403)
+
+    Notification.objects.filter(recipient=user, is_read=False).update(is_read=True)
+    return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'success'})
 
 def context_notifications(request):
@@ -158,18 +176,28 @@ def challenge_list(request):
 
     featured_challenge = Challenge.objects.filter(is_featured=True).first()
 
-    # Add user_idea_submitted info to each challenge
-    user_submitted_challenges = Idea.objects.filter(submitter=user).values_list('challenge_id', flat=True)
+    # Add user_registered info to each challenge
+    # A user is registered if they are the submitter of an idea OR a co-ideator on an idea
+    user_registered_challenges = set(
+        CoIdeator.objects.filter(user=user).values_list('idea__challenge_id', flat=True)
+    ) | set(
+        Idea.objects.filter(submitter=user).values_list('challenge_id', flat=True)
+    )
 
-    # Add flag to featured challenge if it exists
+    # Check if user has actually submitted an idea (submitter of an Idea)
+    user_submitted_challenges = Idea.objects.filter(submitter=user).exclude(status='DRAFT').values_list('challenge_id', flat=True).distinct()
+
+    # Add flags to featured challenge if it exists
     if featured_challenge:
-        featured_challenge.user_idea_submitted = featured_challenge.challenge_id in user_submitted_challenges
+        featured_challenge.user_registered = featured_challenge.challenge_id in user_registered_challenges
+        featured_challenge.user_submitted = featured_challenge.challenge_id in user_submitted_challenges
 
-    # Convert to list and add submitted status to each challenge
+    # Convert to list and add registered status to each challenge
     challenges_list = list(challenges)
     for challenge in challenges_list:
-        challenge.user_idea_submitted = challenge.challenge_id in user_submitted_challenges
-        print(f"Challenge: {challenge.title}, registration_required: '{challenge.registration_required}', user_submitted: {challenge.user_idea_submitted}")
+        challenge.user_registered = challenge.challenge_id in user_registered_challenges
+        challenge.user_submitted = challenge.challenge_id in user_submitted_challenges
+        print(f"Challenge: {challenge.title}, reg_req: '{challenge.registration_required}', registered: {challenge.user_registered}, submitted: {challenge.user_submitted}")
 
     context = {
         'featured_challenge': featured_challenge,
@@ -407,6 +435,9 @@ def idea_detail(request, idea_id):
     # Get category mappings
     category_mappings = idea.ideacategorymapping_set.all()
 
+    # Get supporting documents
+    idea_documents = IdeaDocument.objects.filter(idea=idea).order_by('-uploaded_at')
+
     context = {
         'idea': idea,
         'submitter': idea.submitter,
@@ -415,6 +446,7 @@ def idea_detail(request, idea_id):
         'keywords': keywords,
         'technologies': technologies,
         'category_mappings': category_mappings,
+        'idea_documents': idea_documents,
     }
 
     # If AJAX request (from slide panel), return fragment only (no base template)
@@ -599,15 +631,18 @@ def submit_evaluation(request, idea_id):
 
         print(f"Total ratings created: {rating_count}")
 
-        # Send notification to idea submitter
-        send_notification(
-            recipient=idea.submitter,
-            message=f"Your idea '{idea.title}' has been reviewed.",
-            sender=user,
-            link=f'/review-dashboard/idea-detail/{idea_id}/'
-        )
+        # Send notification to idea submitter if submitter exists
+        if idea.submitter:
+            send_notification(
+                recipient=idea.submitter,
+                message=f"Your idea '{idea.title}' has been reviewed.",
+                sender=user,
+                link=f'/review-dashboard/idea-detail/{idea_id}/'
+            )
 
         messages.success(request, "Evaluation submitted successfully!")
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'success', 'message': 'Evaluation submitted successfully!'})
         return redirect('review_dashboard')
 
     except Exception as e:
@@ -615,6 +650,8 @@ def submit_evaluation(request, idea_id):
         print(f"Error submitting evaluation: {str(e)}")
         print(traceback.format_exc())
         messages.error(request, f"Error submitting evaluation: {str(e)}")
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'error', 'message': f"Error submitting evaluation: {str(e)}"}, status=400)
         return redirect('reviewer_idea_page', idea_id=idea_id)
 
 
@@ -634,17 +671,212 @@ def challenge_detail(request, challenge_id):
         messages.error(request, "Access denied.")
         return redirect('challenge_list')
 
-    # Check if user has already submitted an idea for this challenge
-    user_idea_submitted = Idea.objects.filter(challenge=challenge, submitter=user).exists()
+    # Check if user has already registered
+    user_registered = CoIdeator.objects.filter(idea__challenge=challenge, user=user).exists()
+
+    # Check if user has already submitted an idea (status != 'DRAFT')
+    user_submitted = Idea.objects.filter(challenge=challenge, submitter=user).exclude(status='DRAFT').exists()
+
+    # Also check if user is a co-ideator on a submitted idea
+    if not user_submitted:
+        user_submitted = CoIdeator.objects.filter(idea__challenge=challenge, idea__status__in=['SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'IMPLEMENTED'], user=user).exists()
 
     context = {
         'challenge': challenge,
         'review_params': challenge.review_parameters.all(),
         'is_mentor': is_mentor,
         'is_owner': is_owner,
-        'user_idea_submitted': user_idea_submitted,
+        'user_registered': user_registered,
+        'user_submitted': user_submitted,
     }
     return render(request, 'iris_app/challenge_detail.html', context)
+
+def view_challenge_admin(request, challenge_id):
+    """View challenge details for admin/challenge owner"""
+    try:
+        user = get_context_user(request)
+        if not user:
+            return redirect('login')
+
+        request.iris_user = user
+        challenge = get_object_or_404(Challenge, challenge_id=challenge_id)
+
+        # Check if user is the challenge owner or an admin
+        is_owner = (challenge.created_by == user or challenge.challenge_owner == user)
+        is_admin = user.user_type == 'INTERNAL'
+
+        if not (is_owner or is_admin):
+            messages.error(request, "Access denied.")
+            return redirect('admin_dashboard')
+
+        # Get challenge details
+        ideas_count = Idea.objects.filter(challenge=challenge).count()
+        participants_count = Idea.objects.filter(challenge=challenge).values('submitter').distinct().count()
+        panels = ChallengePanel.objects.filter(challenge=challenge)
+        mentors = ChallengeMentor.objects.filter(panel__challenge=challenge)
+
+        # Process keywords
+        keywords_list = []
+        if challenge.keywords:
+            keywords_list = [kw.strip() for kw in challenge.keywords.split(',')]
+
+        # Process expected outcome
+        outcome_lines = []
+        if challenge.expected_outcome:
+            outcome_lines = [line.strip() for line in challenge.expected_outcome.splitlines() if line.strip()]
+
+        context = {
+            'challenge': challenge,
+            'review_params': challenge.review_parameters.all(),
+            'review_parameters': ReviewParameter.objects.filter(is_active=True),
+            'keywords_list': keywords_list,
+            'outcome_lines': outcome_lines,
+            'is_owner': is_owner,
+            'ideas_count': ideas_count,
+            'participants_count': participants_count,
+            'panels': panels,
+            'mentors': mentors,
+        }
+        return render(request, 'iris_app/challenge_view_fragment.html', context)
+    except Exception as e:
+        import traceback
+        print(f"Error in view_challenge_admin: {str(e)}")
+        print(traceback.format_exc())
+        return HttpResponse(f"Server Error: {str(e)}", status=500)
+
+@transaction.atomic
+def updateChallengeByAdmin(request, challenge_id):
+    """Update challenge details from admin dashboard"""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Only POST method allowed'}, status=405)
+
+    try:
+        challenge = get_object_or_404(Challenge, challenge_id=challenge_id)
+
+        # 1. Update Challenge model
+        challenge.registration_required = request.POST.get('registration_required')
+        challenge.participation_type = request.POST.get('participation_type')
+        challenge.max_team_size = request.POST.get('max_team_size', 5)
+        challenge.ibu_name = request.POST.get('ibu_name')
+        challenge.title = request.POST.get('title')
+        challenge.description = request.POST.get('description')
+        challenge.keywords = request.POST.get('keywords')
+        challenge.expected_outcome = request.POST.get('expected_outcome')
+        challenge.visibility = request.POST.get('visibility', 'PUBLIC')
+
+        start_date = request.POST.get('start_date')
+        if start_date:
+            challenge.start_date = start_date
+
+        end_date = request.POST.get('end_date')
+        if end_date:
+            challenge.end_date = end_date
+
+        num_rounds = int(request.POST.get('num_rounds', 1))
+        challenge.num_rounds = num_rounds
+        challenge.save()
+
+        # 2. Update ChallengePanel (Evaluators)
+        # Clear existing panels and recreate
+        ChallengePanel.objects.filter(challenge=challenge).delete()
+
+        # Round 1 Evaluators
+        round1_names = request.POST.getlist('round1_employee_name[]')
+        round1_emails = request.POST.getlist('round1_employee_email[]')
+        round1_ids = request.POST.getlist('round1_employee_id[]')
+        round1_start = request.POST.get('round1_start_date')
+        round1_end = request.POST.get('round1_end_date')
+
+        for i in range(len(round1_names)):
+            name = round1_names[i]
+            email = round1_emails[i] if i < len(round1_emails) else ''
+            emp_id = round1_ids[i] if i < len(round1_ids) else ''
+
+            if name and email:
+                panel = ChallengePanel.objects.create(
+                    challenge=challenge,
+                    panel_name=name,
+                    emp_id=emp_id,
+                    emailid=email,
+                    round_number=1,
+                    start_date=round1_start if round1_start else None,
+                    end_date=round1_end if round1_end else None
+                )
+                # Ensure ChallengeMentor is also created/linked
+                try:
+                    from .models import IrisUser, ChallengeMentor
+                    mentor = IrisUser.objects.get(email=email)
+                    ChallengeMentor.objects.get_or_create(panel=panel, mentor=mentor)
+                except Exception:
+                    pass
+
+        # Round 2 Evaluators (if num_rounds is 2)
+        if num_rounds == 2:
+            round2_names = request.POST.getlist('round2_employee_name[]')
+            round2_emails = request.POST.getlist('round2_employee_email[]')
+            round2_ids = request.POST.getlist('round2_employee_id[]')
+            round2_start = request.POST.get('round2_start_date')
+            round2_end = request.POST.get('round2_end_date')
+
+            for i in range(len(round2_names)):
+                name = round2_names[i]
+                email = round2_emails[i] if i < len(round2_emails) else ''
+                emp_id = round2_ids[i] if i < len(round2_ids) else ''
+
+                if name and email:
+                    panel = ChallengePanel.objects.create(
+                        challenge=challenge,
+                        panel_name=name,
+                        emp_id=emp_id,
+                        emailid=email,
+                        round_number=2,
+                        start_date=round2_start if round2_start else None,
+                        end_date=round2_end if round2_end else None
+                    )
+                    # Ensure ChallengeMentor is also created/linked
+                    try:
+                        from .models import IrisUser, ChallengeMentor
+                        mentor = IrisUser.objects.get(email=email)
+                        ChallengeMentor.objects.get_or_create(panel=panel, mentor=mentor)
+                    except Exception:
+                        pass
+
+        # 3. Update ChallengeReviewParameter
+        # Clear existing and add new
+        ChallengeReviewParameter.objects.filter(challenge=challenge).delete()
+
+        selected_params = request.POST.getlist('selected_params[]')
+        weightages = request.POST.getlist('param_weightages[]')
+
+        for p_id, weight in zip(selected_params, weightages):
+            if p_id and weight:
+                param = get_object_or_404(ReviewParameter, parameter_id=p_id)
+                ChallengeReviewParameter.objects.create(
+                    challenge=challenge,
+                    parameter=param,
+                    weightage=int(weight)
+                )
+
+        return JsonResponse({'status': 'success', 'message': 'Challenge updated successfully'})
+    except Exception as e:
+        import traceback
+        print(f"Error in updateChallengeByAdmin: {str(e)}")
+        print(traceback.format_exc())
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+@csrf_exempt
+def deleteChallengeByAdmin(request, challenge_id):
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+    try:
+        challenge = get_object_or_404(Challenge, challenge_id=challenge_id)
+        # Deleted automatically by Cascade: Panels, ReviewParameters, etc.
+        challenge.delete()
+        return JsonResponse({'status': 'success', 'message': 'Challenge deleted successfully'})
+    except Exception as e:
+        print(f"Error deleting challenge {challenge_id}: {str(e)}")
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 def home_landing(request):
     user = get_context_user(request)
@@ -866,73 +1098,93 @@ def post_challenge(request):
                         print(f"Parameter with ID {param_id} not found")
 
             # Step 2: Create ChallengePanel for Round 1 with evaluator details
-            round1_emp_name = request.POST.get('round1_employee_name')
-            round1_emp_email = request.POST.get('round1_employee_email')
-            round1_emp_id = request.POST.get('round1_employee_id')
+            round1_names = request.POST.getlist('round1_employee_name[]')
+            round1_emails = request.POST.getlist('round1_employee_email[]')
+            round1_ids = request.POST.getlist('round1_employee_id[]')
             round1_start_date_str = request.POST.get('round1_start_date')
             round1_end_date_str = request.POST.get('round1_end_date')
 
-            if round1_emp_name and round1_emp_email and round1_emp_id:
-                round1_start = datetime.datetime.strptime(round1_start_date_str, '%Y-%m-%d').date() if round1_start_date_str else None
-                round1_end = datetime.datetime.strptime(round1_end_date_str, '%Y-%m-%d').date() if round1_end_date_str else None
+            round1_start = datetime.datetime.strptime(round1_start_date_str, '%Y-%m-%d').date() if round1_start_date_str else None
+            round1_end = datetime.datetime.strptime(round1_end_date_str, '%Y-%m-%d').date() if round1_end_date_str else None
 
-                round1_panel = ChallengePanel.objects.create(
-                    challenge=challenge,
-                    panel_name=round1_emp_name,  # Employee name
-                    emp_id=round1_emp_id,  # Employee ID
-                    emailid=round1_emp_email,  # Email ID
-                    start_date=round1_start,
-                    end_date=round1_end,
-                    round_number=1
-                )
+            for i in range(len(round1_names)):
+                name = round1_names[i]
+                email = round1_emails[i] if i < len(round1_emails) else ''
+                emp_id = round1_ids[i] if i < len(round1_ids) else ''
 
-                # Add mentor for Round 1 panel using the evaluator email
-                try:
-                    mentor = IrisUser.objects.get(email=round1_emp_email)
-                    ChallengeMentor.objects.create(
-                        panel=round1_panel,
-                        mentor=mentor
+                if name and email:
+                    round1_panel = ChallengePanel.objects.create(
+                        challenge=challenge,
+                        panel_name=name,
+                        emp_id=emp_id,
+                        emailid=email,
+                        start_date=round1_start,
+                        end_date=round1_end,
+                        round_number=1
                     )
-                    print(f"ChallengeMentor created for Round 1: panel_id={round1_panel.panel_id}, mentor={mentor.full_name}")
-                except IrisUser.DoesNotExist:
-                    print(f"Mentor with email {round1_emp_email} not found in the system")
+
+                    # Add mentor for Round 1 panel using the evaluator email
+                    try:
+                        mentor = IrisUser.objects.get(email=email)
+                        ChallengeMentor.objects.create(
+                            panel=round1_panel,
+                            mentor=mentor
+                        )
+                        print(f"ChallengeMentor created for Round 1: panel_id={round1_panel.panel_id}, mentor={mentor.full_name}")
+                    except IrisUser.DoesNotExist:
+                        print(f"Mentor with email {email} not found in the system")
 
             # Step 2: Create ChallengePanel for Round 2 (if applicable) with evaluator details
             if int(num_rounds) == 2:
-                round2_emp_name = request.POST.get('round2_employee_name')
-                round2_emp_email = request.POST.get('round2_employee_email')
-                round2_emp_id = request.POST.get('round2_employee_id')
+                round2_names = request.POST.getlist('round2_employee_name[]')
+                round2_emails = request.POST.getlist('round2_employee_email[]')
+                round2_ids = request.POST.getlist('round2_employee_id[]')
                 round2_start_date_str = request.POST.get('round2_start_date')
                 round2_end_date_str = request.POST.get('round2_end_date')
 
-                if round2_emp_name and round2_emp_email and round2_emp_id:
-                    round2_start = datetime.datetime.strptime(round2_start_date_str, '%Y-%m-%d').date() if round2_start_date_str else None
-                    round2_end = datetime.datetime.strptime(round2_end_date_str, '%Y-%m-%d').date() if round2_end_date_str else None
+                round2_start = datetime.datetime.strptime(round2_start_date_str, '%Y-%m-%d').date() if round2_start_date_str else None
+                round2_end = datetime.datetime.strptime(round2_end_date_str, '%Y-%m-%d').date() if round2_end_date_str else None
 
-                    round2_panel = ChallengePanel.objects.create(
-                        challenge=challenge,
-                        panel_name=round2_emp_name,  # Employee name
-                        emp_id=round2_emp_id,  # Employee ID
-                        emailid=round2_emp_email,  # Email ID
-                        start_date=round2_start,
-                        end_date=round2_end,
-                        round_number=2
-                    )
+                for i in range(len(round2_names)):
+                    name = round2_names[i]
+                    email = round2_emails[i] if i < len(round2_emails) else ''
+                    emp_id = round2_ids[i] if i < len(round2_ids) else ''
 
-                    # Add mentor for Round 2 panel using the evaluator email
-                    try:
-                        mentor = IrisUser.objects.get(email=round2_emp_email)
-                        ChallengeMentor.objects.create(
-                            panel=round2_panel,
-                            mentor=mentor
+                    if name and email:
+                        round2_panel = ChallengePanel.objects.create(
+                            challenge=challenge,
+                            panel_name=name,
+                            emp_id=emp_id,
+                            emailid=email,
+                            start_date=round2_start,
+                            end_date=round2_end,
+                            round_number=2
                         )
-                        print(f"ChallengeMentor created for Round 2: panel_id={round2_panel.panel_id}, mentor={mentor.full_name}")
-                    except IrisUser.DoesNotExist:
-                        print(f"Mentor with email {round2_emp_email} not found in the system")
+
+                        # Add mentor for Round 2 panel using the evaluator email
+                        try:
+                            mentor = IrisUser.objects.get(email=email)
+                            ChallengeMentor.objects.create(
+                                panel=round2_panel,
+                                mentor=mentor
+                            )
+                            print(f"ChallengeMentor created for Round 2: panel_id={round2_panel.panel_id}, mentor={mentor.full_name}")
+                        except IrisUser.DoesNotExist:
+                            print(f"Mentor with email {email} not found in the system")
+
+            # Notify Challenge Owner if LIVE
+            if save_status == 'LIVE' and challenge.created_by:
+                send_notification(
+                    recipient=challenge.created_by,
+                    message=f"Challenges has officially started on your idea '{title}'",
+                    sender=user,
+                    link='/challenges/'
+                )
 
             return JsonResponse({'status': 'success', 'challenge_id': str(challenge.challenge_id)})
 
         except Exception as e:
+            traceback.print_exc()
             return JsonResponse({'status': 'error', 'message': str(e)})
 
     # Also fetch all challenge owners to be potential mentors/reviewers
@@ -1101,10 +1353,16 @@ def idea_details(request, challenge_id):
     if challenge.keywords:
         keywords_list = [kw.strip() for kw in challenge.keywords.split(',')]
 
+    # Calculate days remaining
+    days_remaining = 0
+    if challenge.end_date:
+        days_remaining = (challenge.end_date - timezone.now()).days
+
     context = {
         'challenge': challenge,
         'review_parameters': review_params,
         'keywords_list': keywords_list,
+        'days_remaining': days_remaining,
     }
     return render(request, 'iris_app/ideadetails.html', context)
 
@@ -1172,36 +1430,53 @@ def submit_idea(request, challenge_id):
 
             print(f"Received idea submission: title={title}, empcode={empcode}, empname={empname}, emailid={emailid}, ibu_name={ibu_name}, service_line={service_line}, is_confidential={is_confidential}, sharing_scope={sharing_scope}, improvement_category={improvement_category}, improvement_theme={improvement_theme}")
             print(f"IdeaDetail: problem_statement={problem_statement}, proposed_solution={proposed_solution}, keywords={keywords_detail}, technology={technology}, monetary_value={monetary_value}, business_value_monetary={business_value_monetary}, assumptions={assumptions}, risks={risks}, context={context}, innovation_type={innovation_type}")
-            # 1. Create Idea with employee information
-            idea = Idea.objects.create(
-                title=title,
-                submitter=user,
-                challenge=challenge,
-                status='SUBMITTED',
-                empcode=empcode,
-                empname=empname,
-                emailid=emailid,
-                ibu_name=ibu_name,
-                service_line=service_line,
-                is_confidential=is_confidential,
-                sharing_scope=sharing_scope,
-                improvement_category=improvement_category,
-                improvement_theme=improvement_theme
-            )
+            # 1. Find existing draft or create new Idea
+            idea = Idea.objects.filter(submitter=user, challenge=challenge, status='DRAFT').first()
+            if idea:
+                idea.title = title
+                idea.status = 'SUBMITTED'
+                idea.empcode = empcode
+                idea.empname = empname
+                idea.emailid = emailid
+                idea.ibu_name = ibu_name
+                idea.service_line = service_line
+                idea.is_confidential = is_confidential
+                idea.sharing_scope = sharing_scope
+                idea.improvement_category = improvement_category
+                idea.improvement_theme = improvement_theme
+                idea.save()
+            else:
+                idea = Idea.objects.create(
+                    title=title,
+                    submitter=user,
+                    challenge=challenge,
+                    status='SUBMITTED',
+                    empcode=empcode,
+                    empname=empname,
+                    emailid=emailid,
+                    ibu_name=ibu_name,
+                    service_line=service_line,
+                    is_confidential=is_confidential,
+                    sharing_scope=sharing_scope,
+                    improvement_category=improvement_category,
+                    improvement_theme=improvement_theme
+                )
 
-            # 2. Create IdeaDetail with ALL fields
-            IdeaDetail.objects.create(
+            # 2. Create or Update IdeaDetail with ALL fields
+            IdeaDetail.objects.update_or_create(
                 idea=idea,
-                problem_statement=problem_statement,
-                proposed_solution=proposed_solution,
-                keywords=keywords,
-                technology=technology,
-                business_monetary=monetary_value,
-                business_value_monetary=business_value_monetary,
-                assumptions=assumptions,
-                risks=risks,
-                context=context,
-                innovation_type=innovation_type
+                defaults={
+                    'problem_statement': problem_statement,
+                    'proposed_solution': proposed_solution,
+                    'keywords': keywords,
+                    'technology': technology,
+                    'business_monetary': monetary_value,
+                    'business_value_monetary': business_value_monetary,
+                    'assumptions': assumptions,
+                    'risks': risks,
+                    'context': context,
+                    'innovation_type': innovation_type
+                }
             )
 
             # 3. Add Co-Ideators (Email list from hidden input or similar)
@@ -1530,11 +1805,59 @@ def user_dashboard(request):
 
     # Stats
     total_points = Reward.objects.filter(user=user).aggregate(Sum('points'))['points__sum'] or 0
-    ideas_count = Idea.objects.filter(submitter=user).count()
-    challenges_participated = Idea.objects.filter(submitter=user).values('challenge').distinct().count()
+    ideas_queryset = Idea.objects.filter(submitter=user)
+    ideas_count = ideas_queryset.count()
+
+    # Count ideas that have at least one review with decision='APPROVE'
+    approved_count = Review.objects.filter(
+        entity_id__in=ideas_queryset.values_list('idea_id', flat=True),
+        decision='APPROVE',
+        entity_type='IDEA'
+    ).values('entity_id').distinct().count()
+    implemented_count = ideas_queryset.filter(status='IMPLEMENTED').count()
+
+    success_rate = 0
+    if ideas_count > 0:
+        success_rate = round((approved_count / ideas_count) * 100)
+
+    challenges_participated = ideas_queryset.values('challenge').distinct().count()
+
+    # Filtering logic
+    category = request.GET.get('category')
+    status = request.GET.get('status')
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+    q = request.GET.get('q')
+
+    if q:
+        ideas_queryset = ideas_queryset.filter(Q(title__icontains=q) | Q(challenge__title__icontains=q))
+
+    if category and category != 'all':
+        if category == 'Idea Arena':
+            ideas_queryset = ideas_queryset.filter(challenge__isnull=False)
+        elif category == 'Idea Pulse':
+            ideas_queryset = ideas_queryset.filter(challenge__isnull=True)
+        elif category == 'Featured':
+            ideas_queryset = ideas_queryset.filter(challenge__is_featured=True)
+
+    if status:
+        # Map frontend status names to model status codes if necessary
+        status_map = {
+            'implemented': 'IMPLEMENTED',
+            'approved': 'APPROVED',
+            'under_review': 'UNDER_REVIEW',
+            'submitted': 'SUBMITTED'
+        }
+        status_code = status_map.get(status.lower(), status.upper())
+        ideas_queryset = ideas_queryset.filter(status=status_code)
+
+    if from_date:
+        ideas_queryset = ideas_queryset.filter(submission_date__date__gte=from_date)
+    if to_date:
+        ideas_queryset = ideas_queryset.filter(submission_date__date__lte=to_date)
 
     # Recent Activity (Ideas)
-    recent_ideas = Idea.objects.filter(submitter=user).order_by('-submission_date')[:5]
+    recent_ideas = ideas_queryset.order_by('-submission_date')
 
     # Notifications (Unread)
     notifications = Notification.objects.filter(recipient=user, is_read=False).order_by('-created_at')[:5]
@@ -1546,12 +1869,72 @@ def user_dashboard(request):
         'user': user,
         'total_points': total_points,
         'ideas_count': ideas_count,
+        'approved_count': approved_count,
+        'implemented_count': implemented_count,
+        'success_rate': success_rate,
         'challenges_count': challenges_participated,
         'recent_ideas': recent_ideas,
         'notifications': notifications,
         'active_challenges': active_challenges,
     }
     return render(request, 'iris_app/user_dashboard.html', context)
+
+def viewuseridea(request, idea_id):
+    user = get_context_user(request)
+    if not user:
+        return redirect('login')
+
+    request.iris_user = user
+    idea = get_object_or_404(Idea, idea_id=idea_id)
+    idea_detail = getattr(idea, 'ideadetail', None)
+
+    # Fetch reviews (evaluator details and feedback)
+    reviews = Review.objects.filter(entity_id=idea_id, entity_type='IDEA').order_by('-review_date')
+
+    # Fetch rewards for this idea
+    reward_points = Reward.objects.filter(user=idea.submitter, reason__icontains=idea.title).aggregate(Sum('points'))['points__sum'] or 0
+
+    # Determine the status index for timeline (crude way based on status choices)
+    # SUBMITTED, UNDER_REVIEW, APPROVED, IMPLEMENTED
+    status_flow = ['SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'IMPLEMENTED']
+
+    # Check if there are any reviews with 'APPROVE' decision
+    has_approval = reviews.filter(decision='APPROVE').exists()
+
+    # Determine progress index:
+    # 0 = Submitted, 1 = Under Review, 2 = Approved, 3 = Implemented
+    current_status_index = 0 # At minimum, it is submitted
+
+    if idea.status == 'IMPLEMENTED':
+        current_status_index = 3
+    elif idea.status == 'APPROVED' or has_approval:
+        current_status_index = 2
+    elif idea.status == 'UNDER_REVIEW' or reviews.exists():
+        current_status_index = 1
+    elif idea.status == 'SUBMITTED':
+        current_status_index = 0
+
+    # Get keywords as list
+    keywords_list = []
+    if idea_detail and idea_detail.keywords:
+        keywords_list = [k.strip() for k in idea_detail.keywords.split(',') if k.strip()]
+
+    # Get technology as list
+    tools_list = []
+    if idea_detail and idea_detail.technology:
+        tools_list = [t.strip() for t in idea_detail.technology.split(',') if t.strip()]
+
+    context = {
+        'idea': idea,
+        'detail': idea_detail,
+        'reviews': reviews,
+        'reward_points': reward_points,
+        'status_flow': status_flow,
+        'current_status_index': current_status_index,
+        'keywords_list': keywords_list,
+        'tools_list': tools_list,
+    }
+    return render(request, 'iris_app/view_user_idea.html', context)
 
 def reports_view(request):
     user = get_context_user(request)
@@ -1635,11 +2018,13 @@ def challenge_register(request, challenge_id):
         messages.warning(request, "This challenge does not require registration.")
         return redirect('challenge_detail', challenge_id=challenge_id)
 
+    p_type = (challenge.participation_type or 'both').lower().strip()
+
     context = {
         'challenge': challenge,
         'user': user,
-        'participation_type': challenge.participation_type,
-        'max_team_size': challenge.max_team_size or 1,
+        'participation_type': p_type,
+        'max_team_size': challenge.max_team_size or 5,
     }
     return render(request, 'iris_app/challenge_register.html', context)
 
@@ -1656,24 +2041,24 @@ def submit_registration(request, challenge_id):
     challenge = get_object_or_404(Challenge, challenge_id=challenge_id)
 
     try:
-        participation_mode = request.POST.get('participation_mode')  # 'Individual' or 'Team'
-        team_name = request.POST.get('team_name') if participation_mode == 'Team' else None
-        team_lead_name = request.POST.get('team_lead_name') if participation_mode == 'Team' else None
+        participation_mode = (request.POST.get('participation_mode') or '').strip().lower()  # 'individual' or 'team'
+        team_name = request.POST.get('team_name') if participation_mode == 'team' else None
 
         # Get team members from request
-        team_member_emails = request.POST.getlist('team_member_emails[]') if participation_mode == 'Team' else []
+        team_member_emails = request.POST.getlist('team_member_emails[]') if participation_mode == 'team' else []
 
         # Validate participation mode against challenge settings
-        participation_type = (challenge.participation_type or '').lower()
-        if participation_type == 'individual' and participation_mode != 'Individual':
+        participation_type = (challenge.participation_type or '').lower().strip()
+
+        if participation_type == 'individual' and participation_mode != 'individual':
             return JsonResponse({'status': 'error', 'message': 'This challenge only accepts individual submissions'}, status=400)
-        elif participation_type == 'team' and participation_mode != 'Team':
+        elif participation_type == 'team' and participation_mode != 'team':
             return JsonResponse({'status': 'error', 'message': 'This challenge only accepts team submissions'}, status=400)
 
         # Validate team size if team
-        if participation_mode == 'Team':
+        if participation_mode == 'team':
             team_size = len(team_member_emails) + 1  # +1 for the current user
-            if team_size > challenge.max_team_size:
+            if challenge.max_team_size and team_size > challenge.max_team_size:
                 return JsonResponse({'status': 'error', 'message': f'Team size exceeds maximum ({challenge.max_team_size})'}, status=400)
 
             if not team_name:
@@ -1688,3 +2073,221 @@ def submit_registration(request, challenge_id):
 
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+@csrf_exempt
+def registernow(request, challenge_id):
+    """Handle challenge registration and save team members as co-ideators"""
+    user = get_context_user(request)
+    print(f"DEBUG: registernow called for challenge {challenge_id}, user identified: {user}")
+    if not user:
+        return JsonResponse({'status': 'error', 'message': 'Not logged in'}, status=403)
+
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+
+    challenge = get_object_or_404(Challenge, challenge_id=challenge_id)
+
+    try:
+        participation_mode = (request.POST.get('participation_mode') or '').strip().lower()
+        team_name = request.POST.get('team_name')
+        members_json = request.POST.get('members_json')
+
+        # Create a stub/placeholder Idea for the registration
+        idea_title = team_name if (participation_mode == 'team' and team_name) else f"Registration: {challenge.title}"
+
+        with transaction.atomic():
+            # Check if user is already registered (has an idea for this challenge)
+            existing_idea = Idea.objects.filter(submitter=user, challenge=challenge).first()
+            if existing_idea:
+                return JsonResponse({'status': 'success', 'message': 'Already registered'})
+
+            idea = Idea.objects.create(
+                title=idea_title,
+                submitter=user,
+                challenge=challenge,
+                status='DRAFT',
+                empcode=(user.employee_id or '')[:11],
+                empname=user.full_name,
+                emailid=user.email
+            )
+
+            # ALWAYS save the lead/submitter in CoIdeator
+            CoIdeator.objects.get_or_create(
+                idea=idea,
+                user=user,
+                defaults={'team_name': team_name if participation_mode == 'team' else None}
+            )
+
+            # Save additional team members as Co-Ideators if in team mode
+            if participation_mode == 'team' and members_json:
+                try:
+                    members_list = json.loads(members_json)
+                    for member in members_list:
+                        m_email = member.get('email')
+                        # Skip if it's the lead (submitter) or empty email
+                        if m_email and m_email.lower() != user.email.lower():
+                            co_user = IrisUser.objects.filter(email=m_email).first()
+                            if co_user:
+                                CoIdeator.objects.get_or_create(
+                                    idea=idea,
+                                    user=co_user,
+                                    defaults={'team_name': team_name}
+                                )
+                            else:
+                                print(f"DEBUG: Co-ideator user not found for email: {m_email}")
+                except Exception as json_err:
+                    print(f"DEBUG: Error parsing members_json: {str(json_err)}")
+
+            # Handle additional details if necessary (IdeaDetail)
+            IdeaDetail.objects.get_or_create(
+                idea=idea,
+                defaults={
+                    'problem_statement': f"Registered for challenge: {challenge.title}",
+                    'proposed_solution': "Registration details submitted via modal."
+                }
+            )
+
+        messages.success(request, f"Successfully registered for '{challenge.title}'!")
+        return JsonResponse({'status': 'success', 'message': 'successfully submitted'})
+
+    except Exception as e:
+        traceback.print_exc()
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+
+def admin_dashboard(request):
+    user = get_context_user(request)
+    if not user:
+        return redirect('login')
+
+    request.iris_user = user
+
+    # Stats
+    # Admin Dashboard Stats
+    total_challenges = Challenge.objects.count()
+    active_challenges_count = Challenge.objects.filter(status='LIVE').count()
+    draft_challenges_count = Challenge.objects.filter(status='DRAFT').count()
+    completed_challenges_count = Challenge.objects.filter(status='COMPLETED').count()
+
+    # All Challenges for the List/Table
+    try:
+        challenges = Challenge.objects.all().order_by('-start_date')
+    except:
+        challenges = Challenge.objects.all().order_by('-challenge_id')
+
+    # Optional: Keep previous context properties to avoid template crashing if they are used
+    total_points = Reward.objects.filter(user=user).aggregate(Sum('points'))['points__sum'] or 0
+    ideas_count = Idea.objects.filter(submitter=user).count()
+    challenges_participated = Idea.objects.filter(submitter=user).values('challenge').distinct().count()
+
+    context = {
+        'user': user,
+
+        # New context specific to admin dashboard
+        'total_challenges': total_challenges,
+        'active_challenges_count': active_challenges_count,
+        'draft_challenges_count': draft_challenges_count,
+        'completed_challenges_count': completed_challenges_count,
+        'challenges': challenges,
+        'now': timezone.now(),
+
+        # Old context elements appended just in case
+        'total_points': total_points,
+        'ideas_count': ideas_count,
+        'challenges_count': challenges_participated,
+    }
+    return render(request, 'iris_app/admin_dashboard.html', context)
+
+
+def managepanel(request, challenge_id):
+    user = get_context_user(request)
+    if not user:
+        return redirect('login')
+
+    request.iris_user = user
+    challenge = get_object_or_404(Challenge, challenge_id=challenge_id)
+    ideas_count = Idea.objects.filter(challenge=challenge).count()
+
+    # Get all panels for this challenge
+    panels = ChallengePanel.objects.filter(challenge=challenge).order_by('round_number', 'panel_name')
+
+    # Process each panel
+    for panel in panels:
+        # Number of ideas submitted for this challenge (as requested)
+        panel.assigned_count = ideas_count
+
+        # Get count of ideas reviewed by this evaluator for this challenge/round
+        evaluator = IrisUser.objects.filter(email=panel.emailid).first()
+        if evaluator:
+            stage = 'FIRST EVALUATION' if panel.round_number == 1 else 'SECOND EVALUATION'
+            reviewed_count = Review.objects.filter(
+                reviewer=evaluator,
+                entity_type='IDEA',
+                stage=stage,
+                entity_id__in=Idea.objects.filter(challenge=challenge).values('idea_id')
+            ).count()
+            panel.reviewed_count = reviewed_count
+        else:
+            panel.reviewed_count = 0
+
+    round1_panels = [p for p in panels if p.round_number == 1]
+    round2_panels = [p for p in panels if p.round_number == 2]
+
+    # Simple short ID from UUID
+    short_id = str(challenge.challenge_id)[:8].upper()
+
+    context = {
+        'challenge': challenge,
+        'short_id': short_id,
+        'ideas_count': ideas_count,
+        'round1_panels': round1_panels,
+        'round2_panels': round2_panels,
+    }
+
+    return render(request, 'iris_app/managepanel.html', context)
+
+
+def download_challenge_summary(request, challenge_id):
+    """Generate and return a PDF summary of the challenge"""
+    user = get_context_user(request)
+    if not user:
+        return redirect('login')
+
+    challenge = get_object_or_404(Challenge, challenge_id=challenge_id)
+
+    # Process keywords
+    keywords_list = []
+    if challenge.keywords:
+        keywords_list = [kw.strip() for kw in challenge.keywords.split(',')]
+
+    # Process expected outcome
+    outcome_lines = []
+    if challenge.expected_outcome:
+        outcome_lines = [line.strip() for line in challenge.expected_outcome.splitlines() if line.strip()]
+
+    panels = ChallengePanel.objects.filter(challenge=challenge).order_by('round_number')
+    review_params = challenge.review_parameters.all().select_related('parameter')
+
+    context = {
+        'challenge': challenge,
+        'keywords_list': keywords_list,
+        'outcome_lines': outcome_lines,
+        'panels': panels,
+        'review_params': review_params,
+        'today': datetime.datetime.now(),
+    }
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Challenge_Summary_{challenge.title.replace(" ", "_")}.pdf"'
+
+    template = get_template('iris_app/challenge_summary_pdf.html')
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    if pisa_status.err:
+        return HttpResponse('Problem generating PDF', status=500)
+
+    return response
+

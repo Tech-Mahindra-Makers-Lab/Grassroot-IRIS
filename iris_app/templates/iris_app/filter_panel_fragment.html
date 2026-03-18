@@ -1,0 +1,312 @@
+{% load static %}
+<!-- Premium Filter Panel Fragment -->
+<div id="filterBackdrop" class="filter-backdrop" onclick="closeFilterPanel()"></div>
+<div id="filterDrawer" class="filter-drawer-wrapper">
+    <div class="filter-panel-content">
+        <header class="filter-header">
+            <h3>Filter</h3>
+            <button type="button" class="btn-close-filter" onclick="closeFilterPanel()">×</button>
+        </header>
+
+        <form id="filterForm" method="GET" action="{% url 'user_dashboard' %}">
+            <!-- By Category -->
+            <div class="filter-section">
+                <div class="filter-section-title">By Category</div>
+                <div class="filter-options-group">
+                    <label class="filter-option">
+                        <input type="radio" name="category" value="all" checked>
+                        <span class="radio-custom"></span>
+                        <span class="option-text">All</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="category" value="Idea Arena">
+                        <span class="radio-custom"></span>
+                        <span class="option-text">Idea Arena</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="category" value="Idea Pulse">
+                        <span class="radio-custom"></span>
+                        <span class="option-text">Idea Pulse</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="category" value="Featured">
+                        <span class="radio-custom"></span>
+                        <span class="option-text">Featured</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-divider"></div>
+
+            <!-- By Status -->
+            <div class="filter-section">
+                <div class="filter-section-title">By Status</div>
+                <div class="filter-options-group">
+                    <label class="filter-option">
+                        <input type="radio" name="status" value="implemented">
+                        <span class="radio-custom"></span>
+                        <span class="option-text">Implemented</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="status" value="approved">
+                        <span class="radio-custom"></span>
+                        <span class="option-text">Approved</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="status" value="under_review">
+                        <span class="radio-custom"></span>
+                        <span class="option-text">Under Review</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="status" value="with_stakeholder">
+                        <span class="radio-custom"></span>
+                        <span class="option-text">With Stakeholder</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="status" value="submitted">
+                        <span class="radio-custom"></span>
+                        <span class="option-text">Submitted</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-divider"></div>
+
+            <!-- By Date -->
+            <div class="filter-section">
+                <div class="filter-section-title">By Date</div>
+                <div class="date-inputs-group">
+                    <div class="date-field">
+                        <label>From</label>
+                        <input type="date" name="from_date">
+                    </div>
+                    <div class="date-field">
+                        <label>To</label>
+                        <input type="date" name="to_date">
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-footer">
+                <button type="button" class="btn-reset-filter" onclick="resetForm()">Reset</button>
+                <button type="submit" class="btn-apply-filter">Apply</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .filter-drawer-wrapper {
+        position: fixed;
+        top: 0;
+        right: -320px;
+        width: 320px;
+        height: 100vh;
+        background: white;
+        box-shadow: -2px 4px 24px rgba(41, 37, 29, 0.24);
+        z-index: 2000;
+        transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-drawer-wrapper.open {
+        right: 0;
+    }
+
+    .filter-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.4);
+        backdrop-filter: blur(2px);
+        z-index: 1999;
+        display: none;
+    }
+
+    .filter-panel-content {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .filter-header h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: #101828;
+    }
+
+    .btn-close-filter {
+        background: none;
+        border: none;
+        font-size: 28px;
+        color: #4D4D4F;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .filter-section {
+        margin-bottom: 24px;
+    }
+
+    .filter-section-title {
+        font-size: 12px;
+        font-weight: 500;
+        color: rgba(74, 69, 61, 0.8);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 20px;
+    }
+
+    .filter-options-group {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding-left: 8px;
+    }
+
+    .filter-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .filter-option input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .radio-custom {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #4A453D;
+        border-radius: 50%;
+        position: relative;
+        transition: all 0.2s;
+        display: inline-block;
+    }
+
+    .filter-option input:checked ~ .radio-custom {
+        border-color: #4A453D;
+    }
+
+    .filter-option input:checked ~ .radio-custom::after {
+        content: "";
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #4A453D;
+        border-radius: 50%;
+    }
+
+    .option-text {
+        font-size: 14px;
+        font-weight: 500;
+        color: #101828;
+    }
+
+    .filter-divider {
+        height: 1px;
+        background: #E5DFD3;
+        margin: 20px 0;
+    }
+
+    .date-inputs-group {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding-top: 5px;
+    }
+
+    .date-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .date-field label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #101828;
+    }
+
+    .date-field input {
+        padding: 10px;
+        border: none;
+        border-bottom: 1.5px solid rgba(77, 77, 79, 0.2);
+        background: rgba(246, 242, 234, 0.4);
+        font-size: 13px;
+        outline: none;
+    }
+
+    .filter-footer {
+        margin-top: auto;
+        display: flex;
+        gap: 15px;
+        padding-top: 30px;
+    }
+
+    .btn-reset-filter {
+        flex: 1;
+        height: 44px;
+        border: 1.5px solid #29251D;
+        background: transparent;
+        color: #29251D;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .btn-apply-filter {
+        flex: 1;
+        height: 44px;
+        background: #E31837;
+        color: white;
+        border: none;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .btn-apply-filter:hover {
+        background: #C3142F;
+    }
+</style>
+
+<script>
+    function openFilterPanel() {
+        document.getElementById('filterDrawer').classList.add('open');
+        document.getElementById('filterBackdrop').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFilterPanel() {
+        document.getElementById('filterDrawer').classList.remove('open');
+        document.getElementById('filterBackdrop').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    function resetForm() {
+        document.getElementById('filterForm').reset();
+    }
+</script>

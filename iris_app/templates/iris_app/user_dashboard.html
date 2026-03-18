@@ -4,302 +4,220 @@
 {% block title %}My Dashboard{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'iris_app/css/user_dashboard.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-    .dashboard-header {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        color: white;
-        padding: 40px 0 80px;
-        margin-bottom: -40px;
-        position: relative;
-        overflow: hidden;
+    /* Override base container if needed */
+    .container-fluid {
+        padding-left: 0;
+        padding-right: 0;
     }
-
-    .dashboard-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 300px;
-        height: 100%;
-        background: url('{% static "iris_app/images/IRIS.png" %}') no-repeat center right;
-        background-size: contain;
-        opacity: 0.05;
-        transform: rotate(-15deg) scale(1.5);
-    }
-
-    .stat-card {
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        padding: 24px;
-        transition: transform 0.2s;
-        border: 1px solid #f1f5f9;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-
-    .stat-value {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #1e293b;
-        line-height: 1.2;
-    }
-
-    .stat-label {
-        font-size: 0.875rem;
-        color: #64748b;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .stat-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        margin-bottom: 16px;
-    }
-
-    .section-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #1e293b;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .activity-item {
-        padding: 16px;
-        border-bottom: 1px solid #f1f5f9;
-        transition: background 0.2s;
-    }
-
-    .activity-item:last-child {
-        border-bottom: none;
-    }
-
-    .activity-item:hover {
-        background: #f8fafc;
-    }
-
-    .challenge-mini-card {
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        overflow: hidden;
-        margin-bottom: 16px;
-        transition: all 0.2s;
-    }
-
-    .challenge-mini-card:hover {
-        border-color: #cbd5e1;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    main {
+        padding-top: 0 !important;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-page">
-    <!-- Header -->
-    <section class="dashboard-header">
-        <div class="container position-relative">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <span class="badge bg-white text-dark mb-2 px-3 py-2 rounded-pill fw-bold">User Dashboard</span>
-                    <h1 class="fw-bold mb-2">Welcome back, {{ user.full_name }}!</h1>
-                    <p class="text-white-50 mb-0">Here's what's happening in your innovation journey.</p>
+<div class="main-content">
+    <!-- Banner -->
+    <div class="dashboard-banner">
+        <h1 class="banner-title">My Dashboard</h1>
+        <p class="banner-subtitle">Track your submissions and earn rewards</p>
+
+        <div class="teamwork-stats">
+            <div style="font-size: 14px; font-weight: 500; margin-bottom: 4px;">Rewards Points</div>
+            <div class="points-display">
+                <i class="fa-solid fa-trophy" style="margin-right: 8px;"></i>
+                {{ total_points }} <span class="points-label">pts</span>
+            </div>
+        </div>
+
+        <a href="#" class="rewards-journey-btn">
+            <i class="fa-solid fa-route"></i>
+            Rewards Journey
+        </a>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <!-- Total Submissions -->
+        <div class="stat-card">
+            <div class="stat-icon-wrapper">
+                <i class="fa-solid fa-paper-plane"></i>
+            </div>
+            <div class="stat-info">
+                <div class="label">Total Submissions</div>
+                <div class="value">{{ ideas_count }}</div>
+            </div>
+        </div>
+
+        <!-- Approved -->
+        <div class="stat-card">
+            <div class="stat-icon-wrapper">
+                <i class="fa-solid fa-check-double"></i>
+            </div>
+            <div class="stat-info">
+                <div class="label">Approved</div>
+                <div class="value">{{ approved_count }}</div>
+            </div>
+        </div>
+
+        <!-- Implemented -->
+        <div class="stat-card">
+            <div class="stat-icon-wrapper">
+                <i class="fa-solid fa-rocket"></i>
+            </div>
+            <div class="stat-info">
+                <div class="label">Implemented</div>
+                <div class="value">{{ implemented_count }}</div>
+            </div>
+        </div>
+
+        <!-- Success Rate -->
+        <div class="stat-card">
+            <div class="stat-icon-wrapper">
+                <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <div class="stat-info">
+                <div class="label">Success Rate</div>
+                <div class="value">{{ success_rate }}%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs and Filter -->
+    <div class="tabs-filters-bar">
+        <div class="tabs">
+            <div class="tab {% if not request.GET.category or request.GET.category == 'all' %}active{% endif %}" onclick="switchTab('all')">
+                <i class="fa-solid fa-file-invoice"></i>
+                My Submissions
+            </div>
+            <div class="tab {% if request.GET.category == 'Idea Arena' %}active{% endif %}" onclick="switchTab('Idea Arena')">
+                <i class="fa-solid fa-lightbulb"></i>
+                Idea Arena
+            </div>
+            <div class="tab {% if request.GET.category == 'Idea Pulse' %}active{% endif %}" onclick="switchTab('Idea Pulse')">
+                <i class="fa-solid fa-bolt"></i>
+                Idea Pulse
+            </div>
+        </div>
+
+        <div class="search-filter">
+            <div class="search-input-wrapper">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" placeholder="Search Submissions...">
+            </div>
+            <div class="tab" style="border-bottom: none;" onclick="openFilterPanel()" id="filterBtn">
+                <i class="fa-solid fa-filter"></i>
+                Filter
+            </div>
+        </div>
+    </div>
+
+    <!-- Ideas List -->
+    <div class="ideas-list">
+        {% for idea in recent_ideas %}
+        <div class="idea-card">
+            <div style="display: flex; flex-direction: column;">
+                <div class="status-badge {% if idea.status == 'SUBMITTED' %}status-submitted{% elif idea.status == 'APPROVED' %}status-approved{% elif idea.status == 'IMPLEMENTED' %}status-implemented{% else %}status-submitted{% endif %}">
+                    <div style="width: 24px; height: 24px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-check" style="font-size: 10px;"></i>
+                    </div>
+                    {{ idea.get_status_display }}
                 </div>
-                <div class="col-md-4 text-end d-none d-md-block">
-                    <a href="{% url 'submit_grassroot_idea' %}"
-                        class="btn btn-light rounded-pill px-4 fw-bold shadow-sm me-2">
-                        <i class="fa-solid fa-plus me-2"></i> Grassroot Idea
+                <div class="category-label {% if not idea.challenge %}category-grassroot{% endif %}">
+                    {% if idea.challenge %}Idea Arena{% else %}GRASSROOT{% endif %}
+                </div>
+                {% if idea.challenge and idea.challenge.challenge_icon %}
+                    <img src="{{ idea.challenge.challenge_icon.url }}" class="idea-image">
+                {% else %}
+                    <img src="{% static 'iris_app/images/techlednetwork.png' %}" class="idea-image">
+                {% endif %}
+            </div>
+
+            <div class="idea-main-info">
+                <div class="idea-details-left">
+                    <h3 class="idea-title">{{ idea.title }}</h3>
+                    <div class="idea-tags">
+                        {% if idea.improvement_category %}
+                            <span class="tag">{{ idea.improvement_category }}</span>
+                        {% else %}
+                            <span class="tag">Generic</span>
+                        {% endif %}
+                        {% if idea.service_line %}
+                            <span class="tag">{{ idea.service_line }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="idea-meta-right">
+                    <div class="meta-item">
+                        <div class="meta-value">
+                            <i class="fa-regular fa-clock"></i>
+                            {% if idea.challenge %}
+                                {{ idea.challenge.end_date|timeuntil }} left
+                            {% else %}
+                                {{ idea.submission_date|date:"d M Y" }}
+                            {% endif %}
+                        </div>
+                        <div class="meta-value">
+                            <i class="fa-solid fa-users"></i>
+                            120
+                        </div>
+                    </div>
+
+                    <a href="{% url 'viewuseridea' idea.idea_id %}" style="text-decoration: none;">
+                        <div style="padding: 10px 30px; background: var(--primary-red); color: white; border-radius: 4px; font-weight: 500; font-size: 14px; text-align: center;">
+                            View
+                        </div>
                     </a>
                 </div>
             </div>
         </div>
-    </section>
+        {% empty %}
+        <div style="text-align: center; padding: 100px; color: var(--text-gray);">
+            <i class="fa-regular fa-folder-open fa-3x" style="margin-bottom: 20px;"></i>
+            <h3>No submissions found</h3>
+            <p>Start your innovation journey by submitting an idea.</p>
 
-    <div class="container" style="margin-top: -40px; position: relative; z-index: 10;">
-        <!-- Stats Row -->
-        <div class="row g-4 mb-5">
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="stat-value">{{ total_points }}</div>
-                            <div class="stat-label">Total Points</div>
-                        </div>
-                        <div class="stat-icon bg-warning bg-opacity-10 text-warning">
-                            <i class="fa-solid fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="stat-value">{{ ideas_count }}</div>
-                            <div class="stat-label">Ideas Submitted</div>
-                        </div>
-                        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
-                            <i class="fa-regular fa-lightbulb"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="stat-value">{{ challenges_count }}</div>
-                            <div class="stat-label">Challenges Joined</div>
-                        </div>
-                        <div class="stat-icon bg-success bg-opacity-10 text-success">
-                            <i class="fa-solid fa-flag"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
-
-        <div class="row g-4 mb-5">
-            <!-- Left Column: Recent Activity & Notifications -->
-            <div class="col-lg-8">
-                <!-- Recent Ideas -->
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-header bg-white border-0 py-3 rounded-top-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="fw-bold mb-0 text-dark"><i
-                                    class="fa-solid fa-clock-rotate-left me-2 text-muted"></i> Recent Ideas</h5>
-                            <a href="{% url 'my_ideas' %}" class="btn btn-sm btn-link text-decoration-none fw-bold">View
-                                All</a>
-                        </div>
-                    </div>
-                    <div class="card-body p-0">
-                        {% if recent_ideas %}
-                        {% for idea in recent_ideas %}
-                        <div class="activity-item d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="bg-light rounded-circle p-2"
-                                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                    <i class="fa-solid fa-lightbulb text-primary"></i>
-                                </div>
-                                <div>
-                                    <h6 class="fw-bold mb-0 text-dark">{{ idea.title }}</h6>
-                                    <small class="text-muted">{{ idea.submission_date|date:"M d, Y" }} &bull; {{
-                                        idea.challenge.title|default:"Grassroot" }}</small>
-                                </div>
-                            </div>
-                            <span class="badge rounded-pill 
-                                    {% if idea.status == 'APPROVED' %}bg-success
-                                    {% elif idea.status == 'SUBMITTED' %}bg-primary
-                                    {% elif idea.status == 'REJECTED' %}bg-danger
-                                    {% else %}bg-secondary{% endif %}">
-                                {{ idea.get_status_display }}
-                            </span>
-                        </div>
-                        {% endfor %}
-                        {% else %}
-                        <div class="text-center py-5">
-                            <i class="fa-regular fa-folder-open fa-2x text-muted mb-3"></i>
-                            <p class="text-muted">No ideas submitted yet.</p>
-                            <a href="{% url 'challenge_list' %}" class="btn btn-primary btn-sm rounded-pill px-3">Browse
-                                Challenges</a>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- Notifications -->
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-header bg-white border-0 py-3 rounded-top-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="fw-bold mb-0 text-dark"><i class="fa-regular fa-bell me-2 text-muted"></i>
-                                Notifications</h5>
-                            <a href="{% url 'notification_list' %}"
-                                class="btn btn-sm btn-link text-decoration-none fw-bold">View All</a>
-                        </div>
-                    </div>
-                    <div class="card-body p-0">
-                        {% if notifications %}
-                        {% for notif in notifications %}
-                        <div class="activity-item">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <p class="mb-1 text-dark">{{ notif.message }}</p>
-                                    <small class="text-muted">{{ notif.created_at|timesince }} ago</small>
-                                </div>
-                                {% if not notif.is_read %}
-                                <span class="badge bg-danger rounded-circle p-1" style="width: 8px; height: 8px;">
-                                </span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% endfor %}
-                        {% else %}
-                        <div class="p-4 text-center text-muted">
-                            <small>No new notifications.</small>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column: Active Challenges & Quick Links -->
-            <div class="col-lg-4">
-                <!-- Ongoing Challenges -->
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-body">
-                        <h5 class="fw-bold mb-3">Active Challenges</h5>
-                        {% for challenge in active_challenges %}
-                        <div class="challenge-mini-card">
-                            {% if challenge.challenge_icon %}
-                            <div
-                                style="height: 100px; background: url('{{ challenge.challenge_icon.url }}') center/cover;">
-                            </div>
-                            {% else %}
-                            <div style="height: 100px; background: #e2e8f0;"></div>
-                            {% endif %}
-                            <div class="p-3">
-                                <h6 class="fw-bold mb-1 text-truncate">{{ challenge.title }}</h6>
-                                <small class="text-muted d-block mb-2">{{ challenge.end_date|timeuntil }} left</small>
-                                <a href="{% url 'challenge_detail' challenge.challenge_id %}"
-                                    class="btn btn-outline-primary btn-sm w-100 rounded-pill fw-bold">View Details</a>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        <a href="{% url 'challenge_list' %}" class="btn btn-light w-100 fw-bold text-primary">View All
-                            Challenges</a>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="card border-0 shadow-sm rounded-4 bg-primary text-white">
-                    <div class="card-body p-4 text-center">
-                        <i class="fa-solid fa-rocket fa-3x mb-3 text-white-50"></i>
-                        <h5 class="fw-bold">Have an Idea?</h5>
-                        <p class="small text-white-50 mb-3">Don't wait for a challenge. Submit your grassroot innovation
-                            idea anytime.</p>
-                        <a href="{% url 'submit_grassroot_idea' %}"
-                            class="btn btn-white text-primary w-100 fw-bold rounded-pill shadow-sm">Submit Grassroot
-                            Idea</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </div>
+
+{% include 'iris_app/filter_panel_fragment.html' %}
+
+<script>
+    function switchTab(category) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('category', category);
+        window.location.href = url.pathname + url.search;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('.search-input-wrapper input');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const q = this.value;
+                    const url = new URL(window.location.href);
+                    if (q) {
+                        url.searchParams.set('q', q);
+                    } else {
+                        url.searchParams.delete('q');
+                    }
+                    window.location.href = url.pathname + url.search;
+                }
+            });
+
+            // Set initial value from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('q')) {
+                searchInput.value = urlParams.get('q');
+            }
+        }
+    });
+</script>
+
 {% endblock %}

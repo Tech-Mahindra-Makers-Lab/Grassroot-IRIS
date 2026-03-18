@@ -8,6 +8,9 @@
     <meta name="description"
         content="{% block meta_description %}IRIS - Innovation Platform for Global Collaboration{% endblock %}">
     <title>{% block title %}Every Idea Matters{% endblock %} | IRIS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
@@ -233,6 +236,11 @@
                 title="My Dashboard">
                 <i class="fa-solid fa-gauge-high icon"></i>
             </a>
+            <a href="{% url 'admin_dashboard' %}"
+                class="sidebar-item {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"
+                title="Admin Dashboard">
+                <i class="bi bi-speedometer2"></i>
+            </a>
             <a href="{% url 'review_dashboard' %}"
                 class="sidebar-item {% if request.resolver_match.url_name == 'review_dashboard' %}active{% endif %}"
                 title="Review Dashboard">
@@ -267,9 +275,9 @@
             </div>
             {% endif %}
 
-            <a href="{% url 'notification_list' %}"
+            <a href="javascript:void(0)" onclick="openNotifPanel()"
                 class="sidebar-item {% if request.resolver_match.url_name == 'notification_list' %}active{% endif %}"
-                title="Notifications">
+                title="Notifications" style="position: relative;">
                 <i class="fa-solid fa-bell icon"></i>
                 {% if unread_notifications_count %}
                 <span class="sidebar-badge"
@@ -298,7 +306,7 @@
 
                 <div class="nav-menu">
                     <a href="#about" class="nav-link-item">DASHBOARD</a>
-                    <a href="#community" class="nav-link-item">MAKERSLAB</a>
+                    <a href="https://www.techmahindra.com/makers-lab/" class="nav-link-item" target="_blank">MAKERSLAB</a>
                     <a href="#challenges" class="nav-link-item">INNOQUEST</a>
                     <a href="{% url 'challenge_list' %}" class="nav-link-item">IDEA ARENA</a>
                     <a href="{% url 'challenge_list' %}" class="nav-link-item">IDEA PULSE</a>
@@ -345,7 +353,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'iris_app/js/main.js' %}"></script>
     <!-- Registration Modal JS -->
-    <script src="{% static 'iris_app/js/register_modal.js' %}"></script>
+    <!-- <script src="{% static 'iris_app/js/register_modal.js' %}"></script> -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const toggle = document.getElementById('mobileToggle');
@@ -365,6 +373,7 @@
             }
         });
     </script>
+    {% include 'iris_app/notification_panel_fragment.html' %}
     {% block extra_js %}{% endblock %}
 </body>
 

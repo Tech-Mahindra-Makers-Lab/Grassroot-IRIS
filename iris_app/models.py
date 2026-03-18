@@ -175,11 +175,11 @@ class Idea(models.Model):
     submission_date = models.DateTimeField(auto_now_add=True)
 
     STATUS_CHOICES = [
-        ('SUBMITTED', 'Submitted'), ('UNDER_REVIEW', 'Under Review'),
+        ('DRAFT', 'Draft'), ('SUBMITTED', 'Submitted'), ('UNDER_REVIEW', 'Under Review'),
         ('APPROVED', 'Approved'), ('REJECTED', 'Rejected'),
         ('IMPLEMENTED', 'Implemented'), ('ARCHIVED', 'Archived')
     ]
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='SUBMITTED')
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='DRAFT')
 
     is_confidential = models.BooleanField(default=False)
 
@@ -244,6 +244,7 @@ class IdeaCategoryMapping(models.Model):
 class CoIdeator(models.Model):
     idea = models.ForeignKey(Idea, on_delete=models.CASCADE)
     user = models.ForeignKey(IrisUser, on_delete=models.CASCADE)
+    team_name = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         db_table = 'IRIS_CO_IDEATORS'

@@ -133,8 +133,12 @@
     <!-- TABS SECTION -->
     <div class="tabs-section">
         <div class="tabs-container">
+            <button class="tab-button" data-tab-frag="details-evaluate-frag">
+                <span class="tab-text">Summary Details</span>
+            </button>
+
             <button class="tab-button tab-active" data-tab-frag="details-evaluate-frag">
-                <span class="tab-text">Details &amp; Evaluate</span>
+                <span class="tab-text">Evaluate</span>
             </button>
             <button class="tab-button {% if is_first_evaluator %}tab-disabled{% endif %}"
                 data-tab-frag="assessment-history-frag" {% if is_first_evaluator %}disabled{% endif %}
@@ -154,36 +158,40 @@
                 {% csrf_token %}
 
                 <!-- SUBMITTER INFORMATION -->
-                <div class="submitter-section">
-                    <div class="section-title-info">
-                        <div class="section-icon"></div>
-                        <div class="section-title-text">Submitter Information</div>
-                    </div>
-                    <div class="submitter-info-box">
-                        <div class="submitter-detail-flex">
-                            <img class="submitter-avatar" src="https://placehold.co/50x50" alt="Submitter" />
-                            <div class="submitter-info">
-                                <div>
-                                    <span class="submitter-name">{{ submitter.full_name }}</span>
-                                    <span class="submitter-email">({{ submitter.email }})</span>
-                                </div>
-                                <div class="submitter-type-text">{{ submitter.user_type|default:"N/A" }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
 
                 <!-- IDEA NAME -->
                 <div class="idea-name-section">
+                    <div class="label-with-icon">
+                    <img src="{% static 'iris_app/images/ideaicon.png' %}" alt="Focus Area" class="field-icon">
+
                     <div class="idea-name-label-text">Idea Name</div>
+                    </div>
                     <div class="idea-name-value">{{ idea.title }}</div>
                 </div>
+                <!-- Proposed Idea -->
+
+            <div class="idea-name-section">
+                <div class="label-with-icon">
+                    <img src="{% static 'iris_app/images/proposeideaicon.png' %}" alt="Focus Area" class="field-icon">
+                    <label class="idea-name-label-text">Proposed Idea</label>
+                </div>
+                <div class="idea-name-value">
+                    {% if idea_detail and idea_detail.proposed_solution %}
+                        {{ idea_detail.proposed_solution }}
+                    {% else %}
+                        No proposed solution provided
+                    {% endif %}
+                </div>
+            </div>
 
                 <!-- REVIEW PARAMETERS -->
                 <div class="review-params-section">
                     <div class="section-title-info">
-                        <div class="section-icon"></div>
+                    <div class="label-with-icon">
+                    <img src="{% static 'iris_app/images/reviewIcon.png' %}" alt="Focus Area" class="field-icon">
                         <div class="section-title-text">Review Parameters</div>
+                        </div>
                     </div>
                     <div class="params-list">
                         {% for param in review_parameters %}
@@ -199,24 +207,29 @@
                             <div class="param-empty-col"></div>
                         </div>
                         {% endfor %}
-                        <div class="params-total-row">
+                        <!-- <div class="params-total-row">
                             <div class="total-name-col">
+                                <div class="label-with-icon">
+                    <img src="{% static 'iris_app/images/calcuatedWeightedScoreIcon.png' %}" alt="Focus Area" class="field-icon">
                                 <div class="total-name-text">Weighted Calculated Score</div>
+                                </div>
                             </div>
                             <div class="total-score-col">
                                 <input type="number" class="param-score-input" id="total_score_frag" name="total_score"
                                     min="0" max="5" readonly style="background-color: #f6f2ea; font-weight: 600;" />
                             </div>
                             <div class="total-empty-col"></div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 
                 <!-- RATING SECTION -->
                 <div class="rating-section">
                     <div class="section-title-info">
-                        <div class="section-icon"></div>
+                        <div class="label-with-icon">
+                      <img src="{% static 'iris_app/images/calcuatedWeightedScoreIcon.png' %}" alt="Focus Area" class="field-icon">
                         <div class="section-title-text">Calculated Weighted Score *</div>
+                        </div>
                     </div>
                     <div class="rating-box">
                         <div class="required-note"><span style="color: red;">*</span> Required field</div>
@@ -252,10 +265,13 @@
                 <!-- REMARKS SECTION -->
                 <div class="eval-remarks-section">
                     <div class="section-title-info">
-                        <div class="section-icon"></div>
+
+                        <div class="label-with-icon">
+                      <img src="{% static 'iris_app/images/calcuatedWeightedScoreIcon.png' %}" alt="Focus Area" class="field-icon">
                         <div class="remarks-title-text"
-                            style="color: #4D4D4F; font-size: 14px; font-weight: 600; line-height: 20px;">
+                            style="color:red; font-size: 14px; font-weight: 600; line-height: 20px;">
                             Remarks <span style="color: red;">*</span>
+                        </div>
                         </div>
                     </div>
                     <div class="remarks-inner">
@@ -340,55 +356,123 @@
     <!-- FOOTER BUTTONS: Always visible -->
     <div class="evaluator-footer" id="evaluator-footer-frag">
         <div class="button-group">
-            <button type="button" class="btn-clear" id="btn-clear-frag">Clear</button>
-            <button type="submit" class="btn-submit" form="evaluation-form-frag">Submit Evaluation</button>
+            <button type="button" class="btn-submit" id="submit-evaluation-btn" onclick="window.processEvaluationSubmit(this)">Update Evaluation</button>
         </div>
     </div>
 
 </div><!-- end evaluator-wrapper -->
 
 <script>
+// Attach function to window so the button onclick can call it safely regardless of closures
+window.processEvaluationSubmit = function(buttonElem) {
+    var form = document.querySelector('#slidePanelContent #evaluation-form-frag') || document.querySelector('#evaluation-form-frag');
+    var remarks = document.querySelector('#slidePanelContent #remarks-frag') || document.querySelector('#remarks-frag');
+    var ratingInput = document.querySelector('#slidePanelContent #rating-value-frag') || document.querySelector('#rating-value-frag');
+    var currentWrapper = document.querySelector('#slidePanelContent .evaluator-wrapper') || document.querySelector('.evaluator-wrapper');
+
+    if (!form) {
+        alert('Form not found.');
+        return;
+    }
+
+    if (!remarks || !remarks.value.trim() || remarks.value.trim().length < 10) {
+        alert('Remarks are required and must be at least 10 characters');
+        if (remarks) remarks.style.borderColor = 'red';
+        return;
+    }
+    if (remarks) remarks.style.borderColor = '';
+    
+    var formValid = true;
+    currentWrapper.querySelectorAll('.param-score-input[name^="param_score_"]').forEach(function (inp) {
+        if (!inp.value || inp.value < 0 || inp.value > 5) {
+            formValid = false;
+            inp.style.borderColor = 'red';
+        } else {
+            inp.style.borderColor = '';
+        }
+    });
+    if (!formValid) {
+        alert('Please enter a valid score (0-5) for all review parameters');
+        return;
+    }
+
+    if (!ratingInput || !ratingInput.value) {
+        alert('Please select a rating');
+        return;
+    }
+    
+    // Force recalc total manually using its elements because the scoped function might be unavailable here
+    var totalScore = 0;
+    currentWrapper.querySelectorAll('.param-row').forEach(function (row) {
+        var inp  = row.querySelector('.param-score-input[name^="param_score_"]');
+        var txt  = row.querySelector('.param-name-text');
+        if (!inp || !txt || inp.value === '') return;
+        var match = txt.textContent.match(/\((\d+)%\)/);
+        if (match) totalScore += (parseFloat(inp.value) * parseFloat(match[1])) / 100;
+    });
+
+    var totalField = currentWrapper.querySelector('#total_score_frag');
+    if (totalField) totalField.value = totalScore.toFixed(2);
+    
+    var formData = new FormData(form);
+    var csrf = form.querySelector('[name=csrfmiddlewaretoken]');
+    
+    buttonElem.disabled = true;
+    buttonElem.textContent = 'Submitting...';
+
+    fetch(form.getAttribute('action'), {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-CSRFToken': csrf ? csrf.value : '', 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(function (res) {
+        if (res.ok || res.status === 200 || res.status === 302) {
+            return res.json().then(data => {
+                if (data.status === 'success') {
+                    var sm = document.getElementById('evalSuccessModal');
+                    if (sm) sm.style.display = 'flex';
+                } else {
+                    alert(data.message || 'Error submitting evaluation.');
+                    buttonElem.disabled = false;
+                    buttonElem.textContent = 'Update Evaluation';
+                }
+            }).catch(() => {
+                var sm = document.getElementById('evalSuccessModal');
+                if (sm) sm.style.display = 'flex';
+            });
+        } else {
+            return res.json().then(data => {
+                alert(data.message || 'Error submitting evaluation.');
+                buttonElem.disabled = false;
+                buttonElem.textContent = 'Update Evaluation';
+            }).catch(() => {
+                alert('Error submitting evaluation.');
+                buttonElem.disabled = false;
+                buttonElem.textContent = 'Update Evaluation';
+            });
+        }
+    })
+    .catch(function (err) {
+        console.error('Submit error:', err);
+        alert('Error submitting evaluation.');
+        buttonElem.disabled = false;
+        buttonElem.textContent = 'Update Evaluation';
+    });
+};
+
 (function () {
     // Locate the wrapper — try slide panel first, fall back to document
     var wrapper = document.querySelector('#slidePanelContent .evaluator-wrapper')
                   || document.querySelector('.evaluator-wrapper');
     if (!wrapper) return;
 
-    /* ── IMMEDIATE: Move modals to document.body BEFORE any event listeners ─── */
-    console.log('=== MODAL INITIALIZATION START ===');
-    
-    var evalSuccessModal = document.getElementById('evalSuccessModal');
-    var evalCancelModal = document.getElementById('evalCancelModal');
-    
-    if (evalSuccessModal) {
-        console.log('SUCCESS modal found, parent before move:', evalSuccessModal.parentElement.className);
-        if (evalSuccessModal.parentElement !== document.body) {
-            document.body.appendChild(evalSuccessModal);
-            console.log('SUCCESS modal moved to body, new parent:', evalSuccessModal.parentElement.tagName);
-        }
-    } else {
-        console.error('SUCCESS modal NOT found!');
-    }
-    
-    if (evalCancelModal) {
-        console.log('CANCEL modal found, parent before move:', evalCancelModal.parentElement.className);
-        if (evalCancelModal.parentElement !== document.body) {
-            document.body.appendChild(evalCancelModal);
-            console.log('CANCEL modal moved to body, new parent:', evalCancelModal.parentElement.tagName);
-        }
-    } else {
-        console.error('CANCEL modal NOT found!');
-    }
-    
-    console.log('=== MODAL INITIALIZATION END ===');
-
     /* ── helpers ─────────────────────────────────────────── */
     var ratingDescriptions = {
-        1: { title: 'Poor',                  desc: 'Does not meet expectations and needs significant improvements.' },
-        2: { title: 'Below Average',          desc: 'Below expectations with considerable issues.' },
+        1: { title: 'Does not meet expectations',        desc: 'Major gaps in value, feasibility, or impact..' },
+        2: { title: 'Needs improvement',          desc: 'Partially meets requirements but lacks clarity or readiness.' },
         3: { title: 'Meets basic expectations', desc: 'Acceptable but requires refinement to move forward.' },
-        4: { title: 'Good',                   desc: 'Meets expectations with minor improvements needed.' },
-        5: { title: 'Excellent',              desc: 'Exceeds expectations and is ready to move forward.' }
+        4: { title: 'Strong potential',                   desc: 'Well-defined idea with clear value and feasibility..' },
+        5: { title: 'Exceptional quality',              desc: 'Highly impactful, feasible, and ready for implementation.' }
     };
 
     // Paint exactly `n` stars filled (1-5). n=0 → all empty.
@@ -515,75 +599,16 @@
     function openModal(id) {
         var m = document.getElementById(id);
         if (m) {
-            console.log('openModal called for:', id);
-            console.log('Modal element found:', m);
             m.classList.add('eval-modal-open');
-            console.log('Class added. Current classes:', m.classList.toString());
-            console.log('Computed display:', window.getComputedStyle(m).display);
-            return true;
-        } else {
-            console.error('openModal: Modal element not found for id:', id);
-            return false;
+            m.style.display = 'flex';
         }
     }
     function closeModal(id) {
         var m = document.getElementById(id);
         if (m) {
-            console.log('closeModal called for:', id);
             m.classList.remove('eval-modal-open');
-            return true;
-        } else {
-            console.error('closeModal: Modal element not found for id:', id);
-            return false;
+            m.style.display = 'none';
         }
-    }
-
-    /* ── form submit (AJAX) ───────────────────────────────── */
-    var form = wrapper.querySelector('#evaluation-form-frag');
-    if (form) {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            console.log('Form submit triggered');
-            
-            var remarks     = wrapper.querySelector('#remarks-frag');
-            var ratingInput = wrapper.querySelector('#rating-value-frag');
-
-            if (!remarks || !remarks.value.trim() || remarks.value.trim().length < 10) {
-                alert('Remarks are required and must be at least 10 characters');
-                if (remarks) remarks.style.borderColor = 'red';
-                return;
-            }
-            if (remarks) remarks.style.borderColor = '';
-            if (!ratingInput || !ratingInput.value) {
-                alert('Please select a rating');
-                return;
-            }
-            
-            recalcTotal();
-            var formData = new FormData(form);
-            var csrf = form.querySelector('[name=csrfmiddlewaretoken]');
-            
-            console.log('Submitting form data...');
-            fetch(form.getAttribute('action'), {
-                method: 'POST',
-                body: formData,
-                headers: { 'X-CSRFToken': csrf ? csrf.value : '' }
-            })
-            .then(function (res) {
-                console.log('Response status:', res.status);
-                if (res.ok || res.status === 200 || res.status === 302) {
-                    console.log('Opening success modal');
-                    openModal('evalSuccessModal');
-                } else {
-                    console.error('Non-success response:', res.status);
-                    alert('Error submitting evaluation. Please try again.');
-                }
-            })
-            .catch(function (err) {
-                console.error('Submit error:', err);
-                alert('Error submitting evaluation. Please try again.');
-            });
-        });
     }
 
     /* ── clear / cancel button → open cancel modal ────────── */
@@ -600,29 +625,31 @@
     if (sClose) sClose.addEventListener('click', function () {
         closeModal('evalSuccessModal');
         if (window.closeSlideModal) window.closeSlideModal();
+        window.location.reload();
     });
     // Close X
     var sCloseX = document.getElementById('evalSuccessCloseX');
     if (sCloseX) sCloseX.addEventListener('click', function () {
         closeModal('evalSuccessModal');
         if (window.closeSlideModal) window.closeSlideModal();
+        window.location.reload();
     });
     // Review more
     var sReview = document.getElementById('evalSuccessReviewMore');
     if (sReview) sReview.addEventListener('click', function () {
         closeModal('evalSuccessModal');
         if (window.closeSlideModal) window.closeSlideModal();
+        window.location.reload();
     });
     // Clicking backdrop
     var successOverlay = document.getElementById('evalSuccessModal');
-    if (successOverlay) {
-        successOverlay.addEventListener('click', function (e) {
-            if (e.target === this) closeModal('evalSuccessModal');
-        });
-        console.log('evalSuccessModal element found and ready');
-    } else {
-        console.error('evalSuccessModal element not found');
-    }
+    if (successOverlay) successOverlay.addEventListener('click', function (e) {
+        if (e.target === this) {
+            closeModal('evalSuccessModal');
+            if (window.closeSlideModal) window.closeSlideModal();
+            window.location.reload();
+        }
+    });
 
     /* ── CANCEL modal button wiring ───────────────────────── */
     // Continue Editing — just close modal, keep form

@@ -1,0 +1,1319 @@
+/* ================================================================
+   challenge_view_panel.css
+   Slide panel that shows a read-only view of a challenge from the
+   Admin Dashboard.  All styles are scoped so they won't clash
+   with existing pages.
+   ================================================================ */
+
+/* ---- Backdrop ---- */
+.cvp-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1030;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+.cvp-backdrop.cvp-open {
+    display: block;
+    opacity: 1;
+}
+
+/* ---- Slide Panel ---- */
+.cvp-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 50%;
+    max-width: 95vw;
+    height: 100vh;
+    background: #fff;
+    z-index: 1031;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -8px 0 40px rgba(0, 0, 0, 0.18);
+    transform: translateX(100%);
+    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+.cvp-panel.cvp-open {
+    transform: translateX(0);
+}
+
+/* Content injection container — must be a flex column so the inner
+   .cvf-wizard (flex-shrink:0) + .cvf-card (flex:1/scroll) + .cvp-footer
+   can each occupy the correct share of the panel height. */
+#cvpContent {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;   /* overflow is handled by .cvf-card itself */
+    min-height: 0;      /* critical: lets flex children shrink below content size */
+}
+
+/* ---- Panel Header ---- */
+.cvp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 28px;
+    background: linear-gradient(135deg, #5F0229 0%, #9B0A40 55%, #E31837 100%);
+    flex-shrink: 0;
+    gap: 12px;
+}
+
+.cvp-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.cvp-header-label {
+    color: rgba(255,255,255,0.70);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.cvp-header-title {
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;
+}
+
+.cvp-close-btn {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: background 0.2s;
+    line-height: 1;
+}
+.cvp-close-btn:hover {
+    background: rgba(255,255,255,0.28);
+}
+
+/* ---- Status bar below header ---- */
+.cvp-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 28px;
+    background: #F6F2EA;
+    border-bottom: 1px solid #E5DFD3;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.cvp-status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+}
+.cvp-status-live   { background: #DCFCE7; color: #16A34A; }
+.cvp-status-draft  { background: #FEF9C3; color: #A16207; }
+.cvp-status-completed { background: #F3F4F6; color: #374151; }
+.cvp-status-archived  { background: #F1F5F9; color: #475569; }
+.cvp-status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.cvp-visibility-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    background: #EEF2FF;
+    color: #3730A3;
+}
+
+.cvp-meta-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #6B7280;
+    margin-left: auto;
+}
+
+/* ---- Scrollable Body ---- */
+.cvp-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px 40px;
+    scrollbar-width: thin;
+    scrollbar-color: #E5DFD3 transparent;
+}
+.cvp-body::-webkit-scrollbar { width: 5px; }
+.cvp-body::-webkit-scrollbar-track { background: transparent; }
+.cvp-body::-webkit-scrollbar-thumb { background: #E5DFD3; border-radius: 4px; }
+
+/* ---- Section Card ---- */
+.cvp-section {
+    margin-bottom: 24px;
+    border: 1px solid #F0ECE4;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.cvp-section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: #F6F2EA;
+    border-bottom: 1px solid #E5DFD3;
+}
+
+.cvp-section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #5F0229;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.cvp-section-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #29251D;
+    letter-spacing: 0.2px;
+}
+
+.cvp-section-body {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ---- Field Row ---- */
+.cvp-field-row {
+    display: flex;
+    gap: 24px;
+}
+.cvp-field-row.cvp-single {
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cvp-field {
+    flex: 1;
+    min-width: 0;
+}
+
+.cvp-field-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+}
+
+.cvp-field-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #29251D;
+    line-height: 1.5;
+    word-break: break-word;
+}
+.cvp-field-value.cvp-description {
+    font-size: 13px;
+    color: #4A5565;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+.cvp-field-value.cvp-empty {
+    color: #B2AEA4;
+    font-style: italic;
+}
+
+/* ---- Keyword pills inside panel ---- */
+.cvp-keyword-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 2px;
+}
+.cvp-keyword-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 20px;
+    background: #F8EFE3;
+    border: 1px solid #E5DFD3;
+    color: #5F0229;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* ---- Review Parameters mini-table ---- */
+.cvp-params-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+}
+.cvp-params-table th {
+    background: #F6F2EA;
+    color: #29251D;
+    font-weight: 600;
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #E5DFD3;
+}
+.cvp-params-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #F5F5F5;
+    color: #4A5565;
+}
+.cvp-params-table tr:last-child td {
+    border-bottom: none;
+}
+.cvp-weight-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #FEF2F2;
+    color: #991B1B;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* ---- Panel ---- Footer actions ---- */
+.cvp-footer {
+    padding: 16px 28px;
+    background: #fff;
+    border-top: 1px solid #F0ECE4;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    flex-shrink: 0;
+}
+
+.cvp-btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 20px;
+    background: #5F0229;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.cvp-btn-edit:hover {
+    background: #7A0238;
+    color: #fff;
+}
+
+.cvp-btn-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 20px;
+    background: #F6F2EA;
+    color: #29251D;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.cvp-btn-close:hover {
+    background: #E5DFD3;
+}
+
+/* ---- Loading spinner inside panel ---- */
+.cvp-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px;
+    gap: 16px;
+    color: #9CA3AF;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+}
+.cvp-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #F0ECE4;
+    border-top-color: #5F0229;
+    border-radius: 50%;
+    animation: cvp-spin 0.8s linear infinite;
+}
+@keyframes cvp-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 660px) {
+    .cvp-panel { width: 100vw; }
+    .cvp-field-row { flex-direction: column; gap: 14px; }
+}
+
+
+/* ================================================================
+   CVF — Challenge View Fragment component styles (Figma-styled)
+   All prefixed with .cvf- to avoid any collision with existing CSS
+   ================================================================ */
+
+/* ---- Step Wizard ---- */
+.cvf-wizard {
+    display: flex;
+    align-items: center;
+    padding: 18px 28px;
+    background: #F6F2EA;
+    border-bottom: 1px solid #E5DFD3;
+    gap: 0;
+    flex-shrink: 0;
+}
+
+.cvf-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.cvf-step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #E5DFD3;
+    color: #4D4D4F;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cvf-step-circle-active {
+    background: #E31837;
+    color: #fff;
+    box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1), 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.cvf-step-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4A453D;
+    line-height: 1.4;
+}
+.cvf-step-label-active {
+    color: #29251D;
+    font-weight: 600;
+}
+
+.cvf-step-line {
+    flex: 1;
+    height: 2px;
+    background: rgba(77,77,79,0.28);
+    margin: 0 8px;
+    min-width: 24px;
+}
+
+/* ---- Edit Form Wrapper ---- */
+#cvfEditForm {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* ---- Main Card ---- */
+.cvf-card {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    scrollbar-width: thin;
+    scrollbar-color: #E5DFD3 transparent;
+}
+.cvf-card::-webkit-scrollbar { width: 5px; }
+.cvf-card::-webkit-scrollbar-thumb { background: #E5DFD3; border-radius: 4px; }
+
+/* ---- Section Header ---- */
+.cvf-section-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.cvf-section-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #29251D;
+    letter-spacing: 0.07px;
+    line-height: 1.3;
+}
+.cvf-section-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #4A5565;
+    margin-top: 2px;
+}
+
+/* ---- Field Block ---- */
+.cvf-field-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cvf-field-label-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.cvf-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: #000;
+    line-height: 24px;
+}
+.cvf-required {
+    color: #FB2C36;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ---- Underline Field (read-only display row) ---- */
+.cvf-underline-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1.5px solid rgba(77,77,79,0.40);
+    min-height: 50px;
+}
+
+.cvf-underline-field .cvf-field-value {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: #4D4D4F;
+    flex: 1;
+    line-height: 24px;
+    word-break: break-word;
+}
+
+.cvf-textarea-field {
+    min-height: 140px;
+    align-items: flex-start;
+    padding-top: 12px;
+}
+.cvf-textarea-field .cvf-field-value {
+    white-space: pre-wrap;
+    line-height: 1.7;
+}
+
+.cvf-field-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    color: rgba(74,69,61,0.88);
+}
+
+/* ---- Registration Toggle ---- */
+.cvf-reg-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    height: 66px;
+    background: #F6F2EA;
+    border-radius: 14px;
+}
+.cvf-reg-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #000;
+}
+.cvf-toggle-wrap {
+    flex-shrink: 0;
+}
+.cvf-toggle-pill {
+    display: flex;
+    background: #E5DFD3;
+    border-radius: 10px;
+    padding: 4px;
+    gap: 2px;
+    width: 162px;
+    height: 44px;
+}
+.cvf-toggle-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4A453D;
+    cursor: default;
+    transition: background 0.2s;
+}
+.cvf-toggle-selected {
+    background: #fff;
+    box-shadow: 0 1px 2px -1px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.10);
+    color: #29251D;
+    font-weight: 600;
+}
+
+/* ---- Participation Type ---- */
+.cvf-participation-block {
+    box-shadow: 0 0 0 1px #BEDBFF;
+    padding: 12px;
+    gap: 12px;
+}
+.cvf-participation-options {
+    display: flex;
+    gap: 0;
+}
+.cvf-part-card {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    height: 64px;
+    background: #fff;
+    cursor: default;
+}
+.cvf-part-card:last-child {
+    background: #F6F2EA;
+    border-bottom: 2px solid #E5DFD3;
+}
+.cvf-radio-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 6px;
+    border: 1.6px solid #4A453D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.cvf-radio-filled::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4A453D;
+}
+.cvf-part-card span {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: #000;
+}
+
+/* Team Size row */
+.cvf-team-size-row {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    padding: 13px 24px;
+    background: #F6F2EA;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px #FEE685;
+}
+.cvf-team-size-box {
+    padding: 12px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px -1px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.10);
+    min-width: 48px;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #000;
+    font-weight: 400;
+}
+
+/* ---- Date Row ---- */
+.cvf-date-row {
+    display: flex;
+    gap: 20px;
+}
+.cvf-date-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.cvf-date-col .cvf-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #364153;
+}
+
+/* ---- Expected Outcome lines ---- */
+.cvf-outcome-field {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+}
+.cvf-outcome-line {
+    padding-left: 16px;
+    padding-right: 16px;
+    border-left: 2px solid rgba(227,24,55,0.50);
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: #4D4D4F;
+    line-height: 24px;
+}
+
+/* ---- Supporting Document button ---- */
+.cvf-doc-preview-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 28px 50px;
+    background: #F6F2EA;
+    border-radius: 14px;
+    outline: 1px solid #5F0229;
+    color: #5F0229;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.cvf-doc-preview-btn:hover { background: #EDE5D8; color: #5F0229; }
+.cvf-doc-no-file {
+    opacity: 0.55;
+    cursor: default;
+    outline-color: #B2AEA4;
+    color: #6B7280;
+}
+
+/* ---- Audience / View Mode Cards ---- */
+.cvf-audience-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #E5DFD3;
+}
+.cvf-audience-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px 18px 10px;
+    background: #F6F2EA;
+    cursor: default;
+}
+.cvf-audience-card:first-child {
+    background: #fff;
+    border-bottom: 1px solid #E5DFD3;
+}
+.cvf-audience-selected {
+    background: #fff !important;
+}
+.cvf-audience-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    background: #E5DFD3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cvf-audience-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.cvf-audience-name {
+    display: flex;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #29251D;
+    gap: 6px;
+}
+.cvf-audience-desc {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4A5565;
+}
+
+/* ---- Keyword pills (fragment) ---- */
+.cvf-keyword-pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 16px;
+}
+.cvf-kw-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    background: #F6F2EA;
+    border-radius: 30px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #4A453D;
+}
+
+/* ---- Bottom spacer so footer gap is visible ---- */
+.cvf-card > :last-child { margin-bottom: 24px; }
+
+/* Responsive inside panel */
+@media (max-width: 480px) {
+    .cvf-wizard { padding: 12px 16px; }
+    .cvf-card   { padding: 16px 16px 0; }
+    .cvf-step-label { display: none; }
+    .cvf-step-line  { min-width: 12px; }
+    .cvf-date-row   { flex-direction: column; }
+}
+
+/* ---- Wizard Footer (replaces cvp-footer inside fragment) ---- */
+.cvf-wiz-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    background: #fff;
+    border-top: 1px solid #F0ECE4;
+    flex-shrink: 0;
+}
+
+/* ---- Next Step button ---- */
+.cvf-btn-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 22px;
+    background: #E31837;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 1px 2px -1px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1);
+    transition: background 0.2s;
+}
+.cvf-btn-next:hover { background: #C00F2A; }
+
+/* ---- Review step summary cards ---- */
+.cvf-summary-box {
+    background: #F6F2EA;
+    border: 1px solid #E5DFD3;
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.cvf-summary-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+}
+.cvf-summary-value {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #29251D;
+}
+
+/* ================================================================
+   CVF Edit Mode — Edit toggle button & inline form inputs
+   ================================================================ */
+
+/* Edit toggle button (top-right of Basic Info) */
+.cvf-edit-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border: 1.5px solid #E31837;
+    background: #fff;
+    color: #E31837;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.18s, color 0.18s;
+    white-space: nowrap;
+}
+.cvf-edit-toggle-btn:hover {
+    background: #FFF0F2;
+}
+.cvf-edit-toggle-active {
+    background: #FFF0F2 !important;
+    border-color: #B00E28 !important;
+    color: #B00E28 !important;
+}
+
+/* Update button in footer (same look as Edit Challenge but green-ish red) */
+.cvf-btn-update {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    /* inherits cvp-btn-edit styles; just override background */
+    background: #E31837 !important;
+    color: #fff !important;
+    border: none !important;
+    cursor: pointer;
+    text-decoration: none;
+}
+.cvf-btn-update:hover { background: #C00F2A !important; }
+
+/* Edit-mode text inputs */
+.cvf-edit-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #E5DFD3;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #29251D;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.18s;
+    box-sizing: border-box;
+}
+.cvf-edit-input:focus { border-color: #E31837; }
+
+/* Edit-mode textarea */
+.cvf-edit-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #E5DFD3;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #29251D;
+    background: #fff;
+    outline: none;
+    resize: vertical;
+    box-sizing: border-box;
+    transition: border-color 0.18s;
+}
+.cvf-edit-textarea:focus { border-color: #E31837; }
+
+/* Edit-mode select */
+.cvf-edit-select {
+    padding: 8px 12px;
+    border: 1.5px solid #E5DFD3;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #29251D;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+}
+.cvf-edit-select:focus { border-color: #E31837; }
+
+/* Edit-mode radio label cards (Participation Type) */
+.cvf-edit-radio-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1.5px solid #E5DFD3;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #29251D;
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s;
+}
+.cvf-edit-radio-card:hover { border-color: #E31837; background: #FFF0F2; }
+.cvf-edit-radio-card input[type="radio"] { accent-color: #E31837; }
+
+/* ================================================================
+   CVF-RP — Review & Publish step-specific CSS
+   Prefix: cvf-rp-  (no collision with any existing class)
+   ================================================================ */
+
+/* Section header row (icon + title) */
+.cvf-rp-section-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+/* Audience / View Mode choice cards */
+.cvf-rp-choice-stack {
+    display: flex;
+    flex-direction: column;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #E5DFD3;
+}
+.cvf-rp-choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 18px 10px;
+    background: #fff;
+    cursor: default;
+}
+.cvf-rp-choice + .cvf-rp-choice {
+    border-top: 1px solid #E5DFD3;
+}
+.cvf-rp-choice-active {
+    background: #fff !important;
+}
+.cvf-rp-choice-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    background: #E5DFD3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cvf-rp-choice-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.cvf-rp-choice-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.cvf-rp-choice-name {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #29251D;
+}
+.cvf-rp-choice-desc {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4A5565;
+}
+
+/* ── Big beige summary card ── */
+.cvf-rp-summary-card {
+    background: rgba(246, 242, 234, 0.40);
+    border-radius: 14px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+/* Block heading (icon + title) inside summary card */
+.cvf-rp-block-head {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 0 4px;
+}
+.cvf-rp-block-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #29251D;
+    letter-spacing: 0.07px;
+}
+
+/* Label + value row table */
+.cvf-rp-rows {
+    display: flex;
+    flex-direction: column;
+    padding: 0 4px;
+}
+.cvf-rp-row {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    border-bottom: 1px solid #E5DFD3;
+    gap: 16px;
+}
+.cvf-rp-row:last-child { border-bottom: none; }
+.cvf-rp-row-label {
+    width: 44%;
+    flex-shrink: 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #364153;
+    line-height: 20px;
+}
+.cvf-rp-row-value {
+    flex: 1;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #4D4D4F;
+    line-height: 20px;
+    word-break: break-word;
+}
+
+/* Expected Outcome left-border lines */
+.cvf-rp-outcome-line {
+    padding-left: 16px;
+    padding-right: 16px;
+    border-left: 2px solid rgba(227, 24, 55, 0.50);
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #4D4D4F;
+    line-height: 24px;
+}
+
+/* Keywords inside row */
+.cvf-rp-kw-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.cvf-rp-kw-pill {
+    padding: 5px 18px;
+    background: #F6F2EA;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: #4D4D4F;
+}
+
+/* Document preview button */
+.cvf-rp-doc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 18px 48px;
+    background: #F6F2EA;
+    border-radius: 14px;
+    outline: 1px solid #5F0229;
+    color: #5F0229;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.cvf-rp-doc-btn:hover { background: #EDE5D8; color: #5F0229; }
+.cvf-rp-doc-disabled {
+    outline-color: #B2AEA4;
+    color: #6B7280;
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* Round block */
+.cvf-rp-round-block {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #E5DFD3;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.cvf-rp-round-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #0A0838;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #F0ECE4;
+}
+
+/* Evaluator table */
+.cvf-rp-eval-table-wrap { overflow-x: auto; }
+.cvf-rp-eval-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+}
+.cvf-rp-eval-table th {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #364153;
+    padding: 6px 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid #E5DFD3;
+    white-space: nowrap;
+}
+.cvf-rp-eval-table td {
+    padding: 10px 12px;
+    color: #4D4D4F;
+    border-bottom: 1px solid #F5F5F5;
+    font-size: 13px;
+    word-break: break-word;
+}
+.cvf-rp-eval-table tr:last-child td { border-bottom: none; }
+
+/* Review Parameters table */
+.cvf-rp-params-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+.cvf-rp-params-table th {
+    font-weight: 600;
+    color: #4A453D;
+    padding: 6px 12px;
+    text-align: left;
+    border-bottom: 1.5px solid #4A453D;
+    background: #fff;
+}
+.cvf-rp-params-table td {
+    padding: 6px 12px;
+    color: #4A453D;
+    font-weight: 500;
+    border-bottom: 1px solid #E5DFD3;
+}
+.cvf-rp-params-table tfoot .cvf-rp-params-total td {
+    font-weight: 700;
+    border-bottom: none;
+    color: #4A453D;
+    padding-top: 10px;
+}
+
+/* Download Summary button */
+.cvf-rp-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: #E31837;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 1px 2px -1px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.10);
+    transition: background 0.2s;
+}
+.cvf-rp-download-btn:hover { background: #C00F2A; }
+
+/* ---- Select2 Overrides to Match cvf-edit-select / cvf-edit-input ---- */
+.cvf-edit-mode .select2-container .select2-selection--single {
+    height: auto;
+    padding: 6px 12px;
+    border: 1.5px solid #E5DFD3;
+    border-radius: 8px;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.18s;
+}
+
+.cvf-edit-mode .select2-container--default .select2-selection--single .select2-selection__rendered {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #29251D;
+    padding-left: 0;
+    line-height: normal;
+}
+
+.cvf-edit-mode .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100%;
+    right: 12px;
+}
+
+.cvf-edit-mode .select2-container--open .select2-selection--single,
+.cvf-edit-mode .select2-container--focus .select2-selection--single {
+    border-color: #E31837;
+}
+
+.select2-dropdown {
+    border: 1.5px solid #E5DFD3;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.select2-results__option--highlighted[aria-selected] {
+    background-color: #FFF0F2 !important;
+    color: #E31837 !important;
+}

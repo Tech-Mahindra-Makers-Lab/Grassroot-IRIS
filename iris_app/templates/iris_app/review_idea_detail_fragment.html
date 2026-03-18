@@ -25,27 +25,41 @@
     <!-- Main Content -->
     <div class="idea-review-content">
         <!-- Submitter Information -->
-        <section class="review-section">
+        <!-- <section class="review-section">
             <div class="section-header">
                 <svg class="section-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <circle cx="8" cy="5" r="3" stroke="#4D4D4F" stroke-width="1.5"/>
                     <path d="M2 14c0-2.5 2.69-4 6-4s6 1.5 6 4" stroke="#4D4D4F" stroke-width="1.5"/>
                 </svg>
-                <h2 class="section-title">Submitter Information</h2>
-            </div>
-            <div class="submitter-card-review">
-                <div class="submitter-info">
-                    <img src="https://placehold.co/50x50" alt="Avatar" class="submitter-avatar">
-                    <div class="submitter-details">
-                        <div class="submitter-name">{{ idea.submitter.full_name }}</div>
-                        <div class="submitter-email">{{ idea.submitter.email_id|default:"N/A" }}</div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
+            </div>
+
+        </section> -->
+<!-- TABS SECTION -->
+    <div class="tabs-section">
+        <div class="tabs-container">
+            <button class="tab-button tab-active" data-tab-frag="details-evaluate-frag">
+                <span class="tab-text">Summary Details</span>
+            </button>
+
+            <button class="tab-button" data-tab-frag="details-evaluate-frag">
+                <span class="tab-text">Evaluate</span>
+            </button>
+
+            <button class="tab-button {% if is_first_evaluator %}tab-disabled{% endif %}"
+                data-tab-frag="assessment-history-frag" {% if is_first_evaluator %}disabled{% endif %}
+                title="{% if is_first_evaluator %}Assessment history is only available for second evaluator{% endif %}">
+                <span class="tab-text">Assessment History</span>
+            </button>
+        </div>
+    </div>
         <!-- Categories and Themes -->
         <section class="review-section">
+            <div class="field-item">
+                <div class="label-with-icon">
+                    <img src="{% static 'iris_app/images/focusarea.png' %}" alt="Focus Area" class="field-icon">
+                    <label class="field-label-red">Key Focus Area</label>
+                </div>
             <div class="info-rows">
                 <div class="info-row-review">
                     <div class="row-label">Improvement Categories</div>
@@ -56,12 +70,16 @@
                     <div class="row-value">{{ idea.improvement_theme|default:"Not specified" }}</div>
                 </div>
             </div>
+            </div>
         </section>
 
         <!-- Idea Name -->
         <section class="review-section">
             <div class="field-item">
-                <label class="field-label">Idea Name</label>
+                <div class="label-with-icon">
+                    <img src="{% static 'iris_app/images/ideaicon.png' %}" alt="Focus Area" class="field-icon">
+                    <label class="field-label-red">Idea Name</label>
+                </div>
                 <div class="field-value">{{ idea.title }}</div>
             </div>
         </section>
@@ -69,7 +87,10 @@
         <!-- Proposed Idea -->
         <section class="review-section">
             <div class="field-item">
-                <label class="field-label">Proposed Idea</label>
+                <div class="label-with-icon">
+                    <img src="{% static 'iris_app/images/proposeideaicon.png' %}" alt="Focus Area" class="field-icon">
+                    <label class="field-label-red">Proposed Idea</label>
+                </div>
                 <div class="field-value">
                     {% if idea_detail and idea_detail.proposed_solution %}
                         {{ idea_detail.proposed_solution }}
@@ -83,7 +104,10 @@
         <!-- Keywords -->
         <section class="review-section">
             <div class="field-item">
-                <label class="field-label">Keywords</label>
+                <div class="label-with-icon">
+                    <img src="{% static 'iris_app/images/keywordicon.png' %}" alt="Keywords" class="field-icon">
+                    <label class="field-label-red">Keywords</label>
+                </div>
                 <div class="tags-container">
                     {% if keywords %}
                         {% for keyword in keywords %}
@@ -99,7 +123,10 @@
         <!-- Tools/Technology -->
         <section class="review-section">
             <div class="field-item">
-                <label class="field-label">Tools/Technology used</label>
+                <div class="label-with-icon">
+                    <img src="{% static 'iris_app/images/toolcon.png' %}" alt="Technology" class="field-icon">
+                    <label class="field-label-red">Tools/Technology used</label>
+                </div>
                 <div class="tags-container">
                     {% if technologies %}
                         {% for tech in technologies %}
@@ -115,7 +142,10 @@
         <!-- Business Value -->
         <section class="review-section">
             <div class="field-item">
-                <label class="field-label">Business Value</label>
+                <div class="label-with-icon">
+                    <img src="{% static 'iris_app/images/businessvalueicon.png' %}" alt="Business Value" class="field-icon">
+                    <label class="field-label-red">Business Value</label>
+                </div>
                 <div class="field-value">
                     {% if idea_detail and idea_detail.business_monetary %}
                         {{ idea_detail.business_monetary }}
@@ -130,9 +160,9 @@
         {% if idea_detail and idea_detail.business_value_monetary %}
         <section class="review-section">
             <div class="field-item">
-                <label class="field-label">Monetary Value</label>
-                <div class="monetary-box">
-                    <div class="monetary-value">{{ idea_detail.business_value_monetary }}</div>
+                <div class="label-with-icon">
+                    <img src="{% static 'iris_app/images/monetaryicon.png' %}" alt="Monetary Value" class="field-icon">
+                    <label class="field-label-red">Monetary Value</label>
                 </div>
             </div>
         </section>
@@ -141,12 +171,58 @@
         <!-- Additional Information -->
         <section class="review-section">
             <div class="field-item">
-                <label class="field-label">Additional Information</label>
+                <div class="label-with-icon">
+                    <img src="{% static 'iris_app/images/additionalinfo.png' %}" alt="Focus Area" class="field-icon">
+                    <label class="field-label-red">Additional Information</label>
+                </div>
                 <div class="field-value">
                     {% if idea_detail and idea_detail.assumptions %}
                         {{ idea_detail.assumptions }}
                     {% else %}
                         No additional information provided
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Supporting Document -->
+        <section class="review-section">
+            <div class="supporting-doc-container">
+                <div class="supporting-doc-header">
+                    <div class="supporting-doc-label-wrapper">
+
+                        <div class="label-with-icon">
+                            <img src="{% static 'iris_app/images/supportingdocicon.png' %}" alt="Focus Area" class="field-icon">
+                            <label class="field-label-red">Supporting Document</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="supporting-docs-list">
+                    {% if idea_documents %}
+                        {% for document in idea_documents %}
+                        <div class="doc-item">
+                            <div class="doc-name">{{ document.file_name }}</div>
+                            <div class="doc-actions">
+                                <a href="{{ document.file_url.url }}" target="_blank" class="doc-btn doc-preview-btn">
+                                    <span>Preview</span>
+                                    <svg class="doc-icon-small" width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                        <rect x="2" y="7" width="12" height="2" fill="#5F0229"/>
+                                        <rect x="7" y="2" width="2" height="12" fill="#5F0229"/>
+                                    </svg>
+                                </a>
+                                <a href="{{ document.file_url.url }}" download class="doc-btn doc-download-btn">
+                                    <span>Download</span>
+                                    <svg class="doc-icon-small" width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                        <line x1="2" y1="10" x2="14" y2="10" stroke="#5F0229" stroke-width="1.33" stroke-linecap="round"/>
+                                        <polyline points="7,6 10,9 13,6" stroke="#5F0229" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <line x1="10" y1="2" x2="10" y2="9" stroke="#5F0229" stroke-width="1.33" stroke-linecap="round"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-documents">No supporting documents provided</div>
                     {% endif %}
                 </div>
             </div>
@@ -158,7 +234,7 @@
         <button class="evaluate-button evaluateBtn evaluate-slide-btn"
                 data-idea-id="{{ idea.idea_id }}"
                 onclick="if(window.openSlideModal){ window.openSlideModal('{{ idea.idea_id }}', 'Evaluate Idea', '/reviewer-idea-page/{{ idea.idea_id }}/'); } else { window.location.href='/reviewer-idea-page/{{ idea.idea_id }}/'; }">
-            Evaluate
+            Next
         </button>
     </div>
 </div>

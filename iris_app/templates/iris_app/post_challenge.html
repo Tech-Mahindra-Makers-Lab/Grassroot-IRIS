@@ -593,114 +593,64 @@
 
                 <!-- Round 01 Section -->
                 <div class="round-section" id="round-1-section">
-                    <div class="round-section-header">
-                        <div class="round-section-title">
-                            Round 01 - Evaluator Details
-                            <span class="round-section-title-required">*</span>
+                    <div class="round-section-header d-flex justify-content-between align-items-center w-100">
+                        <div>
+                            <div class="round-section-title">
+                                Round 01 - Evaluator Details
+                                <span class="round-section-title-required">*</span>
+                            </div>
+                            <div class="round-section-subtitle">Specify the email IDs of the mentors you want to add</div>
                         </div>
-                        <div class="round-section-subtitle">Specify the email IDs of the mentors you want to add</div>
+                        <button type="button" class="btn btn-outline-danger btn-sm" id="btn-add-eval-r1" onclick="addEvaluatorRow(1)">
+                            <i class="fa-solid fa-plus me-1"></i> Add Evaluator
+                        </button>
                     </div>
 
-                    <div class="evaluator-search-container">
-                        <label class="form-label evaluator-search-label required">Search Evaluators</label>
-                        <label class="form-label required">Evaluator Name</label>
-                    <select name="evaluator_name" class="form-select select2-eval">
-                        <option value="" disabled selected>Search for Evaluator...</option>
-                    </select>
+                    <div id="round1-evaluators-container" class="w-100">
+                        <!-- Evaluator rows will be added here -->
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-self: stretch;">
-                        <div class="date-field">
-                            <label class="form-label date-field-label required">Employee Name</label>
-                            <input type="text" name="round1_employee_name" class="form-control date-field-input" placeholder="">
+                    <div class="row mb-4 w-100">
+                        <div class="col-md-6">
+                            <label class="form-label required">Start Date</label>
+                            <input type="date" name="round1_start_date" class="form-control" required>
                         </div>
-                        <div class="date-field">
-                            <label class="form-label date-field-label required">Email ID</label>
-                            <input type="email" name="round1_employee_email" class="form-control date-field-input" placeholder="">
-                        </div>
-                        <div class="date-field">
-                            <label class="form-label date-field-label required">Employee ID</label>
-                            <input type="text" name="round1_employee_id" class="form-control date-field-input" placeholder="">
+                        <div class="col-md-6">
+                            <label class="form-label required">End Date</label>
+                            <input type="date" name="round1_end_date" class="form-control" required>
                         </div>
                     </div>
-
-                    <!-- <div class="date-fields-container">
-                        <div class="date-field">
-                            <label class="form-label date-field-label required">Start Date</label>
-                            <input type="date" name="round1_start_date" class="form-control date-field-input">
-                        </div>
-                        <div class="date-field">
-                            <label class="form-label date-field-label required">End Date</label>
-                            <input type="date" name="round1_end_date" class="form-control date-field-input">
-                        </div>
-                    </div> -->
-
-                     <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label required">Start Date</label>
-                        <input type="date" name="round1_start_date" class="form-control" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label required">End Date</label>
-                        <input type="date" name="round1_end_date" class="form-control" required>
-                    </div>
-                </div>
                 </div>
 
                 <!-- Round 02 Section (Shown conditionally) -->
                 <div class="round-section" id="round-2-section" style="display: none;">
-                    <div class="round-section-header">
-                        <div class="round-section-title">
-                            Round 02 - Evaluator Details
-                            <span class="round-section-title-required">*</span>
+                    <div class="round-section-header d-flex justify-content-between align-items-center w-100">
+                        <div>
+                            <div class="round-section-title">
+                                Round 02 - Evaluator Details
+                                <span class="round-section-title-required">*</span>
+                            </div>
+                            <div class="round-section-subtitle">Specify the email IDs of the mentors you want to add</div>
                         </div>
-                        <div class="round-section-subtitle">Specify the email IDs of the mentors you want to add</div>
+                        <button type="button" class="btn btn-outline-danger btn-sm" id="btn-add-eval-r2" onclick="addEvaluatorRow(2)">
+                            <i class="fa-solid fa-plus me-1"></i> Add Evaluator
+                        </button>
                     </div>
 
-                     <div class="evaluator-search-container">
-                        <label class="form-label evaluator-search-label required">Search Evaluators</label>
-                        <label class="form-label required">Evaluator Name</label>
-                    <select name="evaluator_name2" class="form-select select2-eval2">
-                        <option value="" disabled selected>Search for Evaluator...</option>
-                    </select>
+                    <div id="round2-evaluators-container" class="w-100">
+                        <!-- Evaluator rows will be added here -->
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-self: stretch;">
-                        <div class="date-field">
-                            <label class="form-label date-field-label required">Employee Name</label>
-                            <input type="text" name="round2_employee_name" class="form-control date-field-input" placeholder="">
+                    <div class="row mb-4 w-100">
+                        <div class="col-md-6">
+                            <label class="form-label required">Start Date</label>
+                            <input type="date" name="round2_start_date" class="form-control" required>
                         </div>
-                        <div class="date-field">
-                            <label class="form-label date-field-label required">Email ID</label>
-                            <input type="email" name="round2_employee_email" class="form-control date-field-input" placeholder="">
-                        </div>
-                        <div class="date-field">
-                            <label class="form-label date-field-label required">Employee ID</label>
-                            <input type="text" name="round2_employee_id" class="form-control date-field-input" placeholder="">
+                        <div class="col-md-6">
+                            <label class="form-label required">End Date</label>
+                            <input type="date" name="round2_end_date" class="form-control" required>
                         </div>
                     </div>
-
-                    <!-- <div class="date-fields-container">
-                        <div class="date-field">
-                            <label class="form-label date-field-label required">Start Date</label>
-                            <input type="date" name="round2_start_date" class="form-control date-field-input">
-                        </div>
-                        <div class="date-field">
-                            <label class="form-label date-field-label required">End Date</label>
-                            <input type="date" name="round2_end_date" class="form-control date-field-input">
-                        </div>
-                    </div> -->
-
-                    <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label required">Start Date</label>
-                        <input type="date" name="round2_start_date" class="form-control" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label required">End Date</label>
-                        <input type="date" name="round2_end_date" class="form-control" required>
-                    </div>
-                </div>
                 </div>
 
                 <!-- Review Parameters Section -->
@@ -859,19 +809,8 @@
                     <!-- Round 01 Details -->
                     <div class="border-bottom pb-3 mb-4">
                         <h6 class="mb-3"><small>Round 01 - Evaluator Details</small></h6>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <small class="text-muted d-block mb-1">Employee Name</small>
-                                <span id="review-r1-emp-name" class="fw-500">-</span>
-                            </div>
-                            <div class="col-md-4">
-                                <small class="text-muted d-block mb-1">Email ID</small>
-                                <span id="review-r1-email" class="fw-500">-</span>
-                            </div>
-                            <div class="col-md-6">
-                                <small class="text-muted d-block mb-1">Employee ID</small>
-                                <span id="review-r1-emp-id" class="fw-500">-</span>
-                            </div>
+                        <div id="review-round1-evaluators">
+                            <!-- Evaluators will be added here -->
                         </div>
                         <div class="row">
                             <div class="col-md-6">
@@ -884,19 +823,8 @@
                     <!-- Round 02 Details (Shown conditionally) -->
                     <div class="border-bottom pb-3 mb-4" id="review-round-02" style="display: none;">
                         <h6 class="mb-3"><small>Round 02 - Evaluator Details</small></h6>
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <small class="text-muted d-block mb-1">Employee Name</small>
-                                <span id="review-r2-emp-name" class="fw-500">-</span>
-                            </div>
-                            <div class="col-md-4">
-                                <small class="text-muted d-block mb-1">Email ID</small>
-                                <span id="review-r2-email" class="fw-500">-</span>
-                            </div>
-                            <div class="col-md-4">
-                                <small class="text-muted d-block mb-1">Employee ID</small>
-                                <span id="review-r2-emp-id" class="fw-500">-</span>
-                            </div>
+                        <div id="review-round2-evaluators">
+                            <!-- Evaluators will be added here -->
                         </div>
                         <div class="row">
                             <div class="col-md-6">
@@ -1015,8 +943,13 @@
                 }
             });
             // Show both sections
-            round1Section.style.display = 'flex';
-            round2Section.style.display = 'flex';
+            round1Section.style.display = 'block';
+            round2Section.style.display = 'block';
+
+            // Ensure at least one evaluator row in Round 2
+            if ($('#round2-evaluators-container .evaluator-row').length === 0) {
+                addEvaluatorRow(2);
+            }
 
             // Make Round 1 fields required
             setRound1Required(true);
@@ -1035,13 +968,93 @@
                 }
             });
             // Show only Round 01 section
-            round1Section.style.display = 'flex';
+            round1Section.style.display = 'block';
             round2Section.style.display = 'none';
 
             // Make Round 1 fields required
             setRound1Required(true);
             // Make Round 2 fields NOT required
             setRound2Required(false);
+        }
+    }
+
+    function addEvaluatorRow(roundNum, data = null) {
+        const container = $(`#round${roundNum}-evaluators-container`);
+        const rowCount = container.find('.evaluator-row').length;
+
+        // Limit to 3 evaluators per round
+        if (rowCount >= 3) {
+            alert(`Maximum 3 evaluators allowed for Round ${roundNum}`);
+            return;
+        }
+
+        const rowIndex = Date.now() + Math.floor(Math.random() * 1000);
+        const rowHtml = `
+            <div class="evaluator-row border rounded-3 p-3 mb-3 position-relative bg-light" data-index="${rowIndex}">
+                <button type="button" class="btn btn-link text-danger position-absolute top-0 end-0 m-1 remove-eval-btn" onclick="removeEvaluatorRow(this)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label required">Search Evaluator</label>
+                        <select name="round${roundNum}_evaluator_search[]" class="form-select select2-eval-dynamic" required>
+                            <option value="" disabled selected>Search for Evaluator...</option>
+                            ${data ? `<option value="${data.employee_id}" selected>${data.employee_name} (${data.employee_id})</option>` : ''}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label required">Employee Name</label>
+                        <input type="text" name="round${roundNum}_employee_name[]" class="form-control" placeholder="Name" value="${data ? data.employee_name : ''}" required readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label required">Email ID</label>
+                        <input type="email" name="round${roundNum}_employee_email[]" class="form-control" placeholder="Email" value="${data ? data.email : ''}" required readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label required">Employee ID</label>
+                        <input type="text" name="round${roundNum}_employee_id[]" class="form-control" placeholder="ID" value="${data ? data.employee_id : ''}" required readonly>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.append(rowHtml);
+        const newRow = container.find(`[data-index="${rowIndex}"]`);
+
+        // Initialize Select2 for the new search field
+        newRow.find('.select2-eval-dynamic').select2({
+            width: '100%',
+            placeholder: 'Search for an Evaluator...',
+            minimumInputLength: 2,
+            dropdownParent: container,
+            ajax: {
+                url: '/employee_search/',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { q: params.term };
+                },
+                processResults: function (data) {
+                    return { results: data.results };
+                },
+                cache: true
+            }
+        }).on('select2:select', function(e) {
+            const selectedData = e.params.data;
+            const parentRow = $(this).closest('.evaluator-row');
+            parentRow.find(`[name="round${roundNum}_employee_name[]"]`).val(selectedData.employee_name);
+            parentRow.find(`[name="round${roundNum}_employee_email[]"]`).val(selectedData.email);
+            parentRow.find(`[name="round${roundNum}_employee_id[]"]`).val(selectedData.employee_id);
+        });
+    }
+
+    function removeEvaluatorRow(btn) {
+        const row = $(btn).closest('.evaluator-row');
+        const container = row.parent();
+        if (container.find('.evaluator-row').length > 1) {
+            row.remove();
+        } else {
+            alert('At least one evaluator is required.');
         }
     }
 
@@ -1106,44 +1119,47 @@
         if (step === 2) {
             const numRounds = $('input[name="num_rounds"]:checked').val();
 
-            // Always validate Round 1 fields when on step 2
-            const round1Fields = [
-                'evaluator_name',
-                'round1_employee_name',
-                'round1_employee_email',
-                'round1_employee_id',
-                'round1_start_date',
-                'round1_end_date'
-            ];
-            round1Fields.forEach(fieldName => {
-                const field = $(`[name="${fieldName}"]`);
-                if (!field.val()) {
-                    field.addClass('is-invalid');
-                    valid = false;
-                } else {
-                    field.removeClass('is-invalid');
-                }
-            });
+            // Validate Round 1 evaluators
+            const round1Names = $('[name="round1_employee_name[]"]');
+            if (round1Names.length === 0) {
+                alert('Please add at least one evaluator for Round 1.');
+                valid = false;
+            } else {
+                round1Names.each(function() {
+                    const parent = $(this).closest('.evaluator-row');
+                    if (!$(this).val() || !parent.find('[name="round1_employee_email[]"]').val()) {
+                        parent.addClass('border-danger');
+                        valid = false;
+                    } else {
+                        parent.removeClass('border-danger');
+                    }
+                });
+            }
+
+            if (!$('[name="round1_start_date"]').val() || !$('[name="round1_end_date"]').val()) {
+                $('[name="round1_start_date"]').addClass('is-invalid');
+                $('[name="round1_end_date"]').addClass('is-invalid');
+                valid = false;
+            }
 
             // If two rounds selected, also validate Round 2 fields
             if (numRounds === '2') {
-                const round2Fields = [
-                    'evaluator_name2',
-                    'round2_employee_name',
-                    'round2_employee_email',
-                    'round2_employee_id',
-                    'round2_start_date',
-                    'round2_end_date'
-                ];
-                round2Fields.forEach(fieldName => {
-                    const field = $(`[name="${fieldName}"]`);
-                    if (!field.val()) {
-                        field.addClass('is-invalid');
+                const round2Names = $('[name="round2_employee_name[]"]');
+                round2Names.each(function() {
+                    const parent = $(this).closest('.evaluator-row');
+                    if (!$(this).val() || !parent.find('[name="round2_employee_email[]"]').val()) {
+                        parent.addClass('border-danger');
                         valid = false;
                     } else {
-                        field.removeClass('is-invalid');
+                        parent.removeClass('border-danger');
                     }
                 });
+
+                if (!$('[name="round2_start_date"]').val() || !$('[name="round2_end_date"]').val()) {
+                    $('[name="round2_start_date"]').addClass('is-invalid');
+                    $('[name="round2_end_date"]').addClass('is-invalid');
+                    valid = false;
+                }
             }
 
             // Validate Review Parameters - at least one must be selected
@@ -1319,17 +1335,43 @@ $('#review-dates').text(`${startDate} to ${endDate}`);
         $('#review-num-rounds').text(numRounds === '1' ? 'Single Round' : 'Two Rounds');
 
         // Round 01 Details
-        $('#review-r1-emp-name').text($('[name="round1_employee_name"]').val() || '-');
-        $('#review-r1-email').text($('[name="round1_employee_email"]').val() || '-');
-        $('#review-r1-emp-id').text($('[name="round1_employee_id"]').val() || '-');
+        let r1EvalHtml = '';
+        $('[name="round1_employee_name[]"]').each(function(i) {
+            const name = $(this).val();
+            const email = $(`[name="round1_employee_email[]"]`).eq(i).val();
+            const id = $(`[name="round1_employee_id[]"]`).eq(i).val();
+            if (name) {
+                r1EvalHtml += `
+                    <div class="row mb-2">
+                        <div class="col-md-4"><small class="text-muted d-block">Name</small> <span class="fw-500">${name}</span></div>
+                        <div class="col-md-4"><small class="text-muted d-block">Email</small> <span class="fw-500">${email}</span></div>
+                        <div class="col-md-4"><small class="text-muted d-block">ID</small> <span class="fw-500">${id}</span></div>
+                    </div>
+                `;
+            }
+        });
+        $('#review-round1-evaluators').html(r1EvalHtml || '<span class="text-muted">-</span>');
         $('#review-r1-dates').text(`${$('[name="round1_start_date"]').val() || '-'} to ${$('[name="round1_end_date"]').val() || '-'}`);
 
         // Round 02 Details
         if (numRounds === '2') {
             $('#review-round-02').show();
-            $('#review-r2-emp-name').text($('[name="round2_employee_name"]').val() || '-');
-            $('#review-r2-email').text($('[name="round2_employee_email"]').val() || '-');
-            $('#review-r2-emp-id').text($('[name="round2_employee_id"]').val() || '-');
+            let r2EvalHtml = '';
+            $('[name="round2_employee_name[]"]').each(function(i) {
+                const name = $(this).val();
+                const email = $(`[name="round2_employee_email[]"]`).eq(i).val();
+                const id = $(`[name="round2_employee_id[]"]`).eq(i).val();
+                if (name) {
+                    r2EvalHtml += `
+                        <div class="row mb-2">
+                            <div class="col-md-4"><small class="text-muted d-block">Name</small> <span class="fw-500">${name}</span></div>
+                            <div class="col-md-4"><small class="text-muted d-block">Email</small> <span class="fw-500">${email}</span></div>
+                            <div class="col-md-4"><small class="text-muted d-block">ID</small> <span class="fw-500">${id}</span></div>
+                        </div>
+                    `;
+                }
+            });
+            $('#review-round2-evaluators').html(r2EvalHtml || '<span class="text-muted">-</span>');
             $('#review-r2-dates').text(`${$('[name="round2_start_date"]').val() || '-'} to ${$('[name="round2_end_date"]').val() || '-'}`);
         } else {
             $('#review-round-02').hide();
@@ -1423,13 +1465,18 @@ $('#review-dates').text(`${startDate} to ${endDate}`);
     }
 
     // Global functions for parameter management
-    window.addParameterToTable = function(paramId, paramName) {
+    window.addParameterToTable = function(paramId, paramName, initialWeightage = '') {
         const tbody = $('#parameters-tbody');
 
         // Check if parameter already exists
         const exists = tbody.find(`tr[data-param-id="${paramId}"]`).length > 0;
         if (exists) {
-            alert('This parameter is already added.');
+            if (initialWeightage !== '') {
+                const existingRow = tbody.find(`tr[data-param-id="${paramId}"]`);
+                existingRow.find('.param-weight-input').val(initialWeightage);
+                existingRow.find('.param-weightage-display').text(initialWeightage + '%');
+                calculateParameterTotal();
+            }
             return;
         }
 
@@ -1440,8 +1487,13 @@ $('#review-dates').text(`${startDate} to ${endDate}`);
                 <td style="vertical-align: middle;">
                     <div style="display: flex; gap: 8px; align-items: center;">
                         <input type="hidden" name="selected_params[]" value="${paramId}">
-                        <input type="number" name="param_weightages[]" class="param-weight-input form-control" placeholder="Enter %" min="0" max="100" required style="width: 80px; padding: 8px 10px; border: 2px solid #E2E8F0; border-radius: 6px;">
-                        <span class="param-weightage-display" style="width: 30px; text-align: center; font-weight: 600; color: #94A3B8;">-</span>
+                        <input type="number" name="param_weightages[]" class="param-weight-input form-control" 
+                            placeholder="Enter %" min="0" max="100" required 
+                            style="width: 80px; padding: 8px 10px; border: 2px solid #E2E8F0; border-radius: 6px;"
+                            value="${initialWeightage}">
+                        <span class="param-weightage-display" style="width: 30px; text-align: center; font-weight: 600; color: #94A3B8;">
+                            ${initialWeightage ? initialWeightage + '%' : '-'}
+                        </span>
                         <button type="button" class="btn btn-link text-danger p-0" style="padding: 0 !important;" onclick="removeParameterRow(this)">
                             <i class="fa-solid fa-trash"></i>
                         </button>
@@ -1603,34 +1655,36 @@ $('#review-dates').text(`${startDate} to ${endDate}`);
             selectRound('1');
         }
 
-        // Pre-fill evaluator details for Round 1
+        // Pre-fill evaluator details
         {% for panel in challenge_data.panels %}
             {% if panel.round_number == 1 %}
-                $('[name="round1_employee_name"]').val('{{ panel.panel_name }}');
-                $('[name="round1_employee_email"]').val('{{ panel.emailid }}');
-                $('[name="round1_employee_id"]').val('{{ panel.emp_id }}');
+                addEvaluatorRow(1, {
+                    employee_name: '{{ panel.panel_name }}',
+                    email: '{{ panel.emailid }}',
+                    employee_id: '{{ panel.emp_id }}'
+                });
                 $('[name="round1_start_date"]').val('{{ panel.start_date|date:"Y-m-d" }}');
                 $('[name="round1_end_date"]').val('{{ panel.end_date|date:"Y-m-d" }}');
             {% elif panel.round_number == 2 %}
-                $('[name="round2_employee_name"]').val('{{ panel.panel_name }}');
-                $('[name="round2_employee_email"]').val('{{ panel.emailid }}');
-                $('[name="round2_employee_id"]').val('{{ panel.emp_id }}');
+                 addEvaluatorRow(2, {
+                    employee_name: '{{ panel.panel_name }}',
+                    email: '{{ panel.emailid }}',
+                    employee_id: '{{ panel.emp_id }}'
+                });
                 $('[name="round2_start_date"]').val('{{ panel.start_date|date:"Y-m-d" }}');
                 $('[name="round2_end_date"]').val('{{ panel.end_date|date:"Y-m-d" }}');
             {% endif %}
         {% endfor %}
 
+        // If no evaluators were added (new challenge), add default first row
+        if ($('#round1-evaluators-container .evaluator-row').length === 0) {
+            addEvaluatorRow(1);
+        }
+
         // Pre-fill review parameters
         {% for review_param in challenge_data.review_params %}
-            // Add parameter to table
-            addParameterToTable('{{ review_param.parameter.parameter_id }}', '{{ review_param.parameter.parameter_name }}');
-            // Set the weightage value for the last added row
-            setTimeout(function() {
-                const lastRow = $('#parameters-tbody tr:last');
-                lastRow.find('[name="param_weightages[]"]').val('{{ review_param.weightage }}');
-                lastRow.find('.param-weightage-display').text('{{ review_param.weightage }}%');
-                calculateParameterTotal();
-            }, 50);
+            // Add parameter to table directly with weightage
+            addParameterToTable('{{ review_param.parameter.parameter_id }}', '{{ review_param.parameter.parameter_name }}', '{{ review_param.weightage }}');
         {% endfor %}
 
         // Set challenge status if it's a draft
@@ -1689,91 +1743,8 @@ $('#review-dates').text(`${startDate} to ${endDate}`);
                 cache: true
             }
         });
-//serch evaluator1
-          $('.select2-eval').select2({
-            width: '100%',
-            placeholder: 'Search for an Evaluator...',
-            minimumInputLength: 2,
-            ajax: {
-                url: '/employee_search/',
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return { q: params.term };
-                },
-                processResults: function (data) {
-                    console.log('employee search results:', data);
-                    return { results: data.results };
-                },
-                cache: true
-            }
-        });
-// Handle evaluator selection for Round 1
-        $('[name="evaluator_name"]').on('select2:select', function(e) {
-            const data = e.params.data;
-            console.log('Selected evaluator:', data);
-
-            if (data.employee_name) {
-                $('[name="round1_employee_name"]').val(data.employee_name);
-            }
-            if (data.email) {
-                $('[name="round1_employee_email"]').val(data.email);
-            }
-            if (data.employee_id) {
-                $('[name="round1_employee_id"]').val(data.employee_id);
-            }
-        });
-        //serch evaluator2
-          $('.select2-eval2').select2({
-            width: '100%',
-            placeholder: 'Search for an Evaluator...',
-            minimumInputLength: 2,
-            ajax: {
-                url: '/employee_search/',
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return { q: params.term };
-                },
-                processResults: function (data) {
-                    console.log('employee search results:', data);
-                    return { results: data.results };
-                },
-                cache: true
-            }
-        });
-// Handle evaluator selection for Round 2
-        $('[name="evaluator_name2"]').on('select2:select', function(e) {
-            const data = e.params.data;
-            console.log('Selected evaluator:', data);
-
-            if (data.employee_name) {
-                $('[name="round2_employee_name"]').val(data.employee_name);
-            }
-            if (data.email) {
-                $('[name="round2_employee_email"]').val(data.email);
-            }
-            if (data.employee_id) {
-                $('[name="round2_employee_id"]').val(data.employee_id);
-            }
-        });
 
 
-        // Handle evaluator selection for Round 2
-        $('[name="round2_evaluator_search"]').on('change', function(e) {
-            const selectedValue = $(this).val();
-            if (selectedValue) {
-                // Parse the selected value if it contains employee data
-                try {
-                    const data = JSON.parse(selectedValue);
-                    if (data.employee_name) $('[name="round2_employee_name"]').val(data.employee_name);
-                    if (data.email) $('[name="round2_employee_email"]').val(data.email);
-                    if (data.employee_id) $('[name="round2_employee_id"]').val(data.employee_id);
-                } catch (e) {
-                    console.log('Could not parse employee data');
-                }
-            }
-        });
 
         $('#description').on('input', function () {
             const len = $(this).val().length; $('#char-count').text(len);

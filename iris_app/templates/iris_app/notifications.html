@@ -3,68 +3,120 @@
 
 {% block title %}Notifications - Grassroot IRIS{% endblock %}
 
-{% block content %}
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Notifications</h2>
-    </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'iris_app/css/notification.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
 
-    <div class="card border-0 shadow-sm rounded-4">
-        <div class="list-group list-group-flush rounded-4 overflow-hidden">
-            {% for notification in notifications %}
-            <div class="list-group-item p-3 {% if not notification.is_read %}bg-light{% endif %}"
-                id="notif-{{ notification.notification_id }}">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <p class="mb-1 {% if not notification.is_read %}fw-bold{% endif %}">{{ notification.message }}
-                        </p>
-                        <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
-                        {% if notification.link %}
-                        <div class="mt-2">
-                            <a href="{{ notification.link }}"
-                                class="btn btn-sm btn-outline-primary rounded-pill px-3 mark-read-link"
-                                data-id="{{ notification.notification_id }}">View Details</a>
-                        </div>
-                        {% endif %}
+{% block content %}
+<div class="container py-5">
+    <div class="notification-container">
+        <!-- Header -->
+        <header class="notif-header">
+            <div class="notif-title-wrapper">
+                <span class="notif-title">All Notification</span>
+                <div class="dots-icon" style="flex-direction: row; gap: 2px;">
+                    <div style="width: 20px; height: 20px; padding: 4px; overflow: hidden; flex-direction: column; justify-content: center; align-items: center; display: inline-flex">
+                        <div style="width: 7.20px; height: 3.60px; background: #6B6258"></div>
                     </div>
-                    {% if not notification.is_read %}
-                    <button class="btn btn-sm btn-link text-decoration-none mark-read-btn"
-                        data-id="{{ notification.notification_id }}">
-                        <span class="badge rounded-pill bg-primary">New</span>
-                    </button>
-                    {% endif %}
                 </div>
             </div>
-            {% empty %}
-            <div class="p-5 text-center">
-                <p class="text-muted mb-0">No notifications yet.</p>
+            <div class="notif-header-actions">
+                <a href="#" class="mark-all-read" id="markAllReadBtn">Mark all as read</a>
+                <div style="width: 24px; height: 24px; position: relative; overflow: hidden">
+                    <div style="width: 12px; height: 12px; left: 6px; top: 6px; position: absolute; outline: 2px #4D4D4F solid; outline-offset: -1px"></div>
+                </div>
             </div>
+        </header>
+
+        <!-- List -->
+        <div class="notif-list">
+            {% for notification in notifications %}
+                {% with msg=notification.message|lower %}
+                <div class="notif-item {% if not notification.is_read %}unread{% endif %}" id="notif-{{ notification.notification_id }}">
+                    <!-- Accent Bar -->
+                    <div class="notif-accent 
+                        {% if 'approved' in msg or 'congratulations' in msg or 'success' in msg %}accent-success
+                        {% elif 'rejected' in msg or 'declined' in msg %}accent-danger
+                        {% elif 'rework' in msg or 'sent back' in msg or 'feedback' in msg %}accent-warning
+                        {% else %}accent-info{% endif %}">
+                    </div>
+
+                    <!-- Content -->
+                    <div class="notif-content">
+                        <div class="notif-message">
+                            {{ notification.message }}
+                        </div>
+                        <div class="notif-time">
+                            {{ notification.created_at|timesince }} ago
+                        </div>
+                        
+                        {% if notification.link %}
+                            <a href="{{ notification.link }}" class="notif-action-link mark-read-link" data-id="{{ notification.notification_id }}">
+                                {% if 'rework' in msg %}Edit Idea{% elif 'rejected' in msg %}View Feedback{% else %}View Details{% endif %}
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="notif-more-btn">
+                        <div class="dots-icon">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+            {% empty %}
+                <div class="empty-notif">
+                    <i class="fa-regular fa-bell-slash fa-3x mb-3" style="opacity: 0.2;"></i>
+                    <h3>No notifications yet</h3>
+                    <p>We'll notify you when something important happens.</p>
+                </div>
             {% endfor %}
         </div>
+        
+        <!-- Footer Spacer -->
+        <div style="align-self: stretch; height: 36px;"></div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    document.querySelectorAll('.mark-read-btn, .mark-read-link').forEach(button => {
-        button.addEventListener('click', function (e) {
-            const notifId = this.getAttribute('data-id');
-            fetch(`/notifications/mark-read/${notifId}/`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        const item = document.getElementById(`notif-${notifId}`);
-                        if (item) {
-                            item.classList.remove('bg-light');
-                            const badge = item.querySelector('.badge');
-                            if (badge) badge.remove();
-                            const msg = item.querySelector('p');
-                            if (msg) msg.classList.remove('fw-bold');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Individual Mark Read
+        document.querySelectorAll('.mark-read-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const notifId = this.getAttribute('data-id');
+                fetch(`/notifications/mark-read/${notifId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            const item = document.getElementById(`notif-${notifId}`);
+                            if (item) item.classList.remove('unread');
                         }
-                    }
-                });
+                    });
+            });
         });
+
+        // Mark All as Read
+        const markAllBtn = document.getElementById('markAllReadBtn');
+        if (markAllBtn) {
+            markAllBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                fetch('{% url "mark_all_notifications_as_read" %}')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            document.querySelectorAll('.notif-item').forEach(item => {
+                                item.classList.remove('unread');
+                            });
+                        }
+                    });
+            });
+        }
     });
 </script>
-{% endblock %}
+{% endblock %}

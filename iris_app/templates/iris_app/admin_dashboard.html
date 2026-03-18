@@ -1,0 +1,642 @@
+{% extends 'iris_app/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block meta_description %}Admin Dashboard — manage all challenges on IRIS Innovation Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'iris_app/css/admin_dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'iris_app/css/challenge_view_panel.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard-wrapper">
+    <!-- Success Modal -->
+    <div class="modal fade" id="updateSuccessModal" tabindex="-1" aria-hidden="true" style="z-index: 2000;">
+        <div class="modal-dialog modal-dialog-centered" style="z-index: 2001;">
+            <div class="modal-content" style="border-radius:12px; border:none; box-shadow:0 10px 25px rgba(0,0,0,0.1);">
+                <div class="modal-body text-center" style="padding:40px 20px;">
+                    <div
+                        style="width:60px; height:60px; background:#dcfce7; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+                        <i class="bi bi-check-lg" style="color:#16a34a; font-size:32px;"></i>
+                    </div>
+                    <h5 style="font-family:'Poppins', sans-serif; font-weight:600; color:#1f2937; margin-bottom:10px;">
+                        Success!</h5>
+                    <p style="color:#6b7280; font-size:14px;">Your details have been updated successfully.</p>
+                    <button type="button" class="btn" data-bs-dismiss="modal"
+                        style="background:#5f0229; color:white; padding:8px 30px; border-radius:8px; margin-top:10px; font-weight:500;">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== Hero Banner ===================== -->
+    <div class="admin-hero">
+        <img class="admin-hero-bg" src="{% static 'iris_app/images/challenge.png' %}" alt="Header Background" />
+        <div class="admin-hero-content">
+            <h1 class="admin-hero-title">Admin Dashboard</h1>
+            <p class="admin-hero-subtitle">Explore opportunities to innovate and collaborate</p>
+        </div>
+
+        <!-- Post New Challenge (top-right) -->
+        <div class="admin-hero-actions">
+            <a href="{% url 'post_challenge' %}" class="btn-post-challenge" id="btnPostChallengHero">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="1" y="1" width="14" height="14" rx="1" stroke="#4A453D" stroke-width="1.5" />
+                    <path d="M8 5v6M5 8h6" stroke="#4A453D" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+                Post New Challenges
+            </a>
+        </div>
+    </div>
+    <!-- ===================== Stats Ribbon ===================== -->
+    <div class="admin-stats-section">
+
+        <!-- Total Challenges -->
+        <div class="admin-stat-card">
+            <div class="stat-icon-box">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="7" width="22" height="14" rx="1" stroke="#5F0229" stroke-width="2.4" />
+                    <rect x="9" y="7" width="12" height="7" rx="0.5" stroke="#5F0229" stroke-width="2.4" />
+                </svg>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">Total Challenges</div>
+                <div class="stat-value" id="statTotal">{{ total_challenges }}</div>
+            </div>
+        </div>
+
+        <!-- Reviewed (LIVE / Active) -->
+        <div class="admin-stat-card">
+            <div class="stat-icon-box">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="14" cy="14" r="10" stroke="#5F0229" stroke-width="2.4" />
+                    <path d="M10 14l3 3 5-5" stroke="#5F0229" stroke-width="2.4" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">Active / Live</div>
+                <div class="stat-value" id="statActive">{{ active_challenges_count }}</div>
+            </div>
+        </div>
+
+        <!-- Pending Review (Draft) -->
+        <div class="admin-stat-card">
+            <div class="stat-icon-box">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="6" y="4" width="16" height="20" rx="1" stroke="#5F0229" stroke-width="2.4" />
+                    <path d="M10 10h8M10 14h8M10 18h5" stroke="#5F0229" stroke-width="2.4" stroke-linecap="round" />
+                </svg>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">Pending Review</div>
+                <div class="stat-value" id="statDraft">{{ draft_challenges_count }}</div>
+            </div>
+        </div>
+
+        <!-- Completed -->
+        <div class="admin-stat-card">
+            <div class="stat-icon-box">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 4l2.7 6.5L24 11.3l-5 4.9 1.2 7L14 20l-6.2 3.2 1.2-7-5-4.9 7.3-.8L14 4z"
+                        stroke="#5F0229" stroke-width="2.4" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">Success Rate</div>
+                <div class="stat-value" id="statSuccess">{{ completed_challenges_count }}</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===================== Tab Navigation + Search ===================== -->
+    <div class="admin-nav-section">
+        <div class="admin-nav-content">
+            <!-- Tabs -->
+            <div class="admin-tabs-wrapper">
+                <!-- All Challenges -->
+                <button class="admin-tab-item active" id="tabAll" data-tab="all" onclick="switchAdminTab(event,'all')">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <rect x="2" y="3" width="12" height="10" rx="1" stroke="currentColor" stroke-width="1.33" />
+                    </svg>
+                    All Challenges
+                </button>
+
+                <!-- Active -->
+                <button class="admin-tab-item" id="tabActive" data-tab="active"
+                    onclick="switchAdminTab(event,'active')">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <rect x="1.33" y="1.33" width="13.33" height="13.33" rx="1" stroke="currentColor"
+                            stroke-width="1.33" />
+                        <path d="M8 5v2M8 11v-2M8 9v-.01" stroke="currentColor" stroke-width="1.33"
+                            stroke-linecap="round" />
+                    </svg>
+                    Active
+                </button>
+
+                <!-- Upcoming -->
+                <button class="admin-tab-item" id="tabUpcoming" data-tab="upcoming"
+                    onclick="switchAdminTab(event,'upcoming')">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.33" />
+                    </svg>
+                    Upcoming
+                </button>
+            </div>
+
+            <!-- Search + Filter -->
+            <div class="admin-search-filter">
+                <div class="admin-search-box">
+                    <svg class="admin-search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="7" cy="7" r="5" stroke="#99A1AF" stroke-width="1.33" />
+                        <path d="M12 12l2 2" stroke="#99A1AF" stroke-width="1.33" stroke-linecap="round" />
+                    </svg>
+                    <input id="adminSearchInput" type="text" class="admin-search-input"
+                        placeholder="Search by Challenge Name, category...." oninput="filterChallengeRows()">
+                </div>
+                <button class="admin-filter-btn" id="btnFilterChallenges">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M2 4h12M4 8h8M7 12h2" stroke="currentColor" stroke-width="1.33"
+                            stroke-linecap="round" />
+                    </svg>
+                    Filter
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===================== Main Content — Challenges Table ===================== -->
+    <div class="admin-main-content">
+        <div class="challenges-table-section">
+
+            <!-- Section header -->
+            <div class="challenges-header">
+                <div class="challenges-subtitle" id="tableSubtitle">Showing all {{ total_challenges }}
+                    challenge{{total_challenges|pluralize }}</div>
+                <div class="challenges-title">All Challenges</div>
+                <a href="{% url 'post_challenge' %}" class="btn-post-challenge-grey" id="btnPostChallengeTable">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <rect x="1" y="1" width="14" height="14" rx="1" stroke="#4A453D" stroke-width="1.5" />
+                        <path d="M8 5v6M5 8h6" stroke="#4A453D" stroke-width="1.5" stroke-linecap="round" />
+                    </svg>
+                    Post New Challenges
+                </a>
+            </div>
+
+            <!-- Table -->
+            <div class="challenges-table-wrapper">
+                <table class="challenges-table" id="challengesTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="th-inner">
+                                    Challenge Name
+                                    <svg class="sort-icon" viewBox="0 0 10 9" fill="none">
+                                        <path d="M5 1L8.46 7H1.54L5 1Z" fill="#29251D" />
+                                        <path d="M5 8L1.54 2H8.46L5 8Z" fill="#29251D" opacity="0.3" />
+                                    </svg>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="th-inner">
+                                    Owner
+                                    <svg class="sort-icon" viewBox="0 0 10 9" fill="none">
+                                        <path d="M5 1L8.46 7H1.54L5 1Z" fill="#29251D" />
+                                        <path d="M5 8L1.54 2H8.46L5 8Z" fill="#29251D" opacity="0.3" />
+                                    </svg>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="th-inner">
+                                    Classification
+                                    <svg class="sort-icon" viewBox="0 0 10 9" fill="none">
+                                        <path d="M5 1L8.46 7H1.54L5 1Z" fill="#29251D" />
+                                        <path d="M5 8L1.54 2H8.46L5 8Z" fill="#29251D" opacity="0.3" />
+                                    </svg>
+                                </div>
+                            </th>
+                            <th>Total Submission</th>
+                            <th>
+                                <div class="th-inner">
+                                    Status
+                                    <svg class="sort-icon" viewBox="0 0 10 9" fill="none">
+                                        <path d="M5 1L8.46 7H1.54L5 1Z" fill="#29251D" />
+                                        <path d="M5 8L1.54 2H8.46L5 8Z" fill="#29251D" opacity="0.3" />
+                                    </svg>
+                                </div>
+                            </th>
+                            <th>
+                                <div class="th-inner">
+                                    Submission End Date
+                                    <svg class="sort-icon" viewBox="0 0 10 9" fill="none">
+                                        <path d="M5 1L8.46 7H1.54L5 1Z" fill="#29251D" />
+                                        <path d="M5 8L1.54 2H8.46L5 8Z" fill="#29251D" opacity="0.3" />
+                                    </svg>
+                                </div>
+                            </th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="challengesTableBody">
+                        {% for challenge in challenges %}
+                        <tr class="challenge-row" data-title="{{ challenge.title|lower }}"
+                            data-keywords="{{ challenge.keywords|lower|default:'' }}"
+                            data-status="{{ challenge.status|lower }}"
+                            data-upcoming="{% if challenge.start_date > now %}true{% else %}false{% endif %}">
+
+                            <!-- Challenge Name -->
+                            <td class="challenge-name-cell">
+                                <a href="{% url 'challenge_detail' challenge.challenge_id %}"
+                                    class="challenge-name-link">
+                                    {{ challenge.title }}
+                                </a>
+                            </td>
+
+                            <!-- Owner -->
+                            <td>
+                                <div class="owner-cell">
+                                    <div class="owner-avatar">
+                                        {% if challenge.created_by %}
+                                        {{ challenge.created_by.full_name|slice:":2"|upper }}
+                                        {% else %}
+                                        --
+                                        {% endif %}
+                                    </div>
+                                    <span>{{ challenge.created_by.full_name|default:"—" }}</span>
+                                </div>
+                            </td>
+
+                            <!-- Classification (Keywords) -->
+                            <td>
+                                <div class="keyword-pills">
+                                    {% if challenge.keywords_list %}
+                                    {% for kw in challenge.keywords_list %}
+                                    <span class="keyword-pill">{{ kw }}</span>
+                                    {% endfor %}
+                                    {% else %}
+                                    <span class="no-keywords">—</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+
+                            <!-- Total Submissions -->
+                            <td class="submission-count">
+                                {{ challenge.idea_set.count }}
+                            </td>
+
+                            <!-- Status -->
+                            <td>
+                                {% if challenge.status == 'LIVE' %}
+                                <span class="badge-status badge-live">
+                                    <span class="status-dot"></span>Live
+                                </span>
+                                {% elif challenge.status == 'DRAFT' %}
+                                <span class="badge-status badge-draft">
+                                    <span class="status-dot"></span>Draft
+                                </span>
+                                {% elif challenge.status == 'COMPLETED' %}
+                                <span class="badge-status badge-completed">
+                                    <span class="status-dot"></span>Completed
+                                </span>
+                                {% elif challenge.status == 'ARCHIVED' %}
+                                <span class="badge-status badge-archived">
+                                    <span class="status-dot"></span>Archived
+                                </span>
+                                {% else %}
+                                <span class="badge-status badge-draft">
+                                    <span class="status-dot"></span>{{ challenge.status|capfirst }}
+                                </span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Submission End Date -->
+                            <td class="date-cell">
+                                {% if challenge.end_date %}
+                                {{ challenge.end_date|date:"d M Y" }}
+                                {% else %}
+                                —
+                                {% endif %}
+                            </td>
+
+                            <!-- Actions -->
+                            <td>
+                                <div class="action-cell">
+                                    <!-- View in Slide Panel -->
+                                    <button class="btn-action btn-action-view cvp-view-btn" title="View Challenge"
+                                        data-challenge-id="{{ challenge.challenge_id }}"
+                                        data-challenge-title="{{ challenge.title|escapejs }}"
+                                        data-view-url="{% url 'view_challenge_admin' challenge.challenge_id %}">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+
+                                    <!-- Manage Panel (Details) -->
+                                    <a href="{% url 'managepanel' challenge.challenge_id %}"
+                                        class="btn-action btn-action-view" title="Manage Panel (Details)"
+                                        style="background-color: #fce7e7;">
+                                        <i class="bi bi-kanban" style="color: #5f0229;"></i>
+                                    </a>
+                                    <!-- Download Summary -->
+                                    <a href="{% url 'download_challenge_summary' challenge.challenge_id %}"
+                                        class="btn-action btn-action-view" title="Download Summary"
+                                        style="background-color: #e0f2fe;">
+                                        <i class="bi bi-download" style="color: #0369a1;"></i>
+                                    </a>
+                                    <!-- Delete Challenge -->
+                                    <button class="btn-action btn-action-delete" title="Delete Challenge"
+                                        onclick="confirmDeleteChallenge('{{ challenge.challenge_id }}')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📋</div>
+                                    <div class="empty-state-text">No challenges found.</div>
+                                    <a href="{% url 'post_challenge' %}" class="btn-post-challenge"
+                                        style="margin-top:16px;display:inline-flex;">
+                                        Post Your First Challenge
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div><!-- /table-wrapper -->
+
+        </div><!-- /challenges-table-section -->
+
+        <!-- Load More -->
+        <div class="load-more-section" id="loadMoreBtn">
+            <span class="load-more-text">Load More</span>
+            <div class="load-more-icon"></div>
+        </div>
+
+    </div><!-- /admin-main-content -->
+
+</div><!-- /admin-dashboard-wrapper -->
+
+<!-- ===================== JavaScript ===================== -->
+<script>
+    /* ---- Tab switching ---- */
+    function switchAdminTab(event, tabName) {
+        event.preventDefault();
+        // Update active tab button
+        document.querySelectorAll('.admin-tab-item').forEach(function (btn) {
+            btn.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+
+        // Filter rows based on tab
+        var rows = document.querySelectorAll('.challenge-row');
+        var searchTerm = document.getElementById('adminSearchInput').value.toLowerCase();
+        var subtitle = document.getElementById('tableSubtitle');
+        var visibleCount = 0;
+
+        rows.forEach(function (row) {
+            var status = row.getAttribute('data-status');
+            var isUpcoming = row.getAttribute('data-upcoming') === 'true';
+            var title = row.getAttribute('data-title') || '';
+            var keywords = row.getAttribute('data-keywords') || '';
+            var matchesSearch = (title.includes(searchTerm) || keywords.includes(searchTerm) || searchTerm === '');
+            var matchesTab = false;
+
+            if (tabName === 'all') {
+                matchesTab = true;
+            } else if (tabName === 'active') {
+                matchesTab = (status === 'live');
+            } else if (tabName === 'upcoming') {
+                matchesTab = isUpcoming;
+            }
+
+            var visible = matchesTab && matchesSearch;
+            row.style.display = visible ? '' : 'none';
+            if (visible) visibleCount++;
+        });
+
+        if (subtitle) {
+            subtitle.textContent = 'Showing ' + visibleCount + ' challenge' + (visibleCount !== 1 ? 's' : '');
+        }
+    }
+
+    /* ---- Search filtering ---- */
+    function filterChallengeRows() {
+        var searchTerm = document.getElementById('adminSearchInput').value.toLowerCase();
+        var activeTab = document.querySelector('.admin-tab-item.active');
+        var tabName = activeTab ? activeTab.getAttribute('data-tab') : 'all';
+        var subtitle = document.getElementById('tableSubtitle');
+        var rows = document.querySelectorAll('.challenge-row');
+        var visibleCount = 0;
+
+        rows.forEach(function (row) {
+            var status = row.getAttribute('data-status');
+            var isUpcoming = row.getAttribute('data-upcoming') === 'true';
+            var title = row.getAttribute('data-title') || '';
+            var keywords = row.getAttribute('data-keywords') || '';
+            var matchesSearch = (title.includes(searchTerm) || keywords.includes(searchTerm) || searchTerm === '');
+            var matchesTab = false;
+
+            if (tabName === 'all') {
+                matchesTab = true;
+            } else if (tabName === 'active') {
+                matchesTab = (status === 'live');
+            } else if (tabName === 'upcoming') {
+                matchesTab = isUpcoming;
+            }
+
+            var visible = matchesTab && matchesSearch;
+            row.style.display = visible ? '' : 'none';
+            if (visible) visibleCount++;
+        });
+
+        if (subtitle) {
+            subtitle.textContent = 'Showing ' + visibleCount + ' challenge' + (visibleCount !== 1 ? 's' : '');
+        }
+    }
+
+    /* ---- Load More (demo: shows hidden rows or could be a fetch) ---- */
+    var ROWS_PER_PAGE = 15;
+    var currentlyShown = ROWS_PER_PAGE;
+
+    function initPagination() {
+        var rows = document.querySelectorAll('.challenge-row');
+        if (rows.length <= ROWS_PER_PAGE) {
+            var lb = document.getElementById('loadMoreBtn');
+            if (lb) lb.style.display = 'none';
+            return;
+        }
+        rows.forEach(function (row, idx) {
+            if (idx >= ROWS_PER_PAGE) row.style.display = 'none';
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // initPagination(); // Uncomment if you want paginated rows
+
+        var loadMoreBtn = document.getElementById('loadMoreBtn');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', function () {
+                var rows = document.querySelectorAll('.challenge-row[style="display: none;"]');
+                var shown = 0;
+                rows.forEach(function (row) {
+                    if (shown < ROWS_PER_PAGE) {
+                        row.style.display = '';
+                        shown++;
+                    }
+                });
+                if (document.querySelectorAll('.challenge-row[style="display: none;"]').length === 0) {
+                    loadMoreBtn.style.display = 'none';
+                }
+            });
+        }
+    });
+
+    /* ---- Delete Challenge ---- */
+    function confirmDeleteChallenge(challengeId) {
+        if (confirm("Would you want delete the challenge")) {
+            // Send POST request
+            fetch(`/delete-challenge-admin/${challengeId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("An error occurred while deleting the challenge.");
+                });
+        }
+    }
+</script>
+
+<!-- ===================== Challenge View Slide Panel ===================== -->
+<div class="cvp-backdrop" id="cvpBackdrop"></div>
+<div class="cvp-panel" id="cvpPanel">
+    <!-- Header -->
+    <div class="cvp-header" id="cvpHeader">
+        <div class="cvp-header-left">
+            <div class="cvp-header-label">Challenge Details</div>
+            <div class="cvp-header-title" id="cvpTitle">Loading...</div>
+        </div>
+        <button class="cvp-close-btn" onclick="closeChallengeViewPanel()" aria-label="Close">&#x2715;</button>
+    </div>
+    <!-- Content injected here by AJAX -->
+    <div id="cvpContent">
+        <div class="cvp-loading">
+            <div class="cvp-spinner"></div>
+            <span>Loading challenge details...</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* ============================================================
+       Challenge View Slide Panel — Admin Dashboard
+       ============================================================ */
+    function openChallengeViewPanel(challengeId, challengeTitle, viewUrl) {
+        var backdrop = document.getElementById('cvpBackdrop');
+        var panel = document.getElementById('cvpPanel');
+        var title = document.getElementById('cvpTitle');
+        var content = document.getElementById('cvpContent');
+
+        // Set title immediately
+        title.textContent = challengeTitle || 'Challenge Details';
+
+        // Show loading state
+        content.innerHTML = '<div class="cvp-loading"><div class="cvp-spinner"></div><span>Loading...</span></div>';
+
+        // Open panel
+        backdrop.classList.add('cvp-open');
+        document.body.style.overflow = 'hidden';
+        // Small delay so CSS transition triggers correctly
+        requestAnimationFrame(function () {
+            panel.classList.add('cvp-open');
+        });
+
+        // Fetch fragment via AJAX
+        fetch(viewUrl, {
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(function (res) {
+                if (!res.ok) throw new Error('Server error ' + res.status);
+                return res.text();
+            })
+            .then(function (html) {
+                content.innerHTML = html;
+                // Re-run any inline scripts in the loaded fragment
+                content.querySelectorAll('script').forEach(function (old) {
+                    var s = document.createElement('script');
+                    s.textContent = old.textContent;
+                    document.body.appendChild(s);
+                    old.remove();
+                });
+            })
+            .catch(function (err) {
+                content.innerHTML = '<div class="cvp-loading" style="color:#E31837;"><i class="bi bi-exclamation-circle" style="font-size:32px;"></i><span>Could not load challenge details.<br>Please try again.</span></div>';
+                console.error('CVP fetch error:', err);
+            });
+    }
+
+    function closeChallengeViewPanel() {
+        var backdrop = document.getElementById('cvpBackdrop');
+        var panel = document.getElementById('cvpPanel');
+        panel.classList.remove('cvp-open');
+        backdrop.classList.remove('cvp-open');
+        document.body.style.overflow = '';
+    }
+
+    // Expose globally so fragment footer Close button works
+    window.closeChallengeViewPanel = closeChallengeViewPanel;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Wire up all View buttons
+        document.querySelectorAll('.cvp-view-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                openChallengeViewPanel(
+                    this.getAttribute('data-challenge-id'),
+                    this.getAttribute('data-challenge-title'),
+                    this.getAttribute('data-view-url')
+                );
+            });
+        });
+
+        // Close on backdrop click
+        document.getElementById('cvpBackdrop').addEventListener('click', closeChallengeViewPanel);
+
+        // Close on Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                var panel = document.getElementById('cvpPanel');
+                if (panel.classList.contains('cvp-open')) closeChallengeViewPanel();
+            }
+        });
+
+        // Reload page when success modal is dismissed
+        $('#updateSuccessModal').on('hidden.bs.modal', function () {
+            location.reload();
+        });
+    });
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{% endblock %}

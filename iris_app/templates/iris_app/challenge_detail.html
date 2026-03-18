@@ -1,161 +1,192 @@
 {% extends 'iris_app/base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'iris_app/css/challenge_detail.css' %}">
+{% endblock %}
+
 {% block title %}{{ challenge.title }} | Challenge Details{% endblock %}
 
 {% block content %}
-<div class="challenge-details-page">
-    <!-- Challenge Hero Section -->
-    <section class="challenge-hero-banner position-relative overflow-hidden" style="height: 400px; background: #000;">
-        {% if challenge.challenge_icon %}
-        <img src="{{ challenge.challenge_icon.url }}" alt="{{ challenge.title }}" class="hero-banner-image w-100 h-100"
-            style="object-fit: cover; opacity: 0.6;">
-        {% else %}
-        <img src="{% static 'iris_app/img/Rectangle 79.png' %}" alt="Default" class="hero-banner-image w-100 h-100"
-            style="object-fit: cover; opacity: 0.6;">
-        {% endif %}
-
-        <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
-            <div class="container py-5">
-                <div class="hero-content text-white" style="max-width: 800px;">
-                    <button onclick="history.back()" class="btn btn-link text-white text-decoration-none p-0 mb-4">←
-                        Back</button>
-                    <h1 class="display-5 fw-bold mb-3">{{ challenge.title }}</h1>
-                    <p class="lead mb-4">{{ challenge.description|truncatewords:30 }}</p>
-                    <span class="badge bg-primary rounded-pill px-4 py-2">{{ challenge.keywords|default:"SustainableEngineering" }}</span>
+<div class="challenge-detail-wrapper">
+    <!-- Hero Section -->
+    <section class="detail-hero"
+        style="background-image: url('{% if challenge.challenge_icon %}{{ challenge.challenge_icon.url }}{% else %}{% static "iris_app/img/Rectangle 79.png" %}{% endif %}');">
+        <div class="hero-top-info">
+            <div class="id-badge">
+                <div class="id-icon">
+                    <svg width="15" height="13" viewBox="0 0 15 13" fill="none">
+                        <path d="M1 1.5H14M1 11.5H14M1 6.5H14" stroke="white" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <div class="id-text">
+                    ID #{{ challenge.challenge_id|stringformat:"s"|slice:":8"|upper }}
                 </div>
             </div>
+
+            <div class="owner-info">
+                <div class="owner-text">
+                    <span class="owner-label">Owner</span>
+                    <span class="owner-name text-white">{{ challenge.owner.get_full_name|default:"Innovation Lead"}}</span>
+                </div>
+                <div class="status-badge">
+                    {{ challenge.status|title }} On
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-content-overlay">
+            <div class="detail-category-tag">
+                {{ challenge.keywords|default:"Innovation"|truncatechars:25 }}
+            </div>
+            <h1 class="detail-title">{{ challenge.title|default:"Sustainable Engineering for a greener Future" }}</h1>
+            <p class="detail-subline">
+                {{ challenge.short_description|default:challenge.description|truncatewords:40 }}
+            </p>
         </div>
     </section>
 
-    <!-- Main Content -->
-    <div class="container py-5">
-        <div class="row g-5">
-            <!-- Left Column: Content -->
-            <div class="col-lg-8">
-                <!-- Overview Section -->
-                <section class="mb-5">
-                    <h2 class="fw-bold mb-4">Overview</h2>
-                    <div class="text-secondary" style="line-height: 1.8;">
-                        {{ challenge.description|linebreaks }}
-                    </div>
-                </section>
+    <!-- Main Content Body -->
+    <main class="detail-main-container">
+        <!-- Left: Primary Info -->
+        <article class="primary-content">
+            <section class="content-section">
+                <h3 class="section-label">Description</h3>
+                <div class="description-text">
+                    {{ challenge.description|linebreaks }}
+                </div>
+            </section>
 
-                <!-- Key Objectives Section -->
-                {% if challenge.expected_outcome %}
-                <section class="mb-5">
-                    <h2 class="fw-bold mb-4">Key Objectives</h2>
-                    <div class="text-secondary">
-                        {{ challenge.expected_outcome|linebreaks }}
-                    </div>
-                </section>
-                {% endif %}
-
-                <!-- Review Parameters Section -->
-                {% if review_params %}
-                <section class="mb-5">
-                    <h2 class="fw-bold mb-4">Review Parameters</h2>
-                    <div class="row g-4">
-                        {% for param in review_params %}
-                        <div class="col-12">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-medium">{{ param.parameter.name }}</span>
-                                <span class="text-primary fw-bold">{{ param.weightage }}%</span>
-                            </div>
-                            <div class="progress" style="height: 8px; border-radius: 4px;">
-                                <div class="progress-bar" role="progressbar"
-                                    style="width: {{ param.weightage }}%; background-color: var(--primary-color);">
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </section>
-                {% endif %}
-
-                <!-- Additional Info Section -->
-                {% if challenge.key_insights %}
-                <section class="p-4 bg-light rounded-4 mb-5">
-                    <h3 class="fw-bold mb-3">Key Insights</h3>
-                    <div class="text-secondary">
-                        {{ challenge.key_insights|linebreaks }}
-                    </div>
-                </section>
-                {% endif %}
-
-                <!-- CTA Section -->
-                {% if challenge.status == 'LIVE' %}
-                <section class="p-5 rounded-4 text-white text-center shadow-lg mb-5"
-                    style="background: linear-gradient(135deg, #29251D 0%, #000 100%);">
-                    <h2 class="fw-bold mb-3">Ready to Submit Your Idea?</h2>
-                    <p class="mb-4 opacity-75">Share your innovative solution and contribute to a sustainable future.
-                    </p>
-                    <a href="{% url 'submit_idea' challenge.challenge_id %}"
-                        class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow">Share Your Idea</a>
-                </section>
-                {% endif %}
-            </div>
-
-            <!-- Right Column: Sidebar -->
-            <div class="col-lg-4">
-                <div class="position-sticky" style="top: 100px;">
-                    <!-- Timeline Card -->
-                    <div class="card border-0 shadow-sm rounded-4 mb-4 p-4">
-                        <h3 class="fw-bold mb-4 h5">Timeline</h3>
-                        <div class="d-flex flex-column gap-3">
-                            <div class="d-flex justify-content-between">
-                                <span class="text-muted">Start Date</span>
-                                <span class="fw-semibold">{{ challenge.start_date|date:"M d, Y" }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span class="text-muted">End Date</span>
-                                <span class="fw-semibold text-danger">{{ challenge.end_date|date:"M d, Y" }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Documents Card -->
-                    {% if challenge.challenge_document or challenge.idea_template_file %}
-                    <div class="card border-0 shadow-sm rounded-4 mb-4 p-4">
-                        <h3 class="fw-bold mb-4 h5">Documents</h3>
-                        {% if challenge.challenge_document %}
-                        <div class="d-flex align-items-center justify-content-between mb-3 p-3 bg-light rounded-3">
-                            <div class="d-flex align-items-center gap-3">
-                                <span class="fs-4">📄</span>
-                                <span class="small fw-medium">Challenge Doc</span>
-                            </div>
-                            <a href="{{ challenge.challenge_document.url }}"
-                                class="btn btn-sm btn-white rounded-circle shadow-sm">⬇</a>
-                        </div>
-                        {% endif %}
-                        {% if challenge.idea_template_file %}
-                        <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3">
-                            <div class="d-flex align-items-center gap-3">
-                                <span class="fs-4">📝</span>
-                                <span class="small fw-medium">Idea Template</span>
-                            </div>
-                            <a href="{{ challenge.idea_template_file.url }}"
-                                class="btn btn-sm btn-white rounded-circle shadow-sm">⬇</a>
-                        </div>
-                        {% endif %}
-                    </div>
+            {% if challenge.expected_outcome %}
+            <section class="content-section">
+                <h3 class="section-label">Expected Business Outcome</h3>
+                <div class="outcome-list">
+                    {% for line in challenge.expected_outcome.splitlines %}
+                    {% if line.strip %}
+                    <div class="outcome-item">{{ line }}</div>
                     {% endif %}
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
 
-                    <!-- Management Actions -->
-                    {% if is_owner %}
-                    <div class="card border-0 shadow-sm rounded-4 mb-4 p-4 bg-primary bg-opacity-10">
-                        <h3 class="fw-bold mb-3 h5">Management</h3>
-                        <div class="d-grid gap-2">
-                            <a href="{% url 'manage_panels' challenge.challenge_id %}"
-                                class="btn btn-outline-primary rounded-pill btn-sm">Manage Panels</a>
-                            <a href="{% url 'manage_mentors' challenge.challenge_id %}"
-                                class="btn btn-outline-primary rounded-pill btn-sm">Manage Mentors</a>
+            {% if review_params %}
+            <section class="content-section">
+                <h3 class="section-label">Review Parameters</h3>
+                <div class="params-grid">
+                    {% for param in review_params %}
+                    <div class="param-row">
+                        <span class="param-name">{{ param.parameter.name }}</span>
+                        <div
+                            style="flex: 1; margin: 0 40px; height: 6px; background: #F8B4A3; opacity: 0.3; border-radius: 3px; position: relative; overflow: hidden;">
+                            <div
+                                style="position: absolute; left: 0; top: 0; height: 100%; background: #F8B4A3; width: {{ param.weightage }}%;">
+                            </div>
                         </div>
+                        <span class="param-weight">{{ param.weightage }}%</span>
                     </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            <section class="content-section">
+                <h3 class="section-label">Additional Info</h3>
+                <div class="info-action-box">
+                    {% if challenge.challenge_document %}
+                    <a href="{{ challenge.challenge_document.url }}" class="detail-download-btn"
+                        style="display: flex; align-items: center; gap: 12px; padding: 20px; background: #F6F2EA; border: 1px solid var(--impact-red); border-radius: 14px; text-decoration: none; color: var(--impact-red); font-weight: 500;">
+                        <i class="fas fa-file-download" style="font-size: 20px;"></i>
+                        <span>Download Supporting Document</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </section>
+        </article>
+
+        <!-- Right: Sidebar -->
+        <aside class="detail-sidebar-info">
+            <div class="sidebar-box">
+                <div class="sidebar-section">
+                    <h4 class="sidebar-label">Timeline</h4>
+                    <div class="sidebar-label-small">Start Date</div>
+                    <div class="sidebar-value">{{ challenge.start_date|date:"M d, Y" }}</div>
+
+                    <div class="sidebar-label-small">End Date</div>
+                    <div class="sidebar-value">{{ challenge.end_date|date:"M d, Y" }}</div>
+
+                    <div class="sidebar-label-small">Days Remaining</div>
+                    <div class="days-remaining">
+                        {% if days_remaining > 0 %}{{ days_remaining }}{% else %}0{% endif %}
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h4 class="sidebar-label">Document</h4>
+                    <span class="sidebar-label-small">Submission Template</span>
+                    {% if challenge.idea_template_file %}
+                    <a href="{{ challenge.idea_template_file.url }}" class="doc-link-card mt-2">
+                        <span>Submission template</span>
+                        <i class="fas fa-download"></i>
+                    </a>
+                    {% else %}
+                    <div class="text-muted small">No template available</div>
                     {% endif %}
                 </div>
             </div>
+        </aside>
+    </main>
+
+    <!-- Footer Banner -->
+    {% if challenge.status == 'LIVE' %}
+    <section class="detail-cta-banner">
+        <div class="cta-text">
+            {% if user_submitted %}
+            <h2>Solution Submitted!</h2>
+            <p>Thank you for participating. You can track your idea in your dashboard.</p>
+            {% else %}
+            <h2>Ready to Submit Your Idea?</h2>
+            <p>Share your innovative solution and contribute to a sustainable future.</p>
+            {% endif %}
         </div>
-    </div>
+
+        {% if user_submitted %}
+        <div class="btn-detail-register" style="padding: 12px 24px; background: #31D586; color: white; border: none; font-weight: 600; cursor: default; border-radius: 8px; font-size: 14px; text-align: center; display: flex; align-items: center; justify-content: center;">
+            Submitted
+        </div>
+        {% elif challenge.registration_required|default:"No"|lower == "yes" %}
+            {% if user_registered %}
+            <a href="{% url 'idea_details' challenge.challenge_id %}" class="btn-detail-register"
+                style="text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center;">
+                Submit Your Idea
+            </a>
+            {% else %}
+            <button type="button" class="btn-detail-register" data-register-modal
+                data-challenge-id="{{ challenge.challenge_id }}" data-challenge-title="{{ challenge.title }}"
+                data-participation-type="{{ challenge.participation_type }}">
+                Register Now
+            </button>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'idea_details' challenge.challenge_id %}" class="btn-detail-register"
+                style="text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center;">
+                Submit Your Idea
+            </a>
+        {% endif %}
+    </section>
+    {% endif %}
 </div>
+
+<!-- Include the Modal Fragment (Copied from index for consistency) -->
+{% include 'iris_app/registration_modal_fragment.html' %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        console.log("Challenge detail page ready with global jQuery.");
+
+    });
+</script>
 {% endblock %}

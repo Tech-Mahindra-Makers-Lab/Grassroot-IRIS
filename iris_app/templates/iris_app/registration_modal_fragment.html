@@ -1,0 +1,565 @@
+{% load static %}
+<!-- New Premium Registration Modal Fragment -->
+<div id="registrationModal" class="reg-modal-wrapper" style="display: none;">
+    <div class="reg-modal-backdrop" onclick="closeRegistrationModal()"></div>
+    <main class="reg-main-card reg-modal-card">
+        <div class="reg-card-inner">
+            <header class="reg-header">
+                <h1>Register Now</h1>
+                <button type="button" class="btn-close-modal" id="closeModalBtn"
+                    onclick="closeRegistrationModal()">×</button>
+            </header>
+
+            <div class="toggle-nav">
+                <div class="toggle-tab active" id="tab-ind" onclick="setRegMode('Individual')">
+                    <i class="fas fa-user"></i> Individual
+                </div>
+                <div class="toggle-tab" id="tab-team" onclick="setRegMode('Team')">
+                    <i class="fas fa-users"></i> Team
+                </div>
+            </div>
+
+            <form id="regForm" method="POST" action="" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="participation_mode" id="participation_mode" value="Individual">
+
+                <div class="reg-form-body">
+                    <!-- Individual Mode Fields -->
+                    <div id="individual-fields-area">
+                        <div class="form-row has-select">
+                            <label>Challenge</label>
+                            <input type="text" id="modalChallengeTitle" value="" disabled>
+                        </div>
+
+                        <div class="form-row">
+                            <label>Full Name</label>
+                            <input type="text" value="{{ request.iris_user.full_name|default:'' }}" disabled>
+                        </div>
+
+                        <div class="form-row">
+                            <label>Employee ID</label>
+                            <input type="text" value="{{ request.iris_user.employee_id|default:'' }}" disabled>
+                        </div>
+
+                        <div class="form-row">
+                            <label>Email ID (Official)</label>
+                            <input type="text" value="{{ request.iris_user.email|default:'' }}" disabled>
+                        </div>
+                    </div>
+
+                    <!-- Team Fields (Hidden by default) -->
+                    <div id="team-details-area">
+                        <div class="team-section-header">Team Details</div>
+
+                        <div class="form-row has-select">
+                            <label>Challenge</label>
+                            <input type="text" class="team-challenge-title" value="" disabled>
+                        </div>
+
+                        <div class="form-row">
+                            <label>Team Name</label>
+                            <input type="text" name="team_name" placeholder="Enter team name" required>
+                        </div>
+
+                        <div class="team-members-control">
+                            <label>Team Members</label>
+                            <button type="button" class="btn-add-member" onclick="addMember()">+ Add</button>
+                        </div>
+
+                        <div id="members-grid-container">
+                            <!-- Dynamic member cards -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reg-footer">
+                    <div style="height: 34px;"></div>
+                    <button type="submit" class="btn-submit-main">Register Now</button>
+                    <button type="button" class="btn-cancel-link" style="background:none; border:none; cursor:pointer;"
+                        onclick="closeRegistrationModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<style>
+    /* Modal Specific Styles */
+    .reg-modal-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2000;
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .reg-modal-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+    }
+
+    .reg-modal-card {
+        z-index: 2001;
+        animation: modalFadeIn 0.3s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Core Styles from High-End Design */
+    :root {
+        --impact-red: #5F0229;
+        --vibrant-red: #E31837;
+        --bg-cream: #F6F2EA;
+    }
+
+    .reg-main-card {
+        width: 100%;
+        max-width: 510px;
+        background-color: var(--bg-cream);
+        background-image: linear-gradient(rgba(246, 242, 234, 0.85), rgba(246, 242, 234, 0.85)),
+        url('{% static "iris_app/images/hex_pattern_bg.png" %}');
+        background-size: cover;
+        border-radius: 4px;
+        box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+        border: 8px solid var(--impact-red);
+    }
+
+    .reg-card-inner {
+        padding: 40px 40px 32px 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 34px;
+    }
+
+    .reg-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .reg-header h1 {
+        color: var(--impact-red);
+        font-size: 24px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .btn-close-modal {
+        background: none;
+        border: none;
+        color: #333;
+        font-size: 28px;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .toggle-nav {
+        background: #E5DFD3;
+        padding: 4px;
+        border-radius: 10px;
+        display: inline-flex;
+        width: 100%;
+        max-width: 380px;
+        gap: 4px;
+        margin-bottom: 10px;
+    }
+
+    .toggle-tab {
+        flex: 1;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 15px;
+        font-weight: 500;
+        color: #4A453D;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .toggle-tab.active {
+        background: #FFFFFF;
+        color: #000000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .reg-form-body {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .form-row {
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1.5px solid rgba(0, 0, 0, 0.2);
+        padding: 0 0 4px 0;
+        position: relative;
+    }
+
+    .form-row label {
+        font-size: 16px;
+        font-weight: 500;
+        color: #000;
+        margin-bottom: 8px;
+        text-align: left;
+    }
+
+    .form-row input {
+        background: transparent;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        font-family: 'Poppins', sans-serif;
+        color: #333;
+        width: 100%;
+        padding: 4px 0;
+    }
+
+    .form-row.has-select::after {
+        content: '\2304';
+        position: absolute;
+        right: 0;
+        bottom: 8px;
+        font-size: 20px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .btn-submit-main {
+        background: var(--vibrant-red);
+        color: white;
+        border: none;
+        padding: 14px 40px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        width: auto;
+        min-width: 200px;
+        border-radius: 2px;
+        box-shadow: 0 4px 10px rgba(227, 24, 55, 0.2);
+        transition: all 0.2s;
+        align-self: flex-start;
+    }
+
+    .btn-cancel-link {
+        color: var(--impact-red);
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    /* Team Specific Improvements */
+    #team-details-area {
+        display: none;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .team-section-header {
+        color: var(--vibrant-red);
+        font-size: 14px;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        margin-bottom: -10px;
+    }
+
+    .team-members-control {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .team-members-control label {
+        font-size: 12px;
+        font-weight: 500;
+        color: #29251D;
+    }
+
+    .btn-add-member {
+        background: var(--impact-red);
+        color: white;
+        border: none;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
+    .btn-add-member:hover {
+        opacity: 0.9;
+    }
+
+    #members-grid-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        max-height: 400px;
+        overflow-y: auto;
+        padding-bottom: 10px;
+    }
+
+    .member-card {
+        background: #E5DFD3;
+        padding: 12px;
+        border-radius: 1px;
+        box-shadow: 0px 0px 0px 1px #E5E7EB;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .member-card-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #4A453D;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .member-card-body {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .member-card input,
+    .member-card select {
+        height: 30px;
+        background: white;
+        border: none;
+        padding: 6px 8px;
+        font-size: 12px;
+        color: #4A453D;
+        font-family: 'Poppins', sans-serif;
+        width: 100%;
+        outline: none;
+    }
+
+    .member-card .select-row {
+        position: relative;
+    }
+
+    .member-card .select-row::after {
+        content: '\2304';
+        position: absolute;
+        right: 8px;
+        top: 4px;
+        font-size: 14px;
+        color: #4A453D;
+        pointer-events: none;
+    }
+
+    .remove-member-btn {
+        color: #E31837;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    if (typeof members === 'undefined') {
+        var members = [];
+    }
+
+    function openRegistrationModal(id, title, pType) {
+        console.log("Opening Registration Modal for ID:", id);
+        $('#modalChallengeTitle').val(title);
+        $('.team-challenge-title').val(title);
+        $('#regForm').attr('action', `/registernow/${id}/`);
+
+        // Reset and init members with lead
+        members = [{
+            name: '{{ request.iris_user.full_name|default:"" }}',
+            emp_id: '{{ request.iris_user.employee_id|default:"" }}',
+            email: '{{ request.iris_user.email|default:"" }}',
+            service_line: ''
+        }];
+        renderMembers();
+
+        pType = (pType || 'both').toLowerCase();
+        if (pType === 'individual') {
+            $('#tab-ind').css({ 'pointer-events': 'auto', 'opacity': '1' });
+            $('#tab-team').css({ 'pointer-events': 'none', 'opacity': '0.5' });
+            setRegMode('Individual');
+        } else if (pType === 'team') {
+            $('#tab-team').css({ 'pointer-events': 'auto', 'opacity': '1' });
+            $('#tab-ind').css({ 'pointer-events': 'none', 'opacity': '0.5' });
+            setRegMode('Team');
+        } else {
+            $('#tab-ind').css({ 'pointer-events': 'auto', 'opacity': '1' });
+            $('#tab-team').css({ 'pointer-events': 'auto', 'opacity': '1' });
+            setRegMode('Individual');
+        }
+
+
+        $('#registrationModal').css('display', 'flex').hide().fadeIn(400);
+        $('body').css('overflow', 'hidden');
+    }
+
+    function closeRegistrationModal() {
+        console.log("Closing Registration Modal");
+        $('#registrationModal').fadeOut(200);
+        $('body').css('overflow', 'auto');
+    }
+
+    function setRegMode(mode) {
+        $('#participation_mode').val(mode);
+        const isTeam = (mode === 'Team');
+
+        if (!isTeam) { // Individual
+            $('#tab-ind').addClass('active');
+            $('#tab-team').removeClass('active');
+            $('#individual-fields-area').show();
+            $('#team-details-area').hide();
+            $('.reg-main-card').css('max-width', '510px');
+            $('input[name="team_name"]').prop('required', false);
+        } else { // Team
+            $('#tab-ind').removeClass('active');
+            $('#tab-team').addClass('active');
+            $('#individual-fields-area').hide();
+            $('#team-details-area').css('display', 'flex');
+            $('.reg-main-card').css('max-width', '560px');
+            $('input[name="team_name"]').prop('required', true);
+        }
+
+        // Toggle required for all member inputs
+        $('#members-grid-container').find('input, select').prop('required', isTeam);
+    }
+
+    function addMember() {
+        if (members.length >= 5) {
+            alert("Max team size is 5");
+            return;
+        }
+        members.push({ name: '', emp_id: '', email: '', service_line: '' });
+        renderMembers();
+    }
+
+    function removeMember(i) {
+        if (i === 0) return;
+        members.splice(i, 1);
+        renderMembers();
+    }
+
+    function updateMemberData(index, field, value) {
+        members[index][field] = value;
+    }
+
+    function renderMembers() {
+        const isTeam = ($('#participation_mode').val() === 'Team');
+        const reqAttr = isTeam ? 'required' : '';
+
+        const html = members.map((m, i) => `
+            <div class="member-card">
+                <div class="member-card-title">
+                    <span>${i === 0 ? 'Team Lead - Member 1' : 'Member ' + (i + 1)}</span>
+                    ${i > 0 ? `<span class="remove-member-btn" onclick="removeMember(${i})">×</span>` : ''}
+                </div>
+                <div class="member-card-body">
+                    <input type="text" placeholder="Full name" value="${m.name}" onchange="updateMemberData(${i}, 'name', this.value)" ${reqAttr}>
+                    <input type="text" placeholder="Employee ID" value="${m.emp_id}" onchange="updateMemberData(${i}, 'emp_id', this.value)" ${reqAttr}>
+                    <input type="email" placeholder="Email ID (Official)" value="${m.email}" onchange="updateMemberData(${i}, 'email', this.value)" ${reqAttr}>
+                    <div class="select-row">
+                        <select onchange="updateMemberData(${i}, 'service_line', this.value)" ${reqAttr}>
+                            <option value="" ${m.service_line === '' ? 'selected' : ''} disabled>Service line</option>
+                            <option value="Delivery" ${m.service_line === 'Delivery' ? 'selected' : ''}>Delivery</option>
+                            <option value="Operations" ${m.service_line === 'Operations' ? 'selected' : ''}>Operations</option>
+                            <option value="Management" ${m.service_line === 'Management' ? 'selected' : ''}>Management</option>
+                            <option value="Other" ${m.service_line === 'Other' ? 'selected' : ''}>Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        $('#members-grid-container').html(html);
+    }
+
+    $(document).ready(function () {
+        console.log("Registration modal script initialized.");
+
+        // Global listener for data-register-modal buttons
+        $(document).on('click', '[data-register-modal]', function (e) {
+            e.preventDefault();
+            console.log("Register Now button clicked!");
+            const id = $(this).data('challenge-id');
+            const title = $(this).data('challenge-title');
+            const pType = $(this).data('participation-type');
+            console.log("Challenge ID:", id);
+            if (id) {
+                openRegistrationModal(id, title, pType);
+            } else {
+                console.error("Challenge ID not found on button!");
+            }
+        });
+
+        $('#regForm').on('submit', function (e) {
+            e.preventDefault();
+            const btn = $(this).find('.btn-submit-main');
+            const originalText = btn.text();
+
+            btn.prop('disabled', true).text('Processing...');
+            console.log("Submitting to:", this.action);
+
+            const formData = new FormData(this);
+            formData.append('members_json', JSON.stringify(members));
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() }
+            })
+                .then(async r => {
+                    const data = await r.json();
+                    if (!r.ok) {
+                        throw new Error(data.message || 'Server error ' + r.status);
+                    }
+                    return data;
+                })
+                .then(data => {
+                    console.log("Success data:", data);
+                    if (data.status === 'success') {
+                        alert('successfully submitted');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                        btn.prop('disabled', false).text(originalText);
+                    }
+                })
+                .catch(err => {
+                    console.error("Submission error:", err);
+                    alert('Submission failed: ' + err.message);
+                    btn.prop('disabled', false).text(originalText);
+                });
+        });
+    });
+</script>

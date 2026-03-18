@@ -1,0 +1,26 @@
+{% for notification in notifications %}
+    {% with msg=notification.message|lower %}
+    <div class="p-notif-item {% if not notification.is_read %}unread{% endif %}" id="p-notif-{{ notification.notification_id }}">
+        <div class="p-notif-accent 
+            {% if 'approved' in msg or 'congratulations' in msg or 'success' in msg %}p-accent-success
+            {% elif 'rejected' in msg or 'declined' in msg %}p-accent-danger
+            {% elif 'rework' in msg or 'sent back' in msg or 'feedback' in msg %}p-accent-warning
+            {% else %}p-accent-info{% endif %}">
+        </div>
+        <div class="p-notif-body">
+            <div class="p-notif-msg">{{ notification.message }}</div>
+            <div class="p-notif-time">{{ notification.created_at|timesince }} ago</div>
+            {% if notification.link %}
+                <a href="{{ notification.link }}" class="notif-action-link" style="font-size: 13px; margin-top: 4px; display: inline-block;">
+                    {% if 'rework' in msg %}Edit Idea{% elif 'rejected' in msg %}View Feedback{% else %}View Details{% endif %}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endwith %}
+{% empty %}
+    <div class="panel-loading">
+        <i class="fa-regular fa-bell-slash fa-2x" style="opacity: 0.2;"></i>
+        <p>No notifications yet</p>
+    </div>
+{% endfor %}

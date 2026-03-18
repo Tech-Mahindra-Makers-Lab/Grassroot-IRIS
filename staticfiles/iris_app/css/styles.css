@@ -8956,6 +8956,26 @@ body {
     line-height: 20px;
     margin: 0;
 }
+.field-label-red {
+    color: #dc3545;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    margin: 0;
+}
+
+.label-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.field-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
 
 .field-value {
     color: #4D4D4F;
@@ -10648,8 +10668,129 @@ body {
 .evaluator-star {
     width: 20px;
     height: 20px;
-    position: relative;
-    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* ============================================
+   SUPPORTING DOCUMENT STYLES
+   ============================================ */
+.supporting-doc-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.supporting-doc-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+}
+
+.supporting-doc-label-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.doc-icon {
+    width: 16px;
+    height: 16px;
+    stroke: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.supporting-docs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.doc-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #FAFAFA;
+    border: 1px solid #E5DFD3;
+    border-radius: 6px;
+    gap: 16px;
+}
+
+.doc-name {
+    flex: 1;
+    color: #29251D;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    line-height: 16px;
+    word-break: break-all;
+}
+
+.doc-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.doc-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #E5DFD3;
+    background: white;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 12px;
+    font-weight: 500;
+    color: #5F0229;
+    font-family: 'Poppins', sans-serif;
+    white-space: nowrap;
+}
+
+.doc-btn:hover {
+    background: #F6F2EA;
+    border-color: #5F0229;
+    color: #5F0229;
+}
+
+.doc-preview-btn {
+    color: #5F0229;
+}
+
+.doc-preview-btn:hover {
+    background: #FFF0F0;
+}
+
+.doc-download-btn {
+    color: #5F0229;
+}
+
+.doc-download-btn:hover {
+    background: #FFF0F0;
+}
+
+.doc-icon-small {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+}
+
+.no-documents {
+    padding: 16px;
+    text-align: center;
+    color: #4A5565;
+    font-size: 13px;
+    font-family: 'Poppins', sans-serif;
+    background: #F9F7F2;
+    border-radius: 6px;
+    border: 1px solid #E5DFD3;
 }
 
 .evaluator-star.filled {
@@ -12250,7 +12391,7 @@ button[disabled] {
 .stat-label {
     font-size: 12px;
     color: #F8B4A3;
-    margin-top: 8px;
+    margin-top: -35px;
     font-family: 'Inter', sans-serif;
 }
 .nav-tabs1 {

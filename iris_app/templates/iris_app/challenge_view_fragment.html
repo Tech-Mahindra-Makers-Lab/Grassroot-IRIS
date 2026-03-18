@@ -1,0 +1,1633 @@
+{% load static %}
+
+<style>
+    .cvf-add-eval-btn {
+        background: transparent;
+        border: 1px solid #E31837;
+        color: #E31837;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .cvf-add-eval-btn:hover {
+        background: #E31837;
+        color: #fff;
+    }
+    .cvf-evaluator-row {
+        position: relative;
+        padding: 16px;
+        border: 1px solid #E5DFD3;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        background: #fff;
+    }
+    .cvf-remove-eval-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        color: #E31837;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        font-size: 18px;
+        line-height: 1;
+        z-index: 10;
+    }
+    .cvf-remove-eval-btn:hover {
+        color: #C11430;
+    }
+</style>
+
+
+<!-- ===== Status Bar ===== -->
+<div class="cvp-status-bar">
+    {% if challenge.status == 'LIVE' %}
+    <span class="cvp-status-chip cvp-status-live"><span class="cvp-status-dot"></span>Live</span>
+    {% elif challenge.status == 'DRAFT' %}
+    <span class="cvp-status-chip cvp-status-draft"><span class="cvp-status-dot"></span>Draft</span>
+    {% elif challenge.status == 'COMPLETED' %}
+    <span class="cvp-status-chip cvp-status-completed"><span class="cvp-status-dot"></span>Completed</span>
+    {% elif challenge.status == 'ARCHIVED' %}
+    <span class="cvp-status-chip cvp-status-archived"><span class="cvp-status-dot"></span>Archived</span>
+    {% else %}
+    <span class="cvp-status-chip cvp-status-draft"><span class="cvp-status-dot"></span>{{ challenge.status|capfirst }}</span>
+    {% endif %}
+    <span class="cvp-visibility-chip">{{ challenge.visibility|capfirst }}</span>
+    <span class="cvp-meta-text">Posted {{ challenge.created_at|date:"d M Y" }}</span>
+</div>
+
+<!-- ===== Step Wizard ===== -->
+<div class="cvf-wizard" id="cvfWizard">
+    <!-- Step 1 -->
+    <div class="cvf-step cvf-step-active" id="cvfWizStep1" onclick="cvfGoToStep(1)" style="cursor:pointer;">
+        <div class="cvf-step-circle cvf-step-circle-active" id="cvfCircle1">1</div>
+        <div class="cvf-step-label cvf-step-label-active" id="cvfLabel1">Basic<br>Info</div>
+    </div>
+    <div class="cvf-step-line"></div>
+    <!-- Step 2 -->
+    <div class="cvf-step" id="cvfWizStep2" onclick="cvfGoToStep(2)" style="cursor:pointer;">
+        <div class="cvf-step-circle" id="cvfCircle2">2</div>
+        <div class="cvf-step-label" id="cvfLabel2">Assessment<br>Setup</div>
+    </div>
+    <div class="cvf-step-line"></div>
+    <!-- Step 3 -->
+    <div class="cvf-step" id="cvfWizStep3" onclick="cvfGoToStep(3)" style="cursor:pointer;">
+        <div class="cvf-step-circle" id="cvfCircle3">3</div>
+        <div class="cvf-step-label" id="cvfLabel3">Review<br>&amp; Publish</div>
+    </div>
+</div>
+
+<!-- ===== STEP 1: Basic Information ===== -->
+<!-- Form wraps Step 1 through Step 3 so Update can submit -->
+<form id="cvfEditForm" method="POST" action="{% url 'updateChallengeByAdmin' challenge.challenge_id %}"
+    enctype="multipart/form-data" style="display:flex; flex-direction:column; flex:1; min-height:0;" novalidate>
+    {% csrf_token %}
+    <div class="cvf-card" id="cvfStep1">
+
+        <!-- Section Header + Edit Toggle Button -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+            <div class="cvf-section-head">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;margin-top:4px;">
+                    <rect x="1.5" y="1.23" width="17" height="9.15" rx="0.5" stroke="#E31837" stroke-width="2" />
+                    <rect x="1.49" y="5.77" width="17.02" height="13.30" rx="0.5" stroke="#E31837" stroke-width="2" />
+                </svg>
+                <div>
+                    <div class="cvf-section-title">Basic Information</div>
+                    <div class="cvf-section-subtitle">Fundamental details of this challenge</div>
+                </div>
+            </div>
+            <button type="button" id="cvfEditToggleBtn" onclick="cvfToggleEdit()" class="cvf-edit-toggle-btn">
+                <i class="bi bi-pencil"></i> Edit
+            </button>
+        </div>
+
+        <!-- Registration Required -->
+        <div class="cvf-field-block">
+            <!-- VIEW -->
+            <div class="cvf-view-mode">
+                <div class="cvf-reg-row">
+                    <span class="cvf-reg-label">Registration Required</span>
+                    <div class="cvf-toggle-pill">
+                        <div
+                            class="cvf-toggle-option {% if challenge.registration_required == 'yes' or challenge.registration_required == True %}cvf-toggle-selected{% endif %}">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M2.5 7l3 3 6-6" stroke="currentColor" stroke-width="1.4"
+                                    stroke-linecap="round" />
+                            </svg>
+                            Yes
+                        </div>
+                        <div
+                            class="cvf-toggle-option {% if challenge.registration_required == 'no' or challenge.registration_required == False %}cvf-toggle-selected{% endif %}">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" stroke-width="1.4"
+                                    stroke-linecap="round" />
+                            </svg>
+                            NO
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- EDIT -->
+            <div class="cvf-edit-mode" style="display:none;">
+                <div class="cvf-reg-row">
+                    <span class="cvf-reg-label">Registration Required</span>
+                    <select name="registration_required" class="cvf-edit-select">
+                        <option value="yes" {% if challenge.registration_required == 'yes' or challenge.registration_required == True %}selected{% endif %}>Yes</option>
+                        <option value="no" {% if challenge.registration_required == 'no' or challenge.registration_required == False %}selected{% endif %}>No</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Participation Type -->
+        <div class="cvf-field-block cvf-participation-block">
+            <div class="cvf-field-label-row">
+                <span class="cvf-label">Participation Type</span><span class="cvf-required">*</span>
+            </div>
+            <!-- VIEW -->
+            <div class="cvf-view-mode">
+                <div class="cvf-participation-options">
+                    <div
+                        class="cvf-part-card {% if challenge.participation_type == 'individual' %}cvf-part-selected{% endif %}">
+                        <div
+                            class="cvf-radio-circle {% if challenge.participation_type == 'individual' %}cvf-radio-filled{% endif %}">
+                        </div>
+                        <span>Individual</span>
+                    </div>
+                    <div
+                        class="cvf-part-card {% if challenge.participation_type == 'team' %}cvf-part-selected{% endif %}">
+                        <div
+                            class="cvf-radio-circle {% if challenge.participation_type == 'team' %}cvf-radio-filled{% endif %}">
+                        </div>
+                        <span>Team</span>
+                    </div>
+                    <div
+                        class="cvf-part-card {% if challenge.participation_type == 'both' %}cvf-part-selected{% endif %}">
+                        <div
+                            class="cvf-radio-circle {% if challenge.participation_type == 'both' %}cvf-radio-filled{% endif %}">
+                        </div>
+                        <span>Individual &amp; Teams</span>
+                    </div>
+                </div>
+            </div>
+            <!-- EDIT -->
+            <div class="cvf-edit-mode" style="display:none;">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <label class="cvf-edit-radio-card"><input type="radio" name="participation_type" value="individual" {% if challenge.participation_type == 'individual' %}checked{% endif %}> Individual</label>
+                    <label class="cvf-edit-radio-card"><input type="radio" name="participation_type" value="team" {% if challenge.participation_type == 'team' %}checked{% endif %}> Team</label>
+                    <label class="cvf-edit-radio-card"><input type="radio" name="participation_type" value="both" {% if challenge.participation_type == 'both' %}checked{% endif %}> Individual &amp; Teams</label>
+                </div>
+            </div>
+            <!-- Max Team Size -->
+            <div class="cvf-team-size-row">
+                <span class="cvf-label">Maximum Team Size <span class="cvf-required">*</span></span>
+                <div class="cvf-view-mode">
+                    <div class="cvf-team-size-box">{{ challenge.max_team_size|default:"5" }}</div>
+                </div>
+                <div class="cvf-edit-mode" style="display:none;"><input type="number" name="max_team_size"
+                        value="{{ challenge.max_team_size|default:'5' }}" min="1" max="50" class="cvf-edit-input"
+                        style="width:70px;"></div>
+            </div>
+        </div>
+
+        <!-- IBU Name -->
+        <div class="cvf-field-block">
+            <div class="cvf-field-label-row">
+                <span class="cvf-label">IBU Name</span><span class="cvf-required">*</span>
+            </div>
+            <div class="cvf-view-mode cvf-underline-field"><span class="cvf-field-value">{{ challenge.ibu_name|default:"—" }}</span></div>
+            <div class="cvf-edit-mode" style="display:none;">
+                <select name="ibu_name" class="cvf-edit-select select2-ibu" required>
+                    <option value="" disabled {% if not challenge.ibu_name %}selected{% endif %}>Search for an IBU...
+                    </option>
+                    {% if challenge.ibu_name %}<option value="{{ challenge.ibu_name }}" selected>{{ challenge.ibu_name }}</option>{% endif %}
+                </select>
+            </div>
+        </div>
+
+        <!-- Challenge Name -->
+        <div class="cvf-field-block">
+            <div class="cvf-field-label-row">
+                <span class="cvf-label">Challenge Name</span><span class="cvf-required">*</span>
+            </div>
+            <div class="cvf-view-mode cvf-underline-field"><span class="cvf-field-value">{{ challenge.title|default:"—" }}</span></div>
+            <div class="cvf-edit-mode" style="display:none;"><input type="text" name="title"
+                    value="{{ challenge.title }}" class="cvf-edit-input"></div>
+        </div>
+
+        <!-- Description -->
+        <div class="cvf-field-block">
+            <div class="cvf-field-label-row">
+                <span class="cvf-label">Description</span><span class="cvf-required">*</span>
+            </div>
+            <div class="cvf-view-mode cvf-underline-field cvf-textarea-field"><span class="cvf-field-value">{{ challenge.description|default:"No description provided." }}</span></div>
+            <div class="cvf-edit-mode" style="display:none;"><textarea name="description" class="cvf-edit-textarea"
+                    rows="7" minlength="10" maxlength="2000">{{ challenge.description }}</textarea></div>
+            <div class="cvf-field-hint">
+                <span style="color:#F54900;">⚠</span>
+                Minimum 10 characters, Max 2000.
+                <span style="margin-left:auto;">{{ challenge.description|length }}/2000</span>
+            </div>
+        </div>
+
+        <!-- Keywords -->
+        <div class="cvf-field-block">
+            <div class="cvf-field-label-row">
+                <span class="cvf-label">Keywords</span><span class="cvf-required">*</span>
+            </div>
+            <!-- VIEW -->
+            <div class="cvf-view-mode">
+                {% if keywords_list %}
+                <div class="cvf-underline-field"><span class="cvf-field-value">{{ keywords_list.0 }}</span>
+                </div>
+                {% if keywords_list|length > 1 %}
+                <div class="cvf-keyword-pill-row">{% for kw in keywords_list %}{% if not forloop.first %}<span
+                        class="cvf-kw-pill">{{ kw }}</span>{% endif %}{% endfor %}</div>
+                {% endif %}
+                {% else %}
+                <div class="cvf-underline-field"><span class="cvf-field-value"
+                        style="color:#B2AEA4;font-style:italic;">No keywords set</span></div>
+                {% endif %}
+            </div>
+            <!-- EDIT -->
+            <div class="cvf-edit-mode" style="display:none;">
+                <input type="text" name="keywords" value="{{ challenge.keywords }}" class="cvf-edit-input"
+                    placeholder="Comma-separated keywords">
+            </div>
+            <div class="cvf-field-hint">Keywords help improve discoverability.</div>
+        </div>
+
+        <!-- Start & End Date -->
+        <div class="cvf-field-block">
+            <div class="cvf-date-row">
+                <div class="cvf-date-col">
+                    <div class="cvf-field-label-row">
+                        <span class="cvf-label"
+                            style="font-family:Inter;font-size:13px;font-weight:600;color:#364153;">Start
+                            Date</span><span class="cvf-required">*</span>
+                    </div>
+                    <div class="cvf-view-mode cvf-underline-field">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;">
+                            <rect x="2.5" y="3.33" width="15" height="15" rx="0.5" stroke="#99A1AF"
+                                stroke-width="1.67" />
+                            <path d="M2.5 7.5h15" stroke="#99A1AF" stroke-width="1.67" />
+                        </svg>
+                        <span class="cvf-field-value">{{ challenge.start_date|date:"d-m-Y"|default:"—" }}</span>
+                    </div>
+                    <div class="cvf-edit-mode" style="display:none;"><input type="date" name="start_date"
+                            value="{{ challenge.start_date|date:'Y-m-d' }}" class="cvf-edit-input"></div>
+                </div>
+                <div class="cvf-date-col">
+                    <div class="cvf-field-label-row">
+                        <span class="cvf-label"
+                            style="font-family:Inter;font-size:13px;font-weight:600;color:#364153;">End Date</span><span
+                            class="cvf-required">*</span>
+                    </div>
+                    <div class="cvf-view-mode cvf-underline-field">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;">
+                            <rect x="2.5" y="3.33" width="15" height="15" rx="0.5" stroke="#99A1AF"
+                                stroke-width="1.67" />
+                            <path d="M2.5 7.5h15" stroke="#99A1AF" stroke-width="1.67" />
+                        </svg>
+                        <span class="cvf-field-value">{{ challenge.end_date|date:"d-m-Y"|default:"—" }}</span>
+                    </div>
+                    <div class="cvf-edit-mode" style="display:none;"><input type="date" name="end_date"
+                            value="{{ challenge.end_date|date:'Y-m-d' }}" class="cvf-edit-input"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expected Business Outcome -->
+        <div class="cvf-field-block">
+            <div class="cvf-field-label-row">
+                <span class="cvf-label">Expected Business Outcome</span><span class="cvf-required">*</span>
+            </div>
+            <div class="cvf-view-mode cvf-underline-field cvf-outcome-field">
+                {% if challenge.expected_outcome %}
+                {% for line in challenge.expected_outcome.splitlines %}{% if line.strip %}<div class="cvf-outcome-line">
+                    {{ line.strip }}</div>{% endif %}{% endfor %}
+                {% else %}
+                <span style="color:#B2AEA4;font-style:italic;">No outcome provided.</span>
+                {% endif %}
+            </div>
+            <div class="cvf-edit-mode" style="display:none;"><textarea name="expected_outcome" class="cvf-edit-textarea"
+                    rows="5" placeholder="One outcome per line">{{ challenge.expected_outcome }}</textarea></div>
+        </div>
+
+        <!-- Supporting Document -->
+        <div class="cvf-field-block">
+            {% if challenge.challenge_document %}
+            <a href="{{ challenge.challenge_document.url }}" target="_blank" class="cvf-doc-preview-btn">
+                <i class="bi bi-file-earmark-text" style="font-size:18px;"></i>
+                Preview Supporting Document
+            </a>
+            {% else %}
+            <div class="cvf-doc-preview-btn cvf-doc-no-file">
+                <i class="bi bi-file-earmark" style="font-size:18px;"></i>
+                No Supporting Document Uploaded
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Target Audience -->
+        <div class="cvf-field-block">
+            <div class="cvf-field-label-row">
+                <span class="cvf-label">Target Audience</span><span class="cvf-required">*</span>
+            </div>
+            <div class="cvf-audience-cards">
+                <div
+                    class="cvf-audience-card {% if challenge.target_audience == 'INTERNAL' %}cvf-audience-selected{% endif %}">
+                    <div class="cvf-audience-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M2.5 18.33c0-4.17 3.36-7.5 7.5-7.5s7.5 3.33 7.5 7.5" stroke="#4A453D"
+                                stroke-width="1.67" />
+                            <circle cx="10" cy="6.25" r="3.75" stroke="#4A453D" stroke-width="1.67" />
+                        </svg>
+                    </div>
+                    <div class="cvf-audience-info">
+                        <div class="cvf-audience-name">
+                            Internal
+                            {% if challenge.target_audience == 'INTERNAL' %}<svg width="14" height="10"
+                                viewBox="0 0 14 10" fill="none" style="margin-left:auto;">
+                                <path d="M1 5l4 4L13 1" stroke="#5F0229" stroke-width="1.67" stroke-linecap="round" />
+                            </svg>{% endif %}
+                        </div>
+                        <div class="cvf-audience-desc">Only People of Tech Mahindra</div>
+                    </div>
+                </div>
+                <div
+                    class="cvf-audience-card {% if challenge.target_audience == 'EXTERNAL' %}cvf-audience-selected{% endif %}">
+                    <div class="cvf-audience-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="10" cy="10" r="8.33" stroke="#4A453D" stroke-width="1.67" />
+                            <path
+                                d="M1.67 10h16.66M10 1.67C7.5 4.5 6.5 7 6.5 10s1 5.5 3.5 8.33M10 1.67C12.5 4.5 13.5 7 13.5 10s-1 5.5-3.5 8.33"
+                                stroke="#4A453D" stroke-width="1.67" />
+                        </svg>
+                    </div>
+                    <div class="cvf-audience-info">
+                        <div class="cvf-audience-name">
+                            External
+                            {% if challenge.target_audience == 'EXTERNAL' %}<svg width="14" height="10"
+                                viewBox="0 0 14 10" fill="none" style="margin-left:auto;">
+                                <path d="M1 5l4 4L13 1" stroke="#5F0229" stroke-width="1.67" stroke-linecap="round" />
+                            </svg>{% endif %}
+                        </div>
+                        <div class="cvf-audience-desc">Open for External Audience</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Mode -->
+        <div class="cvf-field-block" style="margin-bottom:8px;">
+            <div class="cvf-field-label-row">
+                <span class="cvf-label">View Mode</span><span class="cvf-required">*</span>
+            </div>
+            <div class="cvf-audience-cards">
+                <div
+                    class="cvf-audience-card {% if challenge.visibility == 'PRIVATE' %}cvf-audience-selected{% endif %}">
+                    <div class="cvf-audience-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <rect x="3.33" y="9.17" width="13.33" height="9.17" rx="0.5" stroke="#4A453D"
+                                stroke-width="1.67" />
+                            <path d="M6.67 9.17V6.67a3.33 3.33 0 016.66 0v2.5" stroke="#4A453D" stroke-width="1.67" />
+                        </svg>
+                    </div>
+                    <div class="cvf-audience-info">
+                        <div class="cvf-audience-name">
+                            Private
+                            {% if challenge.visibility == 'PRIVATE' %}<svg width="14" height="10" viewBox="0 0 14 10"
+                                fill="none" style="margin-left:auto;">
+                                <path d="M1 5l4 4L13 1" stroke="#5F0229" stroke-width="1.67" stroke-linecap="round" />
+                            </svg>{% endif %}
+                        </div>
+                        <div class="cvf-audience-desc">Selected people can view</div>
+                    </div>
+                </div>
+                <div
+                    class="cvf-audience-card {% if challenge.visibility == 'PUBLIC' %}cvf-audience-selected{% endif %}">
+                    <div class="cvf-audience-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="10" cy="10" r="8.33" stroke="#4A453D" stroke-width="1.67" />
+                            <ellipse cx="10" cy="10" rx="3.33" ry="8.33" stroke="#4A453D" stroke-width="1.67" />
+                            <path d="M2 7.5h16M2 12.5h16" stroke="#4A453D" stroke-width="1.67" />
+                        </svg>
+                    </div>
+                    <div class="cvf-audience-info">
+                        <div class="cvf-audience-name">
+                            Public
+                            {% if challenge.visibility == 'PUBLIC' %}<svg width="14" height="10" viewBox="0 0 14 10"
+                                fill="none" style="margin-left:auto;">
+                                <path d="M1 5l4 4L13 1" stroke="#5F0229" stroke-width="1.67" stroke-linecap="round" />
+                            </svg>{% endif %}
+                        </div>
+                        <div class="cvf-audience-desc">Visible to all participants</div>
+                    </div>
+                </div>
+            </div>
+            <!-- EDIT -->
+            <div class="cvf-edit-mode" style="display:none;">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <label class="cvf-edit-radio-card"><input type="radio" name="visibility" value="PUBLIC" {% if challenge.visibility == 'PUBLIC' %}checked{% endif %}> Public</label>
+                    <label class="cvf-edit-radio-card"><input type="radio" name="visibility" value="PRIVATE" {% if challenge.visibility == 'PRIVATE' %}checked{% endif %}> Private</label>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /Step 1 -->
+
+
+    <!-- ===== STEP 2: Assessment Setup ===== -->
+    <div class="cvf-card" id="cvfStep2" style="display:none;">
+
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+            <div class="cvf-section-head">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;margin-top:4px;">
+                    <rect x="1.5" y="1.5" width="17" height="17" rx="1" stroke="#E31837" stroke-width="2" />
+                    <path d="M6 10h8M6 6h8M6 14h5" stroke="#E31837" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <div>
+                    <div class="cvf-section-title">Assessment Setup</div>
+                    <div class="cvf-section-subtitle">Duration, evaluators and review configuration</div>
+                </div>
+            </div>
+            <button type="button" onclick="cvfToggleEdit()" class="cvf-edit-toggle-btn cvfEditToggleBtnClass">
+                <i class="bi bi-pencil"></i> Edit
+            </button>
+        </div>
+
+        <!-- Evaluation Rounds -->
+        <div class="cvf-field-block">
+            <div class="cvf-field-label-row">
+                <span class="cvf-label">Number of Evaluation Rounds</span><span class="cvf-required">*</span>
+            </div>
+            <!-- VIEW -->
+            <div class="cvf-view-mode">
+                <div class="cvf-participation-options" style="gap:16px;">
+                    <div class="cvf-part-card {% if challenge.num_rounds == 1 or challenge.num_rounds == '1' %}cvf-part-selected{% endif %}"
+                        style="flex-direction:column;align-items:flex-start;height:auto;padding:14px 16px;gap:4px;border:1px solid #E5DFD3;border-radius:10px;background:{% if challenge.num_rounds == 1 or challenge.num_rounds == '1' %}#fff{% else %}#F6F2EA{% endif %};">
+                        <div style="display:flex;align-items:center;gap:8px;width:100%;">
+                            <div
+                                class="cvf-radio-circle {% if challenge.num_rounds == 1 or challenge.num_rounds == '1' %}cvf-radio-filled{% endif %}">
+                            </div>
+                            <span style="font-weight:600;font-size:14px;color:#29251D;">Single Round</span>
+                        </div>
+                        <span style="font-size:12px;color:#6B7280;margin-left:24px;">One evaluation round for faster
+                            results</span>
+                    </div>
+                    <div class="cvf-part-card {% if challenge.num_rounds == 2 or challenge.num_rounds == '2' %}cvf-part-selected{% endif %}"
+                        style="flex-direction:column;align-items:flex-start;height:auto;padding:14px 16px;gap:4px;border:1px solid #E5DFD3;border-radius:10px;background:{% if challenge.num_rounds == 2 or challenge.num_rounds == '2' %}#fff{% else %}#F6F2EA{% endif %};">
+                        <div style="display:flex;align-items:center;gap:8px;width:100%;">
+                            <div
+                                class="cvf-radio-circle {% if challenge.num_rounds == 2 or challenge.num_rounds == '2' %}cvf-radio-filled{% endif %}">
+                            </div>
+                            <span style="font-weight:600;font-size:14px;color:#29251D;">Two Rounds</span>
+                        </div>
+                        <span style="font-size:12px;color:#6B7280;margin-left:24px;">Two evaluation rounds for thorough
+                            assessment</span>
+                    </div>
+                </div>
+            </div>
+            <!-- EDIT -->
+            <div class="cvf-edit-mode" style="display:none;">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <label class="cvf-edit-radio-card"><input type="radio" name="num_rounds" value="1" {% if challenge.num_rounds == 1 or challenge.num_rounds == '1' %}checked{% endif %} onchange="cvfToggleRoundSections(this.value)"> Single Round</label>
+                    <label class="cvf-edit-radio-card"><input type="radio" name="num_rounds" value="2" {% if challenge.num_rounds == 2 or challenge.num_rounds == '2' %}checked{% endif %} onchange="cvfToggleRoundSections(this.value)"> Two Rounds</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panels / Evaluator Details -->
+        <div id="cvf-evaluation-rounds-container">
+            <!-- Round 1 Section -->
+            <div class="cvf-field-block cvf-round-container" id="cvf-round1-section" data-round="1"
+                style="border:1px solid #E5DFD3;border-radius:12px;padding:16px;gap:12px; margin-bottom: 16px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid #F0ECE4; margin-bottom: 12px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:28px;height:28px;border-radius:6px;background:#5F0229;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;">1</div>
+                        <span style="font-family:Poppins;font-size:14px;font-weight:600;color:#29251D;">Round 01 — Evaluator Details</span>
+                    </div>
+                    <button type="button" class="cvf-add-eval-btn cvf-edit-mode" style="display:none;" onclick="cvfAddEvaluatorRow(1)">
+                        <i class="bi bi-plus-lg"></i> Add Evaluator
+                    </button>
+                </div>
+
+                <div id="cvf-round1-evaluators-list">
+                    {% for panel in panels %}
+                        {% if panel.round_number == 1 %}
+                            <div class="cvf-evaluator-row" data-round="1">
+                                <button type="button" class="cvf-remove-eval-btn cvf-edit-mode" style="display:none;" onclick="cvfRemoveEvaluatorRow(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                
+                                <div class="cvf-edit-mode cvf-evaluator-search" style="display:none; margin-bottom: 12px; margin-top: 4px;">
+                                    <div class="cvf-field-label-row" style="margin-bottom: 6px;"><span class="cvf-label" style="font-size:11px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.6px;">Search Evaluator</span></div>
+                                    <select class="cvf-edit-select select2-eval-edit" data-round="1" style="width:100%;">
+                                        <option value="" disabled selected>Search for Evaluator...</option>
+                                    </select>
+                                </div>
+
+                                <div class="cvf-date-row">
+                                    <div class="cvf-date-col">
+                                        <div class="cvf-field-label-row"><span class="cvf-label" style="font-size:12px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.6px;">Evaluator Name</span></div>
+                                        <div class="cvf-view-mode cvf-underline-field"><span class="cvf-field-value">{{ panel.panel_name|default:"—" }}</span></div>
+                                        <div class="cvf-edit-mode" style="display:none;"><input type="text" name="round1_employee_name[]" value="{{ panel.panel_name }}" class="cvf-edit-input emp-name"></div>
+                                    </div>
+                                    <div class="cvf-date-col">
+                                        <div class="cvf-field-label-row"><span class="cvf-label" style="font-size:12px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.6px;">Employee ID</span></div>
+                                        <div class="cvf-view-mode cvf-underline-field"><span class="cvf-field-value">{{ panel.emp_id|default:"—" }}</span></div>
+                                        <div class="cvf-edit-mode" style="display:none;"><input type="text" name="round1_employee_id[]" value="{{ panel.emp_id }}" class="cvf-edit-input emp-id"></div>
+                                    </div>
+                                </div>
+                                <div class="cvf-field-block">
+                                    <div class="cvf-field-label-row"><span class="cvf-label" style="font-size:12px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.6px;">Email ID</span></div>
+                                    <div class="cvf-view-mode cvf-underline-field"><span class="cvf-field-value">{{ panel.emailid|default:"—" }}</span></div>
+                                    <div class="cvf-edit-mode" style="display:none;"><input type="text" name="round1_employee_email[]" value="{{ panel.emailid }}" class="cvf-edit-input emp-email"></div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% if not panels %}<div class="cvf-no-eval-msg" style="padding:10px;text-align:center;color:#9CA3AF;font-size:13px;">No evaluators added yet.</div>{% endif %}
+                </div>
+
+                <div class="cvf-date-row" style="margin-top:10px; border-top: 1px dashed #E5DFD3; padding-top: 15px;">
+                    <div class="cvf-date-col">
+                        <div class="cvf-field-label-row"><span class="cvf-label" style="font-family:Inter;font-size:13px;font-weight:600;color:#364153;">Round 1 Start Date</span></div>
+                        <div class="cvf-view-mode cvf-underline-field">
+                            <span class="cvf-field-value">{% for p in panels %}{% if p.round_number == 1 and forloop.first %}{{ p.start_date|date:"d-m-Y"|default:"—" }}{% endif %}{% endfor %}</span>
+                        </div>
+                        <div class="cvf-edit-mode" style="display:none;"><input type="date" name="round1_start_date" value="{% for p in panels %}{% if p.round_number == 1 and forloop.first %}{{ p.start_date|date:'Y-m-d' }}{% endif %}{% endfor %}" class="cvf-edit-input"></div>
+                    </div>
+                    <div class="cvf-date-col">
+                        <div class="cvf-field-label-row"><span class="cvf-label" style="font-family:Inter;font-size:13px;font-weight:600;color:#364153;">Round 1 End Date</span></div>
+                        <div class="cvf-view-mode cvf-underline-field">
+                            <span class="cvf-field-value">{% for p in panels %}{% if p.round_number == 1 and forloop.first %}{{ p.end_date|date:"d-m-Y"|default:"—" }}{% endif %}{% endfor %}</span>
+                        </div>
+                        <div class="cvf-edit-mode" style="display:none;"><input type="date" name="round1_end_date" value="{% for p in panels %}{% if p.round_number == 1 and forloop.first %}{{ p.end_date|date:'Y-m-d' }}{% endif %}{% endfor %}" class="cvf-edit-input"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Round 2 Section -->
+            <div class="cvf-field-block cvf-round-container" id="cvf-round2-section" data-round="2"
+                style="border:1px solid #E5DFD3;border-radius:12px;padding:16px;gap:12px; margin-bottom: 16px; {% if challenge.num_rounds == 1 or challenge.num_rounds == '1' %}display:none;{% endif %}">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid #F0ECE4; margin-bottom: 12px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:28px;height:28px;border-radius:6px;background:#5F0229;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;">2</div>
+                        <span style="font-family:Poppins;font-size:14px;font-weight:600;color:#29251D;">Round 02 — Evaluator Details</span>
+                    </div>
+                    <button type="button" class="cvf-add-eval-btn cvf-edit-mode" style="display:none;" onclick="cvfAddEvaluatorRow(2)">
+                        <i class="bi bi-plus-lg"></i> Add Evaluator
+                    </button>
+                </div>
+
+                <div id="cvf-round2-evaluators-list">
+                    {% for panel in panels %}
+                        {% if panel.round_number == 2 %}
+                            <div class="cvf-evaluator-row" data-round="2">
+                                <button type="button" class="cvf-remove-eval-btn cvf-edit-mode" style="display:none;" onclick="cvfRemoveEvaluatorRow(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                
+                                <div class="cvf-edit-mode cvf-evaluator-search" style="display:none; margin-bottom: 12px; margin-top: 4px;">
+                                    <div class="cvf-field-label-row" style="margin-bottom: 6px;"><span class="cvf-label" style="font-size:11px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.6px;">Search Evaluator</span></div>
+                                    <select class="cvf-edit-select select2-eval-edit" data-round="2" style="width:100%;">
+                                        <option value="" disabled selected>Search for Evaluator...</option>
+                                    </select>
+                                </div>
+
+                                <div class="cvf-date-row">
+                                    <div class="cvf-date-col">
+                                        <div class="cvf-field-label-row"><span class="cvf-label" style="font-size:12px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.6px;">Evaluator Name</span></div>
+                                        <div class="cvf-view-mode cvf-underline-field"><span class="cvf-field-value">{{ panel.panel_name|default:"—" }}</span></div>
+                                        <div class="cvf-edit-mode" style="display:none;"><input type="text" name="round2_employee_name[]" value="{{ panel.panel_name }}" class="cvf-edit-input emp-name"></div>
+                                    </div>
+                                    <div class="cvf-date-col">
+                                        <div class="cvf-field-label-row"><span class="cvf-label" style="font-size:12px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.6px;">Employee ID</span></div>
+                                        <div class="cvf-view-mode cvf-underline-field"><span class="cvf-field-value">{{ panel.emp_id|default:"—" }}</span></div>
+                                        <div class="cvf-edit-mode" style="display:none;"><input type="text" name="round2_employee_id[]" value="{{ panel.emp_id }}" class="cvf-edit-input emp-id"></div>
+                                    </div>
+                                </div>
+                                <div class="cvf-field-block">
+                                    <div class="cvf-field-label-row"><span class="cvf-label" style="font-size:12px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.6px;">Email ID</span></div>
+                                    <div class="cvf-view-mode cvf-underline-field"><span class="cvf-field-value">{{ panel.emailid|default:"—" }}</span></div>
+                                    <div class="cvf-edit-mode" style="display:none;"><input type="text" name="round2_employee_email[]" value="{{ panel.emailid }}" class="cvf-edit-input emp-email"></div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="cvf-date-row" style="margin-top:10px; border-top: 1px dashed #E5DFD3; padding-top: 15px;">
+                    <div class="cvf-date-col">
+                        <div class="cvf-field-label-row"><span class="cvf-label" style="font-family:Inter;font-size:13px;font-weight:600;color:#364153;">Round 2 Start Date</span></div>
+                        <div class="cvf-view-mode cvf-underline-field">
+                            <span class="cvf-field-value">{% for p in panels %}{% if p.round_number == 2 and forloop.first %}{{ p.start_date|date:"d-m-Y"|default:"—" }}{% endif %}{% endfor %}</span>
+                        </div>
+                        <div class="cvf-edit-mode" style="display:none;"><input type="date" name="round2_start_date" value="{% for p in panels %}{% if p.round_number == 2 and forloop.first %}{{ p.start_date|date:'Y-m-d' }}{% endif %}{% endfor %}" class="cvf-edit-input"></div>
+                    </div>
+                    <div class="cvf-date-col">
+                        <div class="cvf-field-label-row"><span class="cvf-label" style="font-family:Inter;font-size:13px;font-weight:600;color:#364153;">Round 2 End Date</span></div>
+                        <div class="cvf-view-mode cvf-underline-field">
+                            <span class="cvf-field-value">{% for p in panels %}{% if p.round_number == 2 and forloop.first %}{{ p.end_date|date:"d-m-Y"|default:"—" }}{% endif %}{% endfor %}</span>
+                        </div>
+                        <div class="cvf-edit-mode" style="display:none;"><input type="date" name="round2_end_date" value="{% for p in panels %}{% if p.round_number == 2 and forloop.first %}{{ p.end_date|date:'Y-m-d' }}{% endif %}{% endfor %}" class="cvf-edit-input"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Parameters -->
+        <div class="cvf-field-block" style="margin-top:4px;">
+            <div class="cvf-field-label-row" style="margin-bottom:8px;">
+                <span class="cvf-label">Review Parameters</span><span class="cvf-required">*</span>
+            </div>
+
+            <!-- Add Parameter Dropdown (Edit Mode Only) -->
+            <div class="cvf-edit-mode cvf-param-search" style="display:none; margin-bottom: 12px;">
+                <select class="cvf-edit-select parameters-select-dropdown" id="cvf-review-parameters-dropdown"
+                    style="width: 100%;">
+                    <option value="">Select Parameters to Add</option>
+                    {% if review_parameters %}
+                    {% for param in review_parameters %}
+                    <option value="{{ param.parameter_id }}" data-name="{{ param.parameter_name }}">{{ param.parameter_name }}</option>
+                    {% endfor %}
+                    {% else %}
+                    <option value="" disabled>No parameters available</option>
+                    {% endif %}
+                </select>
+            </div>
+
+            <table class="cvp-params-table" style="border:1px solid #E5DFD3;border-radius:8px;overflow:hidden;">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th style="text-align:right;">Weightage</th>{% if review_params %}<th
+                            class="cvf-edit-mode-th cvf-edit-mode" style="display:none;width:40px;"></th>{% endif %}
+                    </tr>
+                </thead>
+                <tbody id="cvf-parameters-tbody">
+                    {% if review_params %}
+                    {% for rp in review_params %}
+                    <tr data-param-id="{{ rp.parameter.parameter_id }}">
+                        <td>
+                            <div class="cvf-view-mode">{{ rp.parameter.parameter_name }}</div>
+                            <div class="cvf-edit-mode" style="display:none;align-items:center;">
+                                <input type="hidden" name="selected_params[]" value="{{ rp.parameter.parameter_id }}">
+                                {{ rp.parameter.parameter_name }}
+                            </div>
+                        </td>
+                        <td style="text-align:right;">
+                            <div class="cvf-view-mode"><span class="cvp-weight-badge">{{ rp.weightage }}%</span></div>
+                            <div class="cvf-edit-mode" style="display:none;justify-content:flex-end;">
+                                <input type="number" name="param_weightages[]" value="{{ rp.weightage }}"
+                                    class="cvf-edit-input param-weight-input-edit"
+                                    style="width:70px;text-align:right;padding:4px 8px;" min="0" max="100">
+                            </div>
+                        </td>
+                        <td class="cvf-edit-mode td-delete" style="display:none;text-align:center;">
+                            <button type="button" class="btn btn-link text-danger p-0"
+                                style="padding: 0 !important; border:none; background:transparent;"
+                                onclick="cvfRemoveParameterRow(this)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr id="cvf-empty-param-row">
+                        <td colspan="3"
+                            style="padding:20px;text-align:center;color:#9CA3AF;font-family:Poppins;font-size:13px;border:1px dashed #E5DFD3;border-radius:10px;">
+                            No review parameters added yet.
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td style="font-weight:600;color:#29251D;padding:8px 12px;">Total Weightage</td>
+                        <td style="text-align:right;padding:8px 12px;font-weight:600;color:#29251D;"
+                            id="cvf-parameters-total-weight">
+                            {% if review_params %}100%{% else %}-{% endif %}
+                        </td>
+                        <td class="cvf-edit-mode" style="display:none;"></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+        </div>
+
+    </div><!-- /Step 2 -->
+
+
+    <!-- ===== STEP 3: Review & Publish ===== -->
+    <div class="cvf-card" id="cvfStep3" style="display:none;">
+
+        <!-- Section Header -->
+        <div class="cvf-rp-section-head">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;">
+                <path d="M14 2H4a2 2 0 00-2 2v16a2 2 0 002 2h16a2 2 0 002-2V8z" stroke="#E31837" stroke-width="2"
+                    stroke-linejoin="round" />
+                <polyline points="14,2 14,8 20,8" stroke="#E31837" stroke-width="2" stroke-linejoin="round" />
+            </svg>
+            <div>
+                <div class="cvf-section-title">Review &amp; Publish</div>
+                <div class="cvf-section-subtitle">Configure evaluation parameters and review panels</div>
+            </div>
+        </div>
+
+        <!-- ── Target Audience ── -->
+        <div class="cvf-field-block">
+            <div class="cvf-field-label-row">
+                <span class="cvf-label">Target Audience</span><span class="cvf-required">*</span>
+            </div>
+            <div class="cvf-rp-choice-stack">
+                <!-- Internal -->
+                <div
+                    class="cvf-rp-choice {% if challenge.target_audience == 'INTERNAL' %}cvf-rp-choice-active{% endif %}">
+                    <div class="cvf-rp-choice-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M2.5 18.33c0-4.17 3.36-7.5 7.5-7.5s7.5 3.33 7.5 7.5" stroke="#4A453D"
+                                stroke-width="1.67" />
+                            <circle cx="10" cy="6.25" r="3.75" stroke="#4A453D" stroke-width="1.67" />
+                        </svg>
+                    </div>
+                    <div class="cvf-rp-choice-body">
+                        <div class="cvf-rp-choice-row">
+                            <span class="cvf-rp-choice-name">Internal</span>
+                            {% if challenge.target_audience == 'INTERNAL' %}
+                            <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
+                                <path d="M1 5l4 4L13 1" stroke="#5F0229" stroke-width="1.67" stroke-linecap="round" />
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="cvf-rp-choice-desc">Only People of Tech Mahindra</div>
+                    </div>
+                </div>
+                <!-- External -->
+                <div class="cvf-rp-choice {% if challenge.target_audience == 'EXTERNAL' %}cvf-rp-choice-active{% endif %}"
+                    style="background:#F6F2EA;">
+                    <div class="cvf-rp-choice-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="10" cy="10" r="8.33" stroke="#4A453D" stroke-width="1.67" />
+                            <path
+                                d="M1.67 10h16.66M10 1.67C7.5 4.5 6.5 7 6.5 10s1 5.5 3.5 8.33M10 1.67C12.5 4.5 13.5 7 13.5 10s-1 5.5-3.5 8.33"
+                                stroke="#4A453D" stroke-width="1.67" />
+                        </svg>
+                    </div>
+                    <div class="cvf-rp-choice-body">
+                        <div class="cvf-rp-choice-row">
+                            <span class="cvf-rp-choice-name">External</span>
+                            {% if challenge.target_audience == 'EXTERNAL' %}
+                            <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
+                                <path d="M1 5l4 4L13 1" stroke="#5F0229" stroke-width="1.67" stroke-linecap="round" />
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="cvf-rp-choice-desc">Open for External Audience</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── View Mode ── -->
+        <div class="cvf-field-block">
+            <div class="cvf-field-label-row">
+                <span class="cvf-label">View Mode</span><span class="cvf-required">*</span>
+            </div>
+            <div class="cvf-rp-choice-stack">
+                <!-- Private -->
+                <div id="cvf-sum-card-private"
+                    class="cvf-rp-choice {% if challenge.visibility == 'PRIVATE' %}cvf-rp-choice-active{% endif %}">
+                    <div class="cvf-rp-choice-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <rect x="3.33" y="9.17" width="13.33" height="9.17" rx="0.5" stroke="#4A453D"
+                                stroke-width="1.67" />
+                            <path d="M6.67 9.17V6.67a3.33 3.33 0 016.66 0v2.5" stroke="#4A453D" stroke-width="1.67" />
+                        </svg>
+                    </div>
+                    <div class="cvf-rp-choice-body">
+                        <div class="cvf-rp-choice-row">
+                            <span class="cvf-rp-choice-name">Private</span>
+                            {% if challenge.visibility == 'PRIVATE' %}
+                            <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
+                                <path d="M1 5l4 4L13 1" stroke="#5F0229" stroke-width="1.67" stroke-linecap="round" />
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="cvf-rp-choice-desc">Selected people can view</div>
+                    </div>
+                </div>
+                <!-- Public -->
+                <div id="cvf-sum-card-public"
+                    class="cvf-rp-choice {% if challenge.visibility == 'PUBLIC' %}cvf-rp-choice-active{% endif %}"
+                    style="background:#F6F2EA;">
+                    <div class="cvf-rp-choice-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="10" cy="10" r="8.33" stroke="#4A453D" stroke-width="1.67" />
+                            <ellipse cx="10" cy="10" rx="3.33" ry="8.33" stroke="#4A453D" stroke-width="1.67" />
+                            <path d="M2 7.5h16M2 12.5h16" stroke="#4A453D" stroke-width="1.67" />
+                        </svg>
+                    </div>
+                    <div class="cvf-rp-choice-body">
+                        <div class="cvf-rp-choice-row">
+                            <span class="cvf-rp-choice-name">Public</span>
+                            {% if challenge.visibility == 'PUBLIC' %}
+                            <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
+                                <path d="M1 5l4 4L13 1" stroke="#5F0229" stroke-width="1.67" stroke-linecap="round" />
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="cvf-rp-choice-desc">Visible to all participants</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════
+         Summary Card (beige bg, full-width)
+         ══════════════════════════════════════ -->
+        <div class="cvf-rp-summary-card">
+
+            <!-- ── Basic Information ── -->
+            <div class="cvf-rp-block-head">
+                <svg width="20" height="18" viewBox="0 0 20 18" fill="none" style="flex-shrink:0;">
+                    <rect x="1" y="1" width="18" height="7" rx="0.5" stroke="#E31837" stroke-width="2" />
+                    <rect x="1" y="5" width="18" height="12" rx="0.5" stroke="#E31837" stroke-width="2" />
+                </svg>
+                <span class="cvf-rp-block-title">Basic Information</span>
+            </div>
+
+            <div class="cvf-rp-rows">
+                <!-- IBU -->
+                <div class="cvf-rp-row">
+                    <div class="cvf-rp-row-label" style="color:#4A5565;">IBU</div>
+                    <div class="cvf-rp-row-value" id="cvf-sum-ibu">{{challenge.ibu_name|default:"—" }}</div>
+                </div>
+                <!-- Challenge Name -->
+                <div class="cvf-rp-row">
+                    <div class="cvf-rp-row-label">Challenge Name:</div>
+                    <div class="cvf-rp-row-value" id="cvf-sum-title">{{challenge.title|default:"—" }}</div>
+                </div>
+                <!-- Description -->
+                <div class="cvf-rp-row" style="align-items:flex-start;padding-top:8px;padding-bottom:8px;">
+                    <div class="cvf-rp-row-label">Description</div>
+                    <div class="cvf-rp-row-value" id="cvf-sum-description"
+                        style="line-height:1.7;max-height:180px;overflow-y:auto;">
+                        {{ challenge.description|default:"—" }}
+                    </div>
+                </div>
+                <!-- Keywords -->
+                <div class="cvf-rp-row">
+                    <div class="cvf-rp-row-label">Keywords</div>
+                    <div class="cvf-rp-row-value">
+                        <div class="cvf-rp-kw-row" id="cvf-sum-keywords">
+                            {% for kw in keywords_list %}
+                            <span class="cvf-rp-kw-pill">{{ kw }}</span>
+                            {% empty %}
+                            <span style="color:#B2AEA4;font-style:italic;">No keywords</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Dates -->
+                <div class="cvf-rp-row">
+                    <div class="cvf-rp-row-label">Start &amp; End Date</div>
+                    <div class="cvf-rp-row-value">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                <rect x="2.5" y="3.33" width="15" height="15" rx="0.5" stroke="#99A1AF"
+                                    stroke-width="1.67" />
+                                <path d="M2.5 7.5h15" stroke="#99A1AF" stroke-width="1.67" />
+                            </svg>
+                            <span id="cvf-sum-start-date">{{ challenge.start_date|date:"d-m-Y"|default:"—" }}</span>
+                            <span style="color:#4D4D4F;font-weight:500;">-</span>
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                <rect x="2.5" y="3.33" width="15" height="15" rx="0.5" stroke="#99A1AF"
+                                    stroke-width="1.67" />
+                                <path d="M2.5 7.5h15" stroke="#99A1AF" stroke-width="1.67" />
+                            </svg>
+                            <span id="cvf-sum-end-date">{{ challenge.end_date|date:"d-m-Y"|default:"—" }}</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Expected Business Outcome -->
+                <div class="cvf-rp-row" style="align-items:flex-start;padding-top:8px;padding-bottom:8px;">
+                    <div class="cvf-rp-row-label">Expected Business Outcome</div>
+                    <div class="cvf-rp-row-value">
+                        <div id="cvf-sum-outcome" style="display:flex;flex-direction:column;gap:12px;">
+                            {% if outcome_lines %}
+                            {% for line in outcome_lines %}
+                            <div class="cvf-rp-outcome-line">{{ line }}</div>
+                            {% endfor %}
+                            {% else %}
+                            <span style="color:#B2AEA4;font-style:italic;">No outcome provided.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Supporting Document -->
+                <div class="cvf-rp-row" style="padding:16px 0;">
+                    {% if challenge.challenge_document %}
+                    <a href="{{ challenge.challenge_document.url }}" target="_blank" class="cvf-rp-doc-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="#5F0229"
+                                stroke-width="2" />
+                            <polyline points="14,2 14,8 20,8" stroke="#5F0229" stroke-width="2" />
+                        </svg>
+                        Preview Supporting Document
+                    </a>
+                    {% else %}
+                    <div class="cvf-rp-doc-btn cvf-rp-doc-disabled">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="#B2AEA4"
+                                stroke-width="2" />
+                            <polyline points="14,2 14,8 20,8" stroke="#B2AEA4" stroke-width="2" />
+                        </svg>
+                        No Supporting Document Uploaded
+                    </div>
+                    {% endif %}
+                </div>
+            </div><!-- /cvf-rp-rows -->
+
+            <!-- ── Evaluation ── -->
+            <div class="cvf-rp-block-head" style="margin-top:8px;">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;">
+                    <rect x="1.5" y="1.5" width="17" height="17" rx="1" stroke="#E31837" stroke-width="2" />
+                    <path d="M6 7h8M6 10h8M6 13h5" stroke="#E31837" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <span class="cvf-rp-block-title">Evaluation</span>
+            </div>
+
+            <div class="cvf-rp-rows">
+                <!-- Number of rounds -->
+                <div class="cvf-rp-row">
+                    <div class="cvf-rp-row-label" style="color:#4A5565;">Number of Evaluation Rounds:</div>
+                    <div class="cvf-rp-row-value" id="cvf-sum-num-rounds">
+                        {% if challenge.num_rounds == 2 or challenge.num_rounds == '2' %}Two Rounds
+                        {% else %}Single Round{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Per-round evaluator details -->
+            <!-- Round 1 Summary -->
+            <div id="cvf-sum-round1-block" class="cvf-rp-round-block" {% if not panels %}style="display:none;"{% endif %}>
+                <div class="cvf-rp-round-title">Round 01 — Evaluator Details</div>
+                <div class="cvf-rp-row" style="border-bottom:none;padding:6px 0;">
+                    <div class="cvf-rp-row-label">Start &amp; End Date</div>
+                    <div class="cvf-rp-row-value">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                                <rect x="2.5" y="3.33" width="15" height="15" rx="0.5" stroke="#99A1AF"
+                                    stroke-width="1.67" />
+                                <path d="M2.5 7.5h15" stroke="#99A1AF" stroke-width="1.67" />
+                            </svg>
+                            <span id="cvf-sum-round1-start">{% for p in panels %}{% if p.round_number == 1 %}{{ p.start_date|date:"d-m-Y" }}{% endif %}{% endfor %}</span>
+                            <span>-</span>
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                                <rect x="2.5" y="3.33" width="15" height="15" rx="0.5" stroke="#99A1AF"
+                                    stroke-width="1.67" />
+                                <path d="M2.5 7.5h15" stroke="#99A1AF" stroke-width="1.67" />
+                            </svg>
+                            <span id="cvf-sum-round1-end">{% for p in panels %}{% if p.round_number == 1 %}{{ p.end_date|date:"d-m-Y" }}{% endif %}{% endfor %}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="cvf-rp-eval-table-wrap">
+                    <table class="cvf-rp-eval-table">
+                        <thead>
+                            <tr>
+                                <th>Employee Name</th>
+                                <th>Email ID</th>
+                                <th>Employee ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cvf-sum-round1-tbody">
+                            {% for p in panels %}
+                            {% if p.round_number == 1 %}
+                            <tr>
+                                <td>{{ p.panel_name }}</td>
+                                <td>{{ p.emailid }}</td>
+                                <td>{{ p.emp_id }}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Round 2 Summary -->
+            <div id="cvf-sum-round2-block" class="cvf-rp-round-block"
+                style="display:{% if challenge.num_rounds == 2 or challenge.num_rounds == '2' %}block{% else %}none{% endif %};">
+                <div class="cvf-rp-round-title">Round 02 — Evaluator Details</div>
+                <div class="cvf-rp-row" style="border-bottom:none;padding:6px 0;">
+                    <div class="cvf-rp-row-label">Start &amp; End Date</div>
+                    <div class="cvf-rp-row-value">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                                <rect x="2.5" y="3.33" width="15" height="15" rx="0.5" stroke="#99A1AF"
+                                    stroke-width="1.67" />
+                                <path d="M2.5 7.5h15" stroke="#99A1AF" stroke-width="1.67" />
+                            </svg>
+                            <span id="cvf-sum-round2-start">{% for p in panels %}{% if p.round_number == 2 %}{{ p.start_date|date:"d-m-Y" }}{% endif %}{% endfor %}</span>
+                            <span>-</span>
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                                <rect x="2.5" y="3.33" width="15" height="15" rx="0.5" stroke="#99A1AF"
+                                    stroke-width="1.67" />
+                                <path d="M2.5 7.5h15" stroke="#99A1AF" stroke-width="1.67" />
+                            </svg>
+                            <span id="cvf-sum-round2-end">{% for p in panels %}{% if p.round_number == 2 %}{{ p.end_date|date:"d-m-Y" }}{% endif %}{% endfor %}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="cvf-rp-eval-table-wrap">
+                    <table class="cvf-rp-eval-table">
+                        <thead>
+                            <tr>
+                                <th>Employee Name</th>
+                                <th>Email ID</th>
+                                <th>Employee ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cvf-sum-round2-tbody">
+                            {% for p in panels %}
+                            {% if p.round_number == 2 %}
+                            <tr>
+                                <td>{{ p.panel_name }}</td>
+                                <td>{{ p.emailid }}</td>
+                                <td>{{ p.emp_id }}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Review Parameters -->
+            <div class="cvf-rp-round-block">
+                <div class="cvf-rp-round-title">Review Parameters</div>
+                {% if review_params %}
+                <table class="cvf-rp-params-table">
+                    <thead>
+                        <tr>
+                            <th>Parameters</th>
+                            <th style="text-align:right;">Weightage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rp in review_params %}
+                        <tr>
+                            <td>{{ rp.parameter.parameter_name }}</td>
+                            <td style="text-align:right;">{{ rp.weightage }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="cvf-rp-params-total">
+                            <td>Total Weightage</td>
+                            <td style="text-align:right;font-weight:700;">100</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                {% else %}
+                <div style="padding:16px;color:#9CA3AF;font-family:Poppins;font-size:13px;text-align:center;">
+                    No review parameters configured.
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Download Summary -->
+            <div style="display:flex;justify-content:flex-end;padding:10px 0 4px;">
+                <a href="{% url 'download_challenge_summary' challenge.challenge_id %}" class="cvf-rp-download-btn"
+                    style="text-decoration:none;">
+                    Download Summary
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 2v10M10 14l-3-3m3 3l3-3" stroke="#fff" stroke-width="1.67"
+                            stroke-linecap="round" />
+                        <path d="M3 17h14" stroke="#fff" stroke-width="1.67" stroke-linecap="round" />
+                    </svg>
+                </a>
+            </div>
+
+        </div><!-- /cvf-rp-summary-card -->
+
+    </div><!-- /Step 3 -->
+
+
+    <!-- ===== Wizard Footer (always visible) ===== -->
+    <div class="cvf-wiz-footer" id="cvfWizFooter">
+        <!-- Left: Cancel / Previous -->
+        <div>
+            <button type="button" class="cvp-btn-close" id="cvfBtnPrev" onclick="cvfPrevStep()" style="display:none;">
+                <i class="bi bi-chevron-left"></i> Prev
+            </button>
+            <button type="button" class="cvp-btn-close" id="cvfBtnCancel" onclick="closeChallengeViewPanel()">
+                <i class="bi bi-x-lg"></i> Cancel
+            </button>
+        </div>
+        <!-- Right: Next / Edit / Update -->
+        <div style="display:flex;gap:10px;">
+            <button type="button" class="cvf-btn-next" id="cvfBtnNext" onclick="cvfNextStep()">
+                Next Step <i class="bi bi-chevron-right"></i>
+            </button>
+            <!-- View mode: Edit Challenge link (shown on Step 3 only) -->
+            <!-- <a href="{% url 'post_challenge' %}?edit={{ challenge.challenge_id }}" class="cvp-btn-edit" id="cvfBtnEdit"
+                style="display:none;">
+                <i class="bi bi-pencil-square"></i> Edit Challenge
+            </a> -->
+            <!-- Edit mode: Update submit button (shown on Step 3 only when editing) -->
+            <button type="submit" form="cvfEditForm" class="cvp-btn-edit cvf-btn-update" id="cvfBtnUpdate"
+                style="display:none;">
+                <i class="bi bi-check-lg"></i> Update
+            </button>
+        </div>
+    </div>
+</form>
+
+<!-- ===== Step Navigation + Edit Toggle JS ===== -->
+<script>
+    (function () {
+        var currentStep = 1;
+        var totalSteps = 3;
+        var isEditMode = false;
+
+        /* ---- Step Navigation ---- */
+        function cvfGoToStep(step) {
+            if (step === 3) {
+                cvfSyncSummaryData();
+            }
+            for (var i = 1; i <= totalSteps; i++) {
+                var el = document.getElementById('cvfStep' + i);
+                if (el) el.style.display = 'none';
+                var circle = document.getElementById('cvfCircle' + i);
+                var label = document.getElementById('cvfLabel' + i);
+                var wiz = document.getElementById('cvfWizStep' + i);
+                if (circle) circle.classList.remove('cvf-step-circle-active');
+                if (label) label.classList.remove('cvf-step-label-active');
+                if (wiz) wiz.classList.remove('cvf-step-active');
+            }
+            var target = document.getElementById('cvfStep' + step);
+            if (target) target.style.display = 'flex';
+            var c = document.getElementById('cvfCircle' + step);
+            var l = document.getElementById('cvfLabel' + step);
+            var w = document.getElementById('cvfWizStep' + step);
+            if (c) c.classList.add('cvf-step-circle-active');
+            if (l) l.classList.add('cvf-step-label-active');
+            if (w) w.classList.add('cvf-step-active');
+            currentStep = step;
+            updateFooterButtons();
+            var panel = document.getElementById('cvpContent');
+            if (panel) panel.scrollTop = 0;
+        }
+
+        function cvfSyncSummaryData() {
+            // Only sync if in edit mode
+            if (!isEditMode) return;
+            console.log("Syncing Step 3 Summary Data...");
+
+            // Step 1 Synchronization
+            // Get text from Select2 for IBU if available
+            let ibuText = '-';
+            const ibuSelect = $('select[name="ibu_name"]');
+            if (ibuSelect.hasClass('select2-hidden-accessible')) {
+                const data = ibuSelect.select2('data');
+                if (data && data.length > 0) ibuText = data[0].text;
+            } else {
+                ibuText = ibuSelect.val() || '-';
+            }
+
+            const title = $('input[name="title"]').val() || '-';
+            const description = $('textarea[name="description"]').val() || '-';
+            const keywordsRaw = $('input[name="keywords"]').val() || '';
+            const startDateRaw = $('input[name="start_date"]').val() || '-';
+            const endDateRaw = $('input[name="end_date"]').val() || '-';
+            const outcomeRaw = $('textarea[name="expected_outcome"]').val() || '';
+
+            $('#cvf-sum-ibu').text(ibuText);
+            $('#cvf-sum-title').text(title);
+            $('#cvf-sum-description').text(description);
+
+            // Keywords
+            const kwContainer = $('#cvf-sum-keywords');
+            kwContainer.empty();
+            if (keywordsRaw) {
+                keywordsRaw.split(',').forEach(kw => {
+                    if (kw.trim()) {
+                        kwContainer.append(`<span class="cvf-rp-kw-pill">${kw.trim()}</span>`);
+                    }
+                });
+            } else {
+                kwContainer.append('<span style="color:#B2AEA4;font-style:italic;">No keywords</span>');
+            }
+
+            // Simple date format adjustment for display (YYYY-MM-DD -> DD-MM-YYYY)
+            const formatDate = (d) => {
+                if (!d || d === '-' || !d.includes('-')) return d || '—';
+                const pts = d.split('-');
+                if (pts.length === 3) return `${pts[2]}-${pts[1]}-${pts[0]}`;
+                return d;
+            };
+
+            $('#cvf-sum-start-date').text(formatDate(startDateRaw));
+            $('#cvf-sum-end-date').text(formatDate(endDateRaw));
+
+            // Outcome
+            const outcomeContainer = $('#cvf-sum-outcome');
+            outcomeContainer.empty();
+            if (outcomeRaw) {
+                outcomeRaw.split('\n').forEach(line => {
+                    if (line.trim()) {
+                        outcomeContainer.append(`<div class="cvf-rp-outcome-line">${line.trim()}</div>`);
+                    }
+                });
+            } else {
+                outcomeContainer.append('<span style="color:#B2AEA4;font-style:italic;">No outcome provided.</span>');
+            }
+
+            // Step 2 Synchronization
+            const numRounds = $('input[name="num_rounds"]:checked').val() || '1';
+            $('#cvf-sum-num-rounds').text(numRounds == '2' ? 'Two Rounds' : 'Single Round');
+
+            // Toggle round blocks in summary
+            $('#cvf-sum-round1-block').show();
+            if (numRounds == '2') {
+                $('#cvf-sum-round2-block').show();
+            } else {
+                $('#cvf-sum-round2-block').hide();
+            }
+
+            // Sync Evaluator Details for each round
+            for (let r = 1; r <= 2; r++) {
+                const rStart = $(`input[name="round${r}_start_date"]`).val();
+                const rEnd = $(`input[name="round${r}_end_date"]`).val();
+                $(`#cvf-sum-round${r}-start`).text(formatDate(rStart));
+                $(`#cvf-sum-round${r}-end`).text(formatDate(rEnd));
+
+                const tbody = $(`#cvf-sum-round${r}-tbody`);
+                tbody.empty();
+                
+                $(`#cvf-round${r}-evaluators-list .cvf-evaluator-row`).each(function() {
+                    const name = $(this).find('input[name="' + `round${r}_employee_name[]` + '"]').val() || '—';
+                    const email = $(this).find('input[name="' + `round${r}_employee_email[]` + '"]').val() || '—';
+                    const empid = $(this).find('input[name="' + `round${r}_employee_id[]` + '"]').val() || '—';
+                    
+                    if (name !== '—' || email !== '—' || empid !== '—') {
+                        tbody.append(`<tr><td>${name}</td><td>${email}</td><td>${empid}</td></tr>`);
+                    }
+                });
+                
+                if (tbody.children().length === 0) {
+                    tbody.append('<tr><td colspan="3" style="text-align:center;">No evaluators added</td></tr>');
+                }
+            }
+
+            // Visibility
+            const visibility = $('input[name="visibility"]:checked').val() || 'PUBLIC';
+            if (visibility === 'PUBLIC') {
+                $('#cvf-sum-card-public').addClass('cvf-rp-choice-active');
+                $('#cvf-sum-card-private').removeClass('cvf-rp-choice-active');
+            } else {
+                $('#cvf-sum-card-private').addClass('cvf-rp-choice-active');
+                $('#cvf-sum-card-public').removeClass('cvf-rp-choice-active');
+            }
+        }
+
+        function updateFooterButtons() {
+            var btnPrev = document.getElementById('cvfBtnPrev');
+            var btnCancel = document.getElementById('cvfBtnCancel');
+            var btnNext = document.getElementById('cvfBtnNext');
+            var btnEdit = document.getElementById('cvfBtnEdit');
+            var btnUpdate = document.getElementById('cvfBtnUpdate');
+
+            if (currentStep === 1) {
+                if (btnPrev) btnPrev.style.display = 'none';
+                if (btnCancel) btnCancel.style.display = 'inline-flex';
+                if (btnNext) btnNext.style.display = 'inline-flex';
+                if (btnEdit) btnEdit.style.display = 'none';
+                if (btnUpdate) btnUpdate.style.display = 'none';
+            } else if (currentStep === totalSteps) {
+                if (btnPrev) btnPrev.style.display = 'inline-flex';
+                if (btnCancel) btnCancel.style.display = 'none';
+                if (btnNext) btnNext.style.display = 'none';
+                /* On Step 3: show Update in edit mode, Edit Challenge in view mode */
+                if (isEditMode) {
+                    if (btnEdit) btnEdit.style.display = 'none';
+                    if (btnUpdate) btnUpdate.style.display = 'inline-flex';
+                } else {
+                    if (btnEdit) btnEdit.style.display = 'inline-flex';
+                    if (btnUpdate) btnUpdate.style.display = 'none';
+                }
+            } else {
+                if (btnPrev) btnPrev.style.display = 'inline-flex';
+                if (btnCancel) btnCancel.style.display = 'none';
+                if (btnNext) btnNext.style.display = 'inline-flex';
+                if (btnEdit) btnEdit.style.display = 'none';
+                if (btnUpdate) btnUpdate.style.display = 'none';
+            }
+        }
+
+        /* ---- Edit Toggle ---- */
+        function cvfToggleEdit() {
+            isEditMode = !isEditMode;
+            var btn = document.getElementById('cvfEditToggleBtn');
+
+            /* Show/hide view and edit fields */
+            document.querySelectorAll('.cvf-view-mode').forEach(function (el) {
+                el.style.display = isEditMode ? 'none' : '';
+            });
+            document.querySelectorAll('.cvf-edit-mode').forEach(function (el) {
+                el.style.display = isEditMode ? '' : 'none';
+            });
+
+            /* Update all toggle button labels */
+            document.querySelectorAll('.cvf-edit-toggle-btn').forEach(function (btn) {
+                btn.innerHTML = isEditMode
+                    ? '<i class="bi bi-x-circle"></i> Cancel Edit'
+                    : '<i class="bi bi-pencil"></i> Edit';
+                btn.classList.toggle('cvf-edit-toggle-active', isEditMode);
+            });
+
+            /* Refresh footer so Step 3 shows correct button */
+            updateFooterButtons();
+        }
+
+        window.cvfGoToStep = cvfGoToStep;
+        window.cvfNextStep = function () { if (currentStep < totalSteps) cvfGoToStep(currentStep + 1); };
+        window.cvfPrevStep = function () { if (currentStep > 1) cvfGoToStep(currentStep - 1); };
+        window.cvfToggleEdit = cvfToggleEdit;
+
+        window.cvfToggleRoundSections = function (numRounds) {
+            const r2Section = document.getElementById('cvf-round2-section');
+            if (r2Section) {
+                r2Section.style.display = (numRounds == 1) ? 'none' : 'block';
+            }
+        };
+
+        window.cvfRemoveEvaluatorRow = function (btn) {
+            const row = $(btn).closest('.cvf-evaluator-row');
+            if (!row || row.length === 0) return;
+            const listContainer = row.parent();
+            row.remove();
+
+            if (listContainer && listContainer.find('.cvf-evaluator-row').length === 0) {
+                if (listContainer.find('.cvf-no-eval-msg').length === 0) {
+                    listContainer.append('<div class="cvf-no-eval-msg" style="padding:10px;text-align:center;color:#9CA3AF;font-size:13px;">No evaluators added yet.</div>');
+                }
+            }
+        };
+
+        window.cvfRemoveParameterRow = function (btn) {
+            const row = $(btn).closest('tr');
+            if (row && row.length > 0) {
+                row.remove();
+                if (typeof window.cvfCalculateParameterTotal === 'function') {
+                    window.cvfCalculateParameterTotal();
+                }
+            }
+        };
+
+        window.cvfCalculateParameterTotal = function () {
+            let total = 0;
+            const weightInputs = document.querySelectorAll('#cvf-parameters-tbody .param-weight-input-edit');
+            weightInputs.forEach(function (input) {
+                const val = input.value;
+                if (val !== '' && val !== null) {
+                    total += parseInt(val);
+                }
+            });
+
+            const totalDisplay = document.getElementById('cvf-parameters-total-weight');
+            if (totalDisplay) {
+                totalDisplay.textContent = total + '%';
+            }
+        };
+
+        cvfGoToStep(1);
+
+        // Initialize select2 and jQuery dependent stuff
+        if (typeof $ !== 'undefined' && $.fn.select2) {
+            $('.select2-ibu').select2({
+                width: '100%',
+                placeholder: 'Search for an IBU...',
+                minimumInputLength: 2,
+                dropdownParent: $('#cvpPanel'), // ensure it renders correctly over the slide panel
+                ajax: {
+                    url: '/ibu-search/',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return { q: params.term };
+                    },
+                    processResults: function (data) {
+                        console.log('IBU search results:', data);
+                        return { results: data.results };
+                    },
+                    cache: true
+                }
+            });
+
+            $('.select2-eval-edit').each(function () {
+                var $this = $(this);
+                var round = $this.data('round');
+                initEvaluatorSelect2($this, round);
+            });
+
+            
+
+            window.cvfAddEvaluatorRow = function (round) {
+                const listContainer = $(`#cvf-round${round}-evaluators-list`);
+                listContainer.find('.cvf-no-eval-msg').remove();
+
+                const currentCount = listContainer.find('.cvf-evaluator-row').length;
+                if (round == 1 && currentCount >= 3) {
+                    alert('Maximum 3 evaluators allowed for Round 1.');
+                    return;
+                } else if (round == 2 && currentCount >= 2) {
+                    alert('Maximum 2 evaluators allowed for Round 2.');
+                    return;
+                }
+
+                const newRowHtml = `
+                    <div class="cvf-evaluator-row" data-round="${round}">
+                        <button type="button" class="cvf-remove-eval-btn cvf-edit-mode" onclick="cvfRemoveEvaluatorRow(this)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                        
+                        <div class="cvf-edit-mode cvf-evaluator-search" style="margin-bottom: 12px; margin-top: 4px;">
+                            <div class="cvf-field-label-row" style="margin-bottom: 6px;"><span class="cvf-label" style="font-size:11px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.6px;">Search Evaluator</span></div>
+                            <select class="cvf-edit-select select2-eval-edit" data-round="${round}" style="width:100%;">
+                                <option value="" disabled selected>Search for Evaluator...</option>
+                            </select>
+                        </div>
+
+                        <div class="cvf-date-row">
+                            <div class="cvf-date-col">
+                                <div class="cvf-field-label-row"><span class="cvf-label" style="font-size:12px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.6px;">Evaluator Name</span></div>
+                                <div class="cvf-edit-mode"><input type="text" name="round${round}_employee_name[]" class="cvf-edit-input emp-name"></div>
+                            </div>
+                            <div class="cvf-date-col">
+                                <div class="cvf-field-label-row"><span class="cvf-label" style="font-size:12px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.6px;">Employee ID</span></div>
+                                <div class="cvf-edit-mode"><input type="text" name="round${round}_employee_id[]" class="cvf-edit-input emp-id"></div>
+                            </div>
+                        </div>
+                        <div class="cvf-field-block">
+                            <div class="cvf-field-label-row"><span class="cvf-label" style="font-size:12px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.6px;">Email ID</span></div>
+                            <div class="cvf-edit-mode"><input type="text" name="round${round}_employee_email[]" class="cvf-edit-input emp-email"></div>
+                        </div>
+                    </div>
+                `;
+                const $newRow = $(newRowHtml);
+                listContainer.append($newRow);
+                
+                // Initialize Select2 for the new row
+                initEvaluatorSelect2($newRow.find('.select2-eval-edit'), round);
+            };
+
+
+            function initEvaluatorSelect2($el, round) {
+                $el.select2({
+                    width: '100%',
+                    placeholder: 'Search for Evaluator...',
+                    minimumInputLength: 2,
+                    dropdownParent: $('#cvpPanel'),
+                    ajax: {
+                        url: '/employee_search/',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) { return { q: params.term }; },
+                        processResults: function (data) { return { results: data.results }; },
+                        cache: true
+                    }
+                }).on('select2:select', function (e) {
+                    var d = e.params.data;
+                    const row = $(this).closest('.cvf-evaluator-row');
+                    if (d.employee_name) row.find('.emp-name').val(d.employee_name);
+                    if (d.email) row.find('.emp-email').val(d.email);
+                    if (d.employee_id) row.find('.emp-id').val(d.employee_id);
+                });
+            }
+
+            // Parameters functionality for edit view
+            $('#cvf-review-parameters-dropdown').on('change', function () {
+                const selectedOption = $(this).find(':selected');
+                const paramId = selectedOption.val();
+                const paramName = selectedOption.data('name');
+
+                if (paramId && paramName) {
+                    cvfAddParameterToTable(paramId, paramName);
+                    $(this).val('');
+                }
+            });
+
+            // Delegate input listening to dynamically update totals
+            $('#cvf-parameters-tbody').on('input', '.param-weight-input-edit', function () {
+                cvfCalculateParameterTotal();
+            });
+
+
+            window.cvfAddParameterToTable = function (paramId, paramName) {
+                const tbody = $('#cvf-parameters-tbody');
+
+                // Remove empty placeholder row if present
+                $('#cvf-empty-param-row').remove();
+
+                if (tbody.find(`tr[data-param-id="${paramId}"]`).length > 0) {
+                    alert('This parameter is already added.');
+                    return;
+                }
+
+                // Ensure the table th for actions is visible
+                $('.cvf-edit-mode-th').show();
+
+                const newRow = `
+                <tr data-param-id="${paramId}">
+                    <td>
+                        <div class="cvf-edit-mode" style="display:flex;align-items:center;">
+                            <input type="hidden" name="selected_params[]" value="${paramId}">
+                            ${paramName}
+                        </div>
+                    </td>
+                    <td style="text-align:right;">
+                        <div class="cvf-edit-mode" style="display:flex;justify-content:flex-end;">
+                            <input type="number" name="param_weightages[]" class="cvf-edit-input param-weight-input-edit" placeholder="Enter %" min="0" max="100" style="width:70px;text-align:right;padding:4px 8px;" required>
+                        </div>
+                    </td>
+                    <td class="cvf-edit-mode td-delete" style="text-align:center;">
+                        <button type="button" class="btn btn-link text-danger p-0" style="padding: 0 !important; border:none; background:transparent;" onclick="cvfRemoveParameterRow(this)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+                tbody.append(newRow);
+                cvfCalculateParameterTotal();
+            };
+
+            // Run initial calculation to bind
+            cvfCalculateParameterTotal();
+
+            // AJAX Form Submission
+            $('#cvfEditForm').on('submit', function (e) {
+                e.preventDefault();
+                console.log("Form submission triggered");
+                const form = $(this);
+                const url = form.attr('action');
+                const formData = new FormData(this);
+
+                // Debug logs for form data
+                for (var pair of formData.entries()) {
+                    console.log(pair[0] + ': ' + pair[1]);
+                }
+
+                // Show loading state on button
+                const btn = $('#cvfBtnUpdate');
+                const originalHtml = btn.html();
+                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...');
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            // Show success modal
+                            if (typeof bootstrap !== 'undefined') {
+                                var successModal = new bootstrap.Modal(document.getElementById('updateSuccessModal'));
+                                successModal.show();
+                            } else {
+                                alert('Challenge updated successfully!');
+                            }
+
+                            // Close the panel after a short delay or when modal OK is clicked
+                            // For now, let's just let the user see the modal
+                            // and maybe refresh the dashboard background if needed.
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function (xhr) {
+                        alert('An error occurred while updating. Please try again.');
+                        console.error(xhr);
+                    },
+                    complete: function () {
+                        btn.prop('disabled', false).html(originalHtml);
+                    }
+                });
+            });
+        }
+    })();
+</script>
