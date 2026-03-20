@@ -1746,6 +1746,60 @@ $('#review-dates').text(`${startDate} to ${endDate}`);
 
 
 
+        // Set minimum date to today for all date inputs
+        const todayStr = new Date().getUTCFullYear() + '-' + 
+                        String(new Date().getUTCMonth() + 1).padStart(2, '0') + '-' + 
+                        String(new Date().getUTCDate()).padStart(2, '0');
+        
+        // Initial min set
+        $('input[type="date"]').attr('min', todayStr);
+
+        // Date sequence validation logic
+        const chanStart = $('input[name="chan_start_date"]');
+        const chanEnd = $('input[name="chan_end_date"]');
+        const r1Start = $('input[name="round1_start_date"]');
+        const r1End = $('input[name="round1_end_date"]');
+        const r2Start = $('input[name="round2_start_date"]');
+        const r2End = $('input[name="round2_end_date"]');
+
+        function updateMinDates() {
+            const currentToday = new Date().getUTCFullYear() + '-' + 
+                                String(new Date().getUTCMonth() + 1).padStart(2, '0') + '-' + 
+                                String(new Date().getUTCDate()).padStart(2, '0');
+            
+            // Challenge End Date
+            if (chanStart.val()) {
+                chanEnd.attr('min', chanStart.val());
+                r1Start.attr('min', chanStart.val());
+            } else {
+                chanEnd.attr('min', currentToday);
+                r1Start.attr('min', currentToday);
+            }
+
+            // Round 1 End Date
+            if (r1Start.val()) {
+                r1End.attr('min', r1Start.val());
+            } else if (chanStart.val()) {
+                r1End.attr('min', chanStart.val());
+            }
+
+            // Round 2 Start
+            if (r1End.val()) {
+                r2Start.attr('min', r1End.val());
+            }
+
+            // Round 2 End
+            if (r2Start.val()) {
+                r2End.attr('min', r2Start.val());
+            }
+        }
+
+        // Listen for changes
+        $('input[type="date"]').on('change', updateMinDates);
+        
+        // Initial call
+        updateMinDates();
+
         $('#description').on('input', function () {
             const len = $(this).val().length; $('#char-count').text(len);
             if (len < 1000) $('#char-warning').html(`<i class="fa-solid fa-circle-exclamation"></i> ${1000 - len} more needed`).attr('class', 'text-warning');

@@ -11,68 +11,98 @@
     <!-- Background Depth Shapes (Requested Mockup Elements) -->
     <div class="depth-lines-container">
         <!-- Specific geometric shapes from user snippet -->
-        <div style="width: 1841.21px; height: 658.34px; left: 200.01px; top: 394.08px; position: absolute; outline: 1px #E31837 solid; outline-offset: -0.50px; opacity: 0.05; transform: rotate(-5deg);"></div>
-        <div style="width: 1118.82px; height: 400.17px; left: 200.01px; top: 652.23px; position: absolute; outline: 1px #E31837 solid; outline-offset: -0.50px; opacity: 0.05; transform: rotate(-5deg);"></div>
-        <div style="width: 680.14px; height: 243.27px; left: 200.01px; top: 809.12px; position: absolute; outline: 1px #E31837 solid; outline-offset: -0.50px; opacity: 0.05; transform: rotate(-5deg);"></div>
-        <div style="width: 992.83px; height: 355.03px; left: 1048.33px; top: 697.38px; position: absolute; outline: 1px #E31837 solid; outline-offset: -0.50px; opacity: 0.05; transform: rotate(-5deg);"></div>
+        <div
+            style="width: 1841.21px; height: 658.34px; left: 200.01px; top: 394.08px; position: absolute; outline: 1px #E31837 solid; outline-offset: -0.50px; opacity: 0.05; transform: rotate(-5deg);">
+        </div>
+        <div
+            style="width: 1118.82px; height: 400.17px; left: 200.01px; top: 652.23px; position: absolute; outline: 1px #E31837 solid; outline-offset: -0.50px; opacity: 0.05; transform: rotate(-5deg);">
+        </div>
+        <div
+            style="width: 680.14px; height: 243.27px; left: 200.01px; top: 809.12px; position: absolute; outline: 1px #E31837 solid; outline-offset: -0.50px; opacity: 0.05; transform: rotate(-5deg);">
+        </div>
+        <div
+            style="width: 992.83px; height: 355.03px; left: 1048.33px; top: 697.38px; position: absolute; outline: 1px #E31837 solid; outline-offset: -0.50px; opacity: 0.05; transform: rotate(-5deg);">
+        </div>
     </div>
 
     <!-- Hero Header -->
     <div style="width: 100%; height: 180px; position: relative; background: #5F0229; overflow: hidden; z-index: 5;">
-        <img style="width: 100%; height: 100%; object-fit: cover; opacity: 0.3;" src="{% static 'iris_app/images/challenge.png' %}" alt="Header background" />
+        <img style="width: 100%; height: 100%; object-fit: cover; opacity: 0.3;"
+            src="{% static 'iris_app/images/challenge.png' %}" alt="Header background" />
         <div style="position: absolute; left: 120px; top: 50px;">
-            <h1 style="color: white; font-size: 36px; font-family: Poppins; font-weight: 700; margin: 0;">Idea Arena</h1>
-            <p style="color: white; font-size: 18px; font-family: Poppins; font-weight: 400; margin-top: 5px;">Explore opportunities to innovate and collaborate</p>
+            <h1 style="color: white; font-size: 36px; font-family: Poppins; font-weight: 700; margin: 0;">Idea Arena
+            </h1>
+            <p style="color: white; font-size: 18px; font-family: Poppins; font-weight: 400; margin-top: 5px;">Explore
+                opportunities to innovate and collaborate</p>
         </div>
         {% if request.iris_user.is_challenge_owner %}
         <div style="position: absolute; right: 120px; top: 70px;">
-             <a href="{% url 'post_challenge' %}" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">Post New Challenge</a>
+            <a href="{% url 'post_challenge' %}" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">Post New
+                Challenge</a>
         </div>
         {% endif %}
     </div>
 
     <!-- Sub-Header / Filters -->
-    <div style="width: 100%; height: 71px; padding-left: 120px; background: #E5DFD3; border-bottom: 1px #E5E7EB solid; display: flex; align-items: flex-end; position: relative; z-index: 5;">
+    <div
+        style="width: 100%; height: 71px; padding-left: 120px; background: #E5DFD3; border-bottom: 1px #E5E7EB solid; display: flex; align-items: flex-end; position: relative; z-index: 5;">
         <div style="display: flex; gap: 0;">
             <a href="?filter=active" style="text-decoration: none;">
-                <div style="padding: 16px 30px; background: {% if current_filter == 'active' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'active' %}#E31837{% else %}transparent{% endif %} solid;">
-                    <span style="color: #29251D; font-size: 14px; font-family: Poppins; font-weight: 500;">Active Challenges</span>
+                <div
+                    style="padding: 16px 30px; background: {% if current_filter == 'active' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'active' %}#E31837{% else %}transparent{% endif %} solid;">
+                    <span style="color: #29251D; font-size: 14px; font-family: Poppins; font-weight: 500;">Active
+                        Challenges</span>
                 </div>
             </a>
+            <a href="?filter=upcoming" style="text-decoration: none;">
+                <div
+                    style="padding: 16px 30px; background: {% if current_filter == 'upcoming' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'upcoming' %}#E31837{% else %}transparent{% endif %} solid;">
+                    <span
+                        style="color: #4A5565; font-size: 14px; font-family: Poppins; font-weight: 500;">Upcoming</span>
+                </div>
+            </a>
+            {% if is_challenge_owner %}
             <a href="?filter=draft" style="text-decoration: none;">
-                <div style="padding: 16px 30px; background: {% if current_filter == 'draft' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'draft' %}#E31837{% else %}transparent{% endif %} solid;">
+                <div
+                    style="padding: 16px 30px; background: {% if current_filter == 'draft' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'draft' %}#E31837{% else %}transparent{% endif %} solid;">
                     <span style="color: #4A5565; font-size: 14px; font-family: Poppins; font-weight: 500;">Drafts</span>
                 </div>
             </a>
+            {% endif %}
             <a href="?filter=past" style="text-decoration: none;">
-                <div style="padding: 16px 30px; background: {% if current_filter == 'past' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'past' %}#E31837{% else %}transparent{% endif %} solid;">
+                <div
+                    style="padding: 16px 30px; background: {% if current_filter == 'past' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'past' %}#E31837{% else %}transparent{% endif %} solid;">
                     <span style="color: #4A5565; font-size: 14px; font-family: Poppins; font-weight: 500;">Past</span>
                 </div>
             </a>
             <a href="?filter=all" style="text-decoration: none;">
-                <div style="padding: 16px 30px; background: {% if current_filter == 'all' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'all' %}#E31837{% else %}transparent{% endif %} solid;">
+                <div
+                    style="padding: 16px 30px; background: {% if current_filter == 'all' %}white{% else %}transparent{% endif %}; border-bottom: 3px {% if current_filter == 'all' %}#E31837{% else %}transparent{% endif %} solid;">
                     <span style="color: #4A5565; font-size: 14px; font-family: Poppins; font-weight: 500;">All</span>
                 </div>
             </a>
         </div>
-        
+
         <div style="margin-left: auto; margin-right: 60px; margin-bottom: 16px;">
-            <div style="width: 300px; height: 38px; background: white; border: 1px #E5E7EB solid; display: flex; align-items: center; padding: 0 12px; border-radius: 20px;">
+            <div
+                style="width: 300px; height: 38px; background: white; border: 1px #E5E7EB solid; display: flex; align-items: center; padding: 0 12px; border-radius: 20px;">
                 <i class="fa-solid fa-magnifying-glass" style="color: #99A1AF; margin-right: 10px;"></i>
                 <form action="{% url 'challenge_list' %}" method="GET" style="flex: 1;">
                     <input type="hidden" name="filter" value="{{ current_filter }}">
-                    <input type="text" name="q" placeholder="Search challenges..." value="{{ query }}" style="border: none; outline: none; width: 100%; font-family: Poppins; font-size: 14px;">
+                    <input type="text" name="q" placeholder="Search challenges..." value="{{ query }}"
+                        style="border: none; outline: none; width: 100%; font-family: Poppins; font-size: 14px;">
                 </form>
             </div>
         </div>
     </div>
 
     <div class="container mt-5" style="position: relative; z-index: 10;">
-        
+
         <!-- Featured Section Header -->
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 30px;">
             <i class="fa-solid fa-fire-flame-curved" style="color: #ED1B32; font-size: 20px;"></i>
-            <h2 style="color: #101828; font-size: 20px; font-family: Poppins; font-weight: 600; margin: 0;">Featured Challenge</h2>
+            <h2 style="color: #101828; font-size: 20px; font-family: Poppins; font-weight: 600; margin: 0;">Featured
+                Challenge</h2>
         </div>
 
         {% if featured_challenge and not query %}
@@ -84,20 +114,20 @@
                 {% else %}
                 <img src="{% static 'iris_app/images/challenge.png' %}" alt="Featured Challenge" />
                 {% endif %}
-                
+
                 <!-- Reward Badge -->
                 <div class="reward-badge-modern">
                     <div class="label">Reward</div>
                     <div class="value">500 <span class="unit">pts</span></div>
                 </div>
             </div>
-            
+
             <!-- Floating Intersection Badges -->
             <div class="floating-status-group">
                 <div class="floating-circle-r">R</div>
                 <div class="floating-tag-orange">1303</div>
             </div>
-            
+
             <!-- Right: Content -->
             <div class="featured-card-content">
                 <div class="category-underline">
@@ -109,10 +139,10 @@
 
                 <div class="pill-tags-row">
                     {% if featured_challenge.keywords %}
-                        <div class="pill-tag">{{ featured_challenge.keywords|truncatechars:30 }}</div>
+                    <div class="pill-tag">{{ featured_challenge.keywords|truncatechars:30 }}</div>
                     {% else %}
-                        <div class="pill-tag">Green Tech</div>
-                        <div class="pill-tag">Innovation</div>
+                    <div class="pill-tag">Green Tech</div>
+                    <div class="pill-tag">Innovation</div>
                     {% endif %}
                 </div>
 
@@ -132,64 +162,129 @@
                 </div>
 
                 <div style="margin-top: auto; display: flex; gap: 15px;">
-                    {% if featured_challenge.status == 'LIVE' %}
+                    {% if featured_challenge.status == 'DRAFT' %}
+                    <a href="{% url 'post_challenge' %}?edit={{ featured_challenge.challenge_id }}"
+                        class="btn-arena-primary"
+                        style="flex: 1; text-decoration: none; display: flex; align-items: center; justify-content: center;">Submit
+                        Challenge</a>
+                    {% else %}
                         {% if featured_challenge.user_submitted %}
-                            <div class="user-submitted-badge" style="flex: 1; height: 48px; background: #00C950; color: white; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-weight: 600; border-radius: 4px; gap: 8px;">
-                                <i class="fa-solid fa-circle-check"></i> Idea Submitted
-                            </div>
-                        {% elif featured_challenge.registration_required|default:"No"|lower == "yes" %}
-                            {% if featured_challenge.user_registered %}
-                                <a href="{% url 'idea_details' featured_challenge.challenge_id %}" class="btn-arena-primary" style="flex: 1;">Submit Idea</a>
+                        <div class="user-submitted-badge"
+                            style="flex: 1; height: 48px; background: #00C950; color: white; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-weight: 600; border-radius: 4px; gap: 8px;">
+                            <i class="fa-solid fa-circle-check"></i> Idea Submitted
+                        </div>
+                        {% elif featured_challenge.end_date|date:"Y-m-d" < today|date:"Y-m-d" or featured_challenge.status == 'COMPLETED' %}
+                        <div class="user-submitted-badge"
+                            style="flex: 1; height: 48px; background: #6B7280; color: white; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-weight: 600; border-radius: 4px; gap: 8px;">
+                            <i class="fa-solid fa-lock"></i> Closed
+                        </div>
+                        {% elif featured_challenge.start_date|date:"Y-m-d" > today|date:"Y-m-d" %}
+                            {% if featured_challenge.registration_required|default:"No"|lower == "yes" %}
+                                {% if featured_challenge.user_registered %}
+                                <div class="user-submitted-badge"
+                                    style="flex: 1; height: 48px; background: #6B7280; color: white; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-weight: 600; border-radius: 4px; gap: 8px;">
+                                    <i class="fa-solid fa-circle-check"></i> Registered
+                                </div>
+                                {% else %}
+                                <button type="button" class="btn-arena-primary" data-register-modal
+                                    data-challenge-id="{{ featured_challenge.challenge_id }}"
+                                    data-challenge-title="{{ featured_challenge.title }}"
+                                    data-participation-type="{{ featured_challenge.participation_type }}"
+                                    style="flex: 1; border: none; outline: none; cursor: pointer;">Register Now</button>
+                                {% endif %}
                             {% else %}
-                                <button type="button" class="btn-arena-primary" data-register-modal data-challenge-id="{{ featured_challenge.challenge_id }}" data-challenge-title="{{ featured_challenge.title }}" data-participation-type="{{ featured_challenge.participation_type }}" style="flex: 1; border: none; outline: none; cursor: pointer;">Register Now</button>
+                            <div class="user-submitted-badge"
+                                style="flex: 1; height: 48px; background: #F3F4F6; color: #6B7280; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-weight: 600; border-radius: 4px;">
+                                Starts Soon
+                            </div>
                             {% endif %}
                         {% else %}
-                            <a href="{% url 'idea_details' featured_challenge.challenge_id %}" class="btn-arena-primary" style="flex: 1;">Submit Idea</a>
+                            {% if featured_challenge.registration_required|default:"No"|lower == "yes" %}
+                                {% if featured_challenge.user_registered %}
+                                <a href="{% url 'idea_details' featured_challenge.challenge_id %}" class="btn-arena-primary"
+                                    style="flex: 1;">Submit Idea</a>
+                                {% else %}
+                                <button type="button" class="btn-arena-primary" data-register-modal
+                                    data-challenge-id="{{ featured_challenge.challenge_id }}"
+                                    data-challenge-title="{{ featured_challenge.title }}"
+                                    data-participation-type="{{ featured_challenge.participation_type }}"
+                                    style="flex: 1; border: none; outline: none; cursor: pointer;">Register Now</button>
+                                {% endif %}
+                            {% else %}
+                            <a href="{% url 'idea_details' featured_challenge.challenge_id %}" class="btn-arena-primary"
+                                style="flex: 1;">Submit Idea</a>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
-                    <a href="{% url 'challenge_detail' featured_challenge.challenge_id %}" class="btn-arena-outline" style="{% if featured_challenge.status != 'LIVE' or featured_challenge.user_submitted %}flex: 1;{% else %}width: 40%;{% endif %}">View Details</a>
+                    <a href="{% url 'challenge_detail' featured_challenge.challenge_id %}" class="btn-arena-outline"
+                        style="width: 40%;">View Details</a>
                 </div>
             </div>
         </div>
         {% endif %}
 
         <!-- Challenges Grid -->
-        <h3 class="mb-4" style="font-family: Poppins; font-weight: 600; font-size: 20px;">{% if query %}Search Results{% else %}Active Challenges{% endif %}</h3>
+        <h3 class="mb-4" style="font-family: Poppins; font-weight: 600; font-size: 20px;">
+            {% if query %}Search Results
+            {% elif current_filter == 'active' %}Active Challenges
+            {% elif current_filter == 'upcoming' %}Upcoming Challenges
+            {% elif current_filter == 'draft' %}Draft Challenges
+            {% elif current_filter == 'past' %}Past Challenges
+            {% else %}All Challenges
+            {% endif %}
+        </h3>
         <div class="row g-4 mb-5">
             {% for challenge in challenges %}
             {% if query or challenge != featured_challenge %}
             <div class="col-md-4">
-                <div class="arena-v2-card-grid-item" style="background: white; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; height: 100%; display: flex; flex-direction: column; transition: transform 0.3s ease; border-bottom: 4px solid #F3F4F6;">
+                <div class="arena-v2-card-grid-item"
+                    style="background: white; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; height: 100%; display: flex; flex-direction: column; transition: transform 0.3s ease; border-bottom: 4px solid #F3F4F6;">
                     <div style="height: 180px; position: relative; overflow: hidden;">
                         {% if challenge.challenge_icon %}
-                        <img src="{{ challenge.challenge_icon.url }}" style="width: 100%; height: 100%; object-fit: cover;" alt="{{ challenge.title }}">
+                        <img src="{{ challenge.challenge_icon.url }}"
+                            style="width: 100%; height: 100%; object-fit: cover;" alt="{{ challenge.title }}">
                         {% else %}
-                        <img src="{% static 'iris_app/images/challenge.png' %}" style="width: 100%; height: 100%; object-fit: cover;" alt="Challenge">
+                        <img src="{% static 'iris_app/images/challenge.png' %}"
+                            style="width: 100%; height: 100%; object-fit: cover;" alt="Challenge">
                         {% endif %}
-                        
-                        <div style="position: absolute; top: 12px; left: 12px; padding: 4px 12px; background: #00C950; border-radius: 100px; color: white; font-size: 11px; font-family: Poppins; font-weight: 600;">
+
+                        <div
+                            style="position: absolute; top: 12px; left: 12px; padding: 4px 12px; background: #00C950; border-radius: 100px; color: white; font-size: 11px; font-family: Poppins; font-weight: 600;">
                             {{ challenge.get_status_display }}
                         </div>
                     </div>
-                    
+
                     <div style="padding: 20px; flex: 1; display: flex; flex-direction: column;">
-                        <h4 style="color: #101828; font-size: 18px; font-family: Poppins; font-weight: 600; line-height: 1.4; margin-bottom: 12px; min-height: 50px;">{{ challenge.title }}</h4>
-                        
+                        <h4
+                            style="color: #101828; font-size: 18px; font-family: Poppins; font-weight: 600; line-height: 1.4; margin-bottom: 12px; min-height: 50px;">
+                            {{ challenge.title }}</h4>
+
                         <!-- Tags -->
                         <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
                             {% if challenge.keywords %}
-                                <span style="padding: 4px 10px; background: #F6F2EA; border-radius: 6px; color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 500;">{{ challenge.keywords|truncatechars:30 }}</span>
+                            <span
+                                style="padding: 4px 10px; background: #F6F2EA; border-radius: 6px; color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 500;">{{challenge.keywords|truncatechars:30 }}</span>
                             {% else %}
-                                <span style="padding: 4px 10px; background: #F6F2EA; border-radius: 6px; color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 500;">Innovation</span>
+                            <span
+                                style="padding: 4px 10px; background: #F6F2EA; border-radius: 6px; color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 500;">Innovation</span>
                             {% endif %}
                         </div>
 
-                        <div style="margin-top: auto; padding-top: 15px; border-top: 1px #F3F4F6 solid; display: flex; justify-content: space-between; align-items: center;">
-                            <div style="display: flex; align-items: center; gap: 6px; color: rgba(77, 77, 79, 0.7); font-size: 12px; font-family: Poppins;">
+                        <div
+                            style="margin-top: auto; padding-top: 15px; border-top: 1px #F3F4F6 solid; display: flex; justify-content: space-between; align-items: center;">
+                            <div
+                                style="display: flex; align-items: center; gap: 6px; color: rgba(77, 77, 79, 0.7); font-size: 12px; font-family: Poppins;">
                                 <i class="fa-regular fa-clock"></i>
-                                <span>{{ challenge.end_date|timeuntil }} left</span>
+                                <span>
+                                    {% if current_filter == 'upcoming' %}
+                                    Starts in {{ challenge.start_date|timeuntil }}
+                                    {% else %}
+                                    {{ challenge.end_date|timeuntil }} left
+                                    {% endif %}
+                                </span>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 6px; color: rgba(77, 77, 79, 0.7); font-size: 12px; font-family: Poppins;">
+                            <div
+                                style="display: flex; align-items: center; gap: 6px; color: rgba(77, 77, 79, 0.7); font-size: 12px; font-family: Poppins;">
                                 <i class="fa-solid fa-users"></i>
                                 <span>{{ challenge.idea_set.count }}</span>
                             </div>
@@ -197,22 +292,62 @@
 
                         <!-- Card Buttons -->
                         <div style="margin-top: 15px; display: flex; gap: 10px;">
-                            {% if challenge.status == 'LIVE' %}
+                            {% if challenge.status == 'DRAFT' %}
+                            <a href="{% url 'post_challenge' %}?edit={{ challenge.challenge_id }}"
+                                style="flex: 1; height: 36px; background: #E31837; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: Poppins; font-weight: 600; text-decoration: none; border-radius: 4px;">Submit
+                                Challenge</a>
+                            {% else %}
                                 {% if challenge.user_submitted %}
-                                    <div style="flex: 1; height: 36px; background: #00C950; color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: Poppins; font-weight: 600; border-radius: 4px; gap: 5px;">
-                                        <i class="fa-solid fa-circle-check"></i> Submitted
-                                    </div>
-                                {% elif challenge.registration_required|default:"No"|lower == "yes" %}
-                                    {% if challenge.user_registered %}
-                                        <a href="{% url 'idea_details' challenge.challenge_id %}" style="flex: 1; height: 36px; background: #E31837; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: Poppins; font-weight: 600; text-decoration: none; border-radius: 4px;">Submit Idea</a>
+                                <div
+                                    style="flex: 1; height: 36px; background: #00C950; color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: Poppins; font-weight: 600; border-radius: 4px; gap: 5px;">
+                                    <i class="fa-solid fa-circle-check"></i> Submitted
+                                </div>
+                                {% elif challenge.end_date|date:"Y-m-d" < today|date:"Y-m-d" or challenge.status == 'COMPLETED' %}
+                                <div
+                                    style="flex: 1; height: 36px; background: #6B7280; color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: Poppins; font-weight: 600; border-radius: 4px; gap: 5px;">
+                                    <i class="fa-solid fa-lock"></i> Closed
+                                </div>
+                                {% elif challenge.start_date|date:"Y-m-d" > today|date:"Y-m-d" %}
+                                    {% if challenge.registration_required|default:"No"|lower == "yes" %}
+                                        {% if challenge.user_registered %}
+                                        <div
+                                            style="flex: 1; height: 36px; background: #6B7280; color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: Poppins; font-weight: 600; border-radius: 4px; gap: 5px;">
+                                            <i class="fa-solid fa-circle-check"></i> Registered
+                                        </div>
+                                        {% else %}
+                                        <button type="button" class="btn-register" data-register-modal
+                                            data-challenge-id="{{ challenge.challenge_id }}"
+                                            data-challenge-title="{{ challenge.title }}"
+                                            data-participation-type="{{ challenge.participation_type }}"
+                                            style="flex: 1; height: 36px; background: #E31837; color: white; outline: none; border: none; font-size: 12px; font-family: Poppins; font-weight: 600; border-radius: 4px; cursor: pointer;">Register Now</button>
+                                        {% endif %}
                                     {% else %}
-                                        <button type="button" class="btn-register" data-register-modal data-challenge-id="{{ challenge.challenge_id }}" data-challenge-title="{{ challenge.title }}" data-participation-type="{{ challenge.participation_type }}" style="flex: 1; height: 36px; background: #E31837; color: white; outline: none; border: none; font-size: 12px; font-family: Poppins; font-weight: 600; border-radius: 4px; cursor: pointer;">Register Now</button>
+                                    <div
+                                        style="flex: 1; height: 36px; background: #F3F4F6; color: #6B7280; display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: Poppins; font-weight: 600; border-radius: 4px;">
+                                        Starts Soon
+                                    </div>
                                     {% endif %}
                                 {% else %}
-                                    <a href="{% url 'idea_details' challenge.challenge_id %}" style="flex: 1; height: 36px; background: #E31837; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: Poppins; font-weight: 600; text-decoration: none; border-radius: 4px;">Submit Idea</a>
+                                    {% if challenge.registration_required|default:"No"|lower == "yes" %}
+                                        {% if challenge.user_registered %}
+                                        <a href="{% url 'idea_details' challenge.challenge_id %}"
+                                            style="flex: 1; height: 36px; background: #E31837; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: Poppins; font-weight: 600; text-decoration: none; border-radius: 4px;">Submit Idea</a>
+                                        {% else %}
+                                        <button type="button" class="btn-register" data-register-modal
+                                            data-challenge-id="{{ challenge.challenge_id }}"
+                                            data-challenge-title="{{ challenge.title }}"
+                                            data-participation-type="{{ challenge.participation_type }}"
+                                            style="flex: 1; height: 36px; background: #E31837; color: white; outline: none; border: none; font-size: 12px; font-family: Poppins; font-weight: 600; border-radius: 4px; cursor: pointer;">Register Now</button>
+                                        {% endif %}
+                                    {% else %}
+                                    <a href="{% url 'idea_details' challenge.challenge_id %}"
+                                        style="flex: 1; height: 36px; background: #E31837; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: Poppins; font-weight: 600; text-decoration: none; border-radius: 4px;">Submit Idea</a>
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
-                            <a href="{% url 'challenge_detail' challenge.challenge_id %}" style="{% if challenge.status != 'LIVE' or challenge.user_submitted %}flex: 1;{% else %}width: 45%;{% endif %} height: 36px; border: 1.5px solid #E31837; color: #E31837; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: Poppins; font-weight: 600; text-decoration: none; border-radius: 4px;">View Details</a>
+                            <a href="{% url 'challenge_detail' challenge.challenge_id %}"
+                                style="width: 45%; height: 36px; border: 1.5px solid #E31837; color: #E31837; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: Poppins; font-weight: 600; text-decoration: none; border-radius: 4px;">View
+                                Details</a>
                         </div>
                     </div>
                 </div>
@@ -222,27 +357,33 @@
             <div class="col-12 text-center py-5">
                 <i class="fas fa-search fa-3x text-muted mb-3"></i>
                 <h4 class="text-muted">No challenges found</h4>
-                <a href="{% url 'challenge_list' %}" class="btn btn-outline-danger btn-sm mt-2 rounded-pill">Clear Filters</a>
+                <a href="{% url 'challenge_list' %}" class="btn btn-outline-danger btn-sm mt-2 rounded-pill">Clear
+                    Filters</a>
             </div>
             {% endfor %}
         </div>
 
         {% if challenges.count > 9 %}
         <div class="text-center pb-5">
-            <button class="btn btn-outline-dark rounded-pill px-5 py-2 fw-bold" style="font-family: Poppins;">Load More</button>
+            <button class="btn btn-outline-dark rounded-pill px-5 py-2 fw-bold" style="font-family: Poppins;">Load
+                More</button>
         </div>
         {% endif %}
     </div>
 
     <!-- Mockup Chatbot / Help Icon (As requested in the snippet) -->
     <div style="position: fixed; right: 40px; bottom: 40px; z-index: 1000; cursor: pointer;">
-        <div style="width: 80px; height: 80px; background: #E31837; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(227, 24, 55, 0.4); border: 4px solid white;">
+        <div
+            style="width: 80px; height: 80px; background: #E31837; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(227, 24, 55, 0.4); border: 4px solid white;">
             <i class="fa-solid fa-headset" style="color: white; font-size: 32px;"></i>
         </div>
         <!-- Tooltip -->
-        <div style="position: absolute; right: 95px; top: 50%; transform: translateY(-50%); background: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); white-space: nowrap; font-family: Poppins; font-weight: 600; color: #5F0229;">
+        <div
+            style="position: absolute; right: 95px; top: 50%; transform: translateY(-50%); background: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); white-space: nowrap; font-family: Poppins; font-weight: 600; color: #5F0229;">
             Need help?
-            <div style="position: absolute; right: -8px; top: 50%; transform: translateY(-50%) rotate(45deg); width: 16px; height: 16px; background: white;"></div>
+            <div
+                style="position: absolute; right: -8px; top: 50%; transform: translateY(-50%) rotate(45deg); width: 16px; height: 16px; background: white;">
+            </div>
         </div>
     </div>
 </div>

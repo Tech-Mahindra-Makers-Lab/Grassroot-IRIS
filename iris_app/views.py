@@ -161,9 +161,13 @@ def challenge_list(request):
 
     # Apply Status Filter from URL
     if status_filter == 'active':
-        # Active challenges: end_date in the future and status is LIVE
+        # Active challenges: started today or earlier, and ending today or later
         today = timezone.now().date()
-        challenges = challenges.filter(status='LIVE', end_date__date__gte=today)
+        challenges = challenges.filter(status='LIVE', start_date__date__lte=today, end_date__date__gte=today)
+    elif status_filter == 'upcoming':
+        # Upcoming challenges: starting after today
+        today = timezone.now().date()
+        challenges = challenges.filter(status='LIVE', start_date__date__gt=today)
     elif status_filter == 'draft':
         challenges = challenges.filter(status='DRAFT')
     elif status_filter == 'past':
@@ -204,6 +208,8 @@ def challenge_list(request):
         'challenges': challenges_list,
         'current_filter': status_filter,
         'query': query,
+        'today': timezone.now().date(),
+        'is_challenge_owner': is_challenge_owner,
     }
     return render(request, 'iris_app/index.html', context)
 
@@ -635,7 +641,7 @@ def submit_evaluation(request, idea_id):
         if idea.submitter:
             send_notification(
                 recipient=idea.submitter,
-                message=f"Your idea '{idea.title}' has been reviewed.",
+                message=f"Your idea '{idea.title}' has been reviewed and scored.",
                 sender=user,
                 link=f'/review-dashboard/idea-detail/{idea_id}/'
             )
@@ -688,6 +694,8 @@ def challenge_detail(request, challenge_id):
         'is_owner': is_owner,
         'user_registered': user_registered,
         'user_submitted': user_submitted,
+        'today': timezone.now().date(),
+        'days_remaining': (challenge.end_date.date() - timezone.now().date()).days if challenge.end_date else 0,
     }
     return render(request, 'iris_app/challenge_detail.html', context)
 
@@ -1172,14 +1180,15 @@ def post_challenge(request):
                         except IrisUser.DoesNotExist:
                             print(f"Mentor with email {email} not found in the system")
 
-            # Notify Challenge Owner if LIVE
-            if save_status == 'LIVE' and challenge.created_by:
-                send_notification(
-                    recipient=challenge.created_by,
-                    message=f"Challenges has officially started on your idea '{title}'",
-                    sender=user,
-                    link='/challenges/'
-                )
+            # Notify All Users if LIVE
+            if save_status == 'LIVE':
+                for common_user in IrisUser.objects.all():
+                    send_notification(
+                        recipient=common_user,
+                        message=f"A new challenge '{title}' has officially started!",
+                        sender=user,
+                        link='/challenges/'
+                    )
 
             return JsonResponse({'status': 'success', 'challenge_id': str(challenge.challenge_id)})
 
@@ -1522,7 +1531,7 @@ def submit_idea(request, challenge_id):
                     recipient=mentor,
                     message=f"New idea '{title}' submitted for the challenge you are mentoring: {challenge.title}.",
                     sender=user,
-                    link='/challenges/'
+                    link='/review-dashboard/'
                 )
 
             return JsonResponse({'status': 'success', 'message': 'Idea submitted successfully'})

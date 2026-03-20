@@ -138,22 +138,50 @@
     </main>
 
     <!-- Footer Banner -->
-    {% if challenge.status == 'LIVE' %}
+    {% if challenge.status != 'DRAFT' %}
     <section class="detail-cta-banner">
         <div class="cta-text">
-            {% if user_submitted %}
-            <h2>Solution Submitted!</h2>
-            <p>Thank you for participating. You can track your idea in your dashboard.</p>
+            {% if challenge.user_submitted %}
+                <h2>Solution Submitted!</h2>
+                <p>Thank you for participating. You can track your idea in your dashboard.</p>
+            {% elif challenge.end_date|date:"Y-m-d" < today|date:"Y-m-d" or challenge.status == 'COMPLETED' %}
+                <h2>Challenge Closed!</h2>
+                <p>The submission period for this challenge has ended. Thank you for your interest.</p>
+            {% elif challenge.start_date|date:"Y-m-d" > today|date:"Y-m-d" %}
+                <h2>Challenge Starting Soon!</h2>
+                <p>Register now to stay updated. You can submit your idea once the challenge starts on {{ challenge.start_date|date:"M d, Y" }}.</p>
             {% else %}
-            <h2>Ready to Submit Your Idea?</h2>
-            <p>Share your innovative solution and contribute to a sustainable future.</p>
+                <h2>Ready to Submit Your Idea?</h2>
+                <p>Share your innovative solution and contribute to a sustainable future.</p>
             {% endif %}
         </div>
 
-        {% if user_submitted %}
-        <div class="btn-detail-register" style="padding: 12px 24px; background: #31D586; color: white; border: none; font-weight: 600; cursor: default; border-radius: 8px; font-size: 14px; text-align: center; display: flex; align-items: center; justify-content: center;">
-            Submitted
-        </div>
+        {% if challenge.user_submitted %}
+            <div class="btn-detail-register" style="padding: 12px 24px; background: #31D586; color: white; border: none; font-weight: 600; cursor: default; border-radius: 8px; font-size: 14px; text-align: center; display: flex; align-items: center; justify-content: center;">
+                Submitted
+            </div>
+        {% elif challenge.end_date|date:"Y-m-d" < today|date:"Y-m-d" or challenge.status == 'COMPLETED' %}
+            <div class="btn-detail-register" style="padding: 12px 24px; background: #6B7280; color: white; border: none; font-weight: 600; cursor: default; border-radius: 8px; font-size: 14px; text-align: center; display: flex; align-items: center; justify-content: center;">
+                Closed
+            </div>
+        {% elif challenge.start_date|date:"Y-m-d" > today|date:"Y-m-d" %}
+            {% if challenge.registration_required|default:"No"|lower == "yes" %}
+                {% if user_registered %}
+                <div class="btn-detail-register" style="padding: 12px 24px; background: #6B7280; color: white; border: none; font-weight: 600; cursor: default; border-radius: 8px; font-size: 14px; text-align: center; display: flex; align-items: center; justify-content: center;">
+                    Registered
+                </div>
+                {% else %}
+                <button type="button" class="btn-detail-register" data-register-modal
+                    data-challenge-id="{{ challenge.challenge_id }}" data-challenge-title="{{ challenge.title }}"
+                    data-participation-type="{{ challenge.participation_type }}">
+                    Register Now
+                </button>
+                {% endif %}
+            {% else %}
+                <div class="btn-detail-register" style="padding: 12px 24px; background: #F3F4F6; color: #6B7280; border: none; font-weight: 600; cursor: default; border-radius: 8px; font-size: 14px; text-align: center; display: flex; align-items: center; justify-content: center;">
+                    Starts Soon
+                </div>
+            {% endif %}
         {% elif challenge.registration_required|default:"No"|lower == "yes" %}
             {% if user_registered %}
             <a href="{% url 'idea_details' challenge.challenge_id %}" class="btn-detail-register"

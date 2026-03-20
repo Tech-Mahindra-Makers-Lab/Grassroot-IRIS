@@ -223,8 +223,38 @@ body {
 
 .search-filter {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     align-items: center;
+}
+
+.view-toggle {
+    display: flex;
+    gap: 8px;
+    margin-right: 15px;
+    border-right: 1px solid #E5E7EB;
+    padding-right: 15px;
+}
+
+.toggle-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-gray);
+    transition: all 0.2s;
+    font-size: 16px;
+}
+
+.toggle-icon:hover {
+    background: #E5DFD3;
+}
+
+.toggle-icon.active {
+    background: var(--primary-red);
+    color: white;
 }
 
 .search-input-wrapper {
@@ -354,21 +384,115 @@ body {
     background: var(--green);
 }
 
+/* Categories and Status within grid context */
 .category-label {
     height: 22px;
-    padding: 0 22px;
+    padding: 0 15px;
     background: var(--primary-red);
-    color: var(--bg-color);
+    color: var(--white);
     font-size: 10px;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 2px;
     display: flex;
     align-items: center;
+    width: fit-content;
 }
 
 .category-grassroot {
     background: var(--dark-maroon);
+}
+
+.status-badge {
+    height: 32px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    color: white;
+}
+
+/* Grid Mode Layout */
+.ideas-list.grid-mode {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+    padding: 40px 60px;
+}
+
+.ideas-list.grid-mode .idea-card {
+    flex-direction: column;
+    height: auto;
+    border-bottom: none;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ideas-list.grid-mode .idea-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+}
+
+.ideas-list.grid-mode .idea-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 200px;
+}
+
+.ideas-list.grid-mode .idea-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ideas-list.grid-mode .category-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.ideas-list.grid-mode .status-badge {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 10;
+}
+
+.ideas-list.grid-mode .idea-main-info {
+    padding: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.ideas-list.grid-mode .idea-details-left {
+    width: 100%;
+}
+
+.ideas-list.grid-mode .idea-meta-right {
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 15px;
+    border-top: 1px solid #F1F1F1;
+    gap: 10px;
+}
+
+.ideas-list.grid-mode .meta-item {
+    flex-direction: row;
+    gap: 15px;
+}
+
+/* Default Image Wrapper styles (for list mode) */
+.idea-image-wrapper {
+    display: flex;
+    flex-direction: column;
 }
 
 /* Responsive adjustments */

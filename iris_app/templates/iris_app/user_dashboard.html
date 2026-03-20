@@ -104,6 +104,14 @@
         </div>
 
         <div class="search-filter">
+            <div class="view-toggle">
+                <div class="toggle-icon active" onclick="setView('list')" id="listBtn" title="List View">
+                    <i class="fa-solid fa-list-ul"></i>
+                </div>
+                <div class="toggle-icon" onclick="setView('grid')" id="gridBtn" title="Grid View">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                </div>
+            </div>
             <div class="search-input-wrapper">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
                 <input type="text" placeholder="Search Submissions...">
@@ -116,10 +124,10 @@
     </div>
 
     <!-- Ideas List -->
-    <div class="ideas-list">
+    <div class="ideas-list" id="ideasContainer">
         {% for idea in recent_ideas %}
         <div class="idea-card">
-            <div style="display: flex; flex-direction: column;">
+            <div class="idea-image-wrapper">
                 <div class="status-badge {% if idea.status == 'SUBMITTED' %}status-submitted{% elif idea.status == 'APPROVED' %}status-approved{% elif idea.status == 'IMPLEMENTED' %}status-implemented{% else %}status-submitted{% endif %}">
                     <div style="width: 24px; height: 24px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                         <i class="fa-solid fa-check" style="font-size: 10px;"></i>
@@ -195,6 +203,23 @@
         window.location.href = url.pathname + url.search;
     }
 
+    function setView(view) {
+        const container = document.getElementById('ideasContainer');
+        const listBtn = document.getElementById('listBtn');
+        const gridBtn = document.getElementById('gridBtn');
+
+        if (view === 'grid') {
+            container.classList.add('grid-mode');
+            gridBtn.classList.add('active');
+            listBtn.classList.remove('active');
+        } else {
+            container.classList.remove('grid-mode');
+            listBtn.classList.add('active');
+            gridBtn.classList.remove('active');
+        }
+        localStorage.setItem('dashboardView', view);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.querySelector('.search-input-wrapper input');
         if (searchInput) {
@@ -217,6 +242,10 @@
                 searchInput.value = urlParams.get('q');
             }
         }
+
+        // Restore view preference
+        const savedView = localStorage.getItem('dashboardView') || 'list';
+        setView(savedView);
     });
 </script>
 
