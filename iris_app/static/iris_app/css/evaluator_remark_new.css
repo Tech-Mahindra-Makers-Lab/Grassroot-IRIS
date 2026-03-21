@@ -1701,3 +1701,157 @@ body {
 .rd-v2-icon.active {
     color: #E31837;
 }
+/* ============================================
+   REVIEW DASHBOARD FILTER SIDEBAR
+   ============================================ */
+.rd-v2-filter-wrapper {
+    position: fixed;
+    top: 0;
+    right: -287px;
+    width: 287px;
+    height: 100vh;
+    background: white;
+    box-shadow: -2px 0 24px rgba(41, 37, 29, 0.24);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 18px;
+    gap: 15px;
+    transition: right 0.3s ease;
+}
+
+.rd-v2-filter-wrapper.show {
+    right: 0;
+}
+
+.rd-v2-filter-header {
+    align-self: stretch;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    margin-bottom: 5px;
+}
+
+.rd-v2-filter-title {
+    color: #101828;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+.rd-v2-filter-close {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.rd-v2-filter-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rd-v2-filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.rd-v2-filter-label {
+    color: rgba(74, 69, 61, 0.80);
+    font-size: 11.20px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+.rd-v2-filter-options {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rd-v2-filter-option {
+    color: #29251D;
+    font-size: 11.20px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+.rd-v2-filter-date-inputs {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rd-v2-filter-date-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rd-v2-filter-date-row label {
+    color: #101828;
+    font-size: 11.20px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+.rd-v2-filter-date-input {
+    width: 100%;
+    height: 30px;
+    background: rgba(246, 242, 234, 0.40);
+    border: none;
+    border-bottom: 1.20px rgba(77, 77, 79, 0.40) solid;
+    font-size: 11px;
+    padding: 0 5px;
+}
+
+.rd-v2-filter-footer {
+    padding-top: 12px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 17px;
+    display: flex;
+    margin-top: auto;
+    padding-bottom: 20px;
+}
+
+.rd-v2-filter-btn-reset {
+    width: 100px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.2px solid #29251D;
+    color: #29251D;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.rd-v2-filter-btn-apply {
+    width: 100px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #E31837;
+    color: white;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 4px;
+}
+

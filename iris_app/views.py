@@ -179,6 +179,9 @@ def challenge_list(request):
         pass
 
     featured_challenge = Challenge.objects.filter(is_featured=True).first()
+    if not featured_challenge:
+        # Fallback to the latest LIVE challenge if no explicit featured challenge is set
+        featured_challenge = Challenge.objects.filter(status='LIVE').order_by('-created_at').first()
 
     # Add user_registered info to each challenge
     # A user is registered if they are the submitter of an idea OR a co-ideator on an idea
@@ -2175,9 +2178,18 @@ def admin_dashboard(request):
     # Stats
     # Admin Dashboard Stats
     total_challenges = Challenge.objects.count()
-    active_challenges_count = Challenge.objects.filter(status='LIVE').count()
-    draft_challenges_count = Challenge.objects.filter(status='DRAFT').count()
-    completed_challenges_count = Challenge.objects.filter(status='COMPLETED').count()
+    # Count unique challenges that have at least one review entry in the Review model
+    reviewed_challenge_ids = Idea.objects.filter(
+        idea_id__in=Review.objects.filter(entity_type='IDEA').values_list('entity_id', flat=True)
+    ).values_list('challenge_id', flat=True).distinct()
+    
+    active_challenges_count = Challenge.objects.filter(challenge_id__in=reviewed_challenge_ids).count()
+    
+    # Count unique challenges that have no entries in the Review model (on any of their ideas)
+    draft_challenges_count = Challenge.objects.exclude(challenge_id__in=reviewed_challenge_ids).count()
+    # Calculate Success Rate as a percentage of reviewed challenges vs total challenges
+    success_rate = (active_challenges_count / total_challenges * 100) if total_challenges > 0 else 0
+    completed_challenges_count = f"{round(success_rate, 1)}%"
 
     # All Challenges for the List/Table
     try:

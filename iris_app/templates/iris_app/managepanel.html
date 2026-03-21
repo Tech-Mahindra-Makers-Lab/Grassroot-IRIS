@@ -9,12 +9,15 @@
         cursor: pointer;
         transition: all 0.2s ease;
     }
+
     .round-tab.active {
         border-bottom: 2px #E31837 solid;
     }
+
     .round-tab.active .tab-text {
         color: black !important;
     }
+
     .hidden {
         display: none !important;
     }
@@ -23,156 +26,261 @@
 
 {% block content %}
 <div style="width: 100%; min-height: 100vh; background: #f9fafb; padding: 20px;">
-    <div data-property-1="Default" style="width: 100%; max-width: 1200px; margin: 0 auto; background: white; box-shadow: 0px 25px 50px -12px rgba(0, 0, 0, 0.25); flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex; border-radius: 8px; overflow: hidden;">
-        <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-            <div style="align-self: stretch; height: 189px; padding-top: 24px; padding-bottom: 1px; padding-left: 32px; padding-right: 32px; position: relative; background: white; border-bottom: 1px #E5E7EB solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: flex">
-                <div style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
-                    <div style="flex: 1 1 0; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 8px; display: inline-flex">
-                        <div style="align-self: stretch; height: 30px; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex">
+    <div data-property-1="Default"
+        style="width: 100%; max-width: 1200px; margin: 0 auto; background: white; box-shadow: 0px 25px 50px -12px rgba(0, 0, 0, 0.25); flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex; border-radius: 8px; overflow: hidden;">
+        <div
+            style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+            <div
+                style="align-self: stretch; height: 189px; padding-top: 24px; padding-bottom: 1px; padding-left: 32px; padding-right: 32px; position: relative; background: white; border-bottom: 1px #E5E7EB solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: flex">
+                <div
+                    style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
+                    <div
+                        style="flex: 1 1 0; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 8px; display: inline-flex">
+                        <div
+                            style="align-self: stretch; height: 30px; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex">
                             <div style="justify-content: flex-start; align-items: center; display: flex">
-                                <div style="height: 27px; padding-left: 22px; padding-right: 22px; padding-top: 4.01px; padding-bottom: 4.01px; background: #F8B4A3; border-radius: 16px; justify-content: center; align-items: center; display: flex">
-                                    <div style="color: #5F0229; font-size: 12px; font-family: Poppins; font-weight: 400; text-transform: uppercase; line-height: 16.05px; letter-spacing: 2px; word-wrap: break-word">Evaluators Details</div>
+                                <div
+                                    style="height: 27px; padding-left: 22px; padding-right: 22px; padding-top: 4.01px; padding-bottom: 4.01px; background: #F8B4A3; border-radius: 16px; justify-content: center; align-items: center; display: flex">
+                                    <div
+                                        style="color: #5F0229; font-size: 12px; font-family: Poppins; font-weight: 400; text-transform: uppercase; line-height: 16.05px; letter-spacing: 2px; word-wrap: break-word">
+                                        Evaluators Details</div>
                                 </div>
                             </div>
                         </div>
-                        <div style="align-self: stretch; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
-                            <div style="width: 100%; color: #29251D; font-size: 22px; font-family: Poppins; font-weight: 700; line-height: 32px; letter-spacing: 0.07px; word-wrap: break-word">{{ challenge.title }}</div>
+                        <div
+                            style="align-self: stretch; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+                            <div
+                                style="width: 100%; color: #29251D; font-size: 22px; font-family: Poppins; font-weight: 700; line-height: 32px; letter-spacing: 0.07px; word-wrap: break-word">
+                                {{ challenge.title }}</div>
                         </div>
                     </div>
-                    <div style="width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer;" onclick="window.history.back()">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer;"
+                        onclick="window.history.back()">
                         <div style="width: 24px; height: 24px; position: relative; overflow: hidden">
-                            <div style="width: 12px; height: 12px; left: 5.71px; top: 6px; position: absolute; outline: 2px #4D4D4F solid; outline-offset: -1px"></div>
-                            <div style="width: 12px; height: 12px; left: 5.71px; top: 6px; position: absolute; outline: 2px #4D4D4F solid; outline-offset: -1px"></div>
+                            <div
+                                style="width: 12px; height: 12px; left: 5.71px; top: 6px; position: absolute; outline: 2px #4D4D4F solid; outline-offset: -1px">
+                            </div>
+                            <div
+                                style="width: 12px; height: 12px; left: 5.71px; top: 6px; position: absolute; outline: 2px #4D4D4F solid; outline-offset: -1px">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div style="color: rgba(77, 77, 79, 0.80); font-size: 14px; font-family: Poppins; font-weight: 500; word-wrap: break-word"> ID - #IA-{{ short_id }}</div>
-                <div style="width: 100%; height: 47px; padding-bottom: 1px; left: 0px; top: 143px; position: absolute; background: #E5DFD3; border-bottom: 1px rgba(74, 69, 61, 0.20) solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                    <div style="align-self: stretch; height: 46px; justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex; padding-left: 32px;">
-                        <div id="tab-round1" class="round-tab {% if round1_panels %}active{% endif %}" onclick="showRound(1)" style="width: 177.48px; height: 46px; padding-top: 12px; padding-bottom: 5px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+                <div
+                    style="color: rgba(77, 77, 79, 0.80); font-size: 14px; font-family: Poppins; font-weight: 500; word-wrap: break-word">
+                    ID - #IA-{{ short_id }}</div>
+                <div
+                    style="width: 100%; height: 47px; padding-bottom: 1px; left: 0px; top: 143px; position: absolute; background: #E5DFD3; border-bottom: 1px rgba(74, 69, 61, 0.20) solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                    <div
+                        style="align-self: stretch; height: 46px; justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex; padding-left: 32px;">
+                        <div id="tab-round1" class="round-tab {% if round1_panels %}active{% endif %}"
+                            onclick="showRound(1)"
+                            style="width: 177.48px; height: 46px; padding-top: 12px; padding-bottom: 5px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
                             <div style="align-self: stretch; height: 20px; position: relative">
-                                <div class="tab-text" style="left: 41.54px; top: 0.53px; position: absolute; text-align: center; color: #4D4D4F; font-size: 14px; font-family: Poppins; font-weight: 600; line-height: 20px; word-wrap: break-word">Round 01</div>
+                                <div class="tab-text"
+                                    style="left: 41.54px; top: 0.53px; position: absolute; text-align: center; color: #4D4D4F; font-size: 14px; font-family: Poppins; font-weight: 600; line-height: 20px; word-wrap: break-word">
+                                    Round 01</div>
                             </div>
                         </div>
-                        <div id="tab-round2" class="round-tab {% if not round1_panels and round2_panels %}active{% endif %}" onclick="showRound(2)" style="width: 191.27px; height: 46px; padding-top: 12px; padding-bottom: 2px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
-                            <div style="align-self: stretch; padding-left: 36px; padding-right: 36px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
-                                <div class="tab-text" style="text-align: center; color: #4D4D4F; font-size: 14px; font-family: Poppins; font-weight: 600; line-height: 20px; word-wrap: break-word">Round 02 </div>
+                        <div id="tab-round2"
+                            class="round-tab {% if not round1_panels and round2_panels %}active{% endif %}"
+                            onclick="showRound(2)"
+                            style="width: 191.27px; height: 46px; padding-top: 12px; padding-bottom: 2px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+                            <div
+                                style="align-self: stretch; padding-left: 36px; padding-right: 36px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+                                <div class="tab-text"
+                                    style="text-align: center; color: #4D4D4F; font-size: 14px; font-family: Poppins; font-weight: 600; line-height: 20px; word-wrap: break-word">
+                                    Round 02 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Round 1 Content -->
-            <div id="content-round1" class="round-content {% if not round1_panels %}hidden{% endif %}" style="align-self: stretch; min-height: 400px; padding: 24px 32px; background: white; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 24px; display: flex">
-                <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                    <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                        <div style="align-self: stretch; height: 34px; justify-content: flex-start; align-items: center; display: inline-flex">
-                            <div style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                                <div style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">Evaluator</div>
+            <div id="content-round1" class="round-content {% if not round1_panels %}hidden{% endif %}"
+                style="align-self: stretch; min-height: 400px; padding: 24px 32px; background: white; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 24px; display: flex">
+                <div
+                    style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                    <div
+                        style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                        <div
+                            style="align-self: stretch; height: 34px; justify-content: flex-start; align-items: center; display: inline-flex">
+                            <div
+                                style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                                <div
+                                    style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">
+                                    Evaluator</div>
                             </div>
-                            <div style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                                <div style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">Assigned Evaluations Ideas</div>
+                            <div
+                                style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                                <div
+                                    style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">
+                                    Assigned Evaluations Ideas</div>
                             </div>
-                            <div style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                                <div style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">Reviewed Ideas</div>
+                            <div
+                                style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                                <div
+                                    style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">
+                                    Reviewed Ideas</div>
                             </div>
-                            <div style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                                <div style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">Review End Date</div>
+                            <div
+                                style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                                <div
+                                    style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">
+                                    Review End Date</div>
                             </div>
                         </div>
                     </div>
-                    <div style="width: 100%; height: 0px; outline: 1px rgba(229, 223, 211, 0.60) solid; outline-offset: -0.50px"></div>
-                    
+                    <div
+                        style="width: 100%; height: 0px; outline: 1px rgba(229, 223, 211, 0.60) solid; outline-offset: -0.50px">
+                    </div>
+
                     {% for panel in round1_panels %}
-                    <div style="align-self: stretch; height: 44px; justify-content: flex-start; align-items: center; display: inline-flex; border-bottom: 1px solid rgba(229, 223, 211, 0.3);">
-                        <div style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                            <div style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 400; word-wrap: break-word">{{ panel.panel_name }}</div>
+                    <div
+                        style="align-self: stretch; height: 44px; justify-content: flex-start; align-items: center; display: inline-flex; border-bottom: 1px solid rgba(229, 223, 211, 0.3);">
+                        <div
+                            style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                            <div
+                                style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 400; word-wrap: break-word">
+                                {{ panel.panel_name }}</div>
                         </div>
-                        <div style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                            <div style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 400; word-wrap: break-word">{{ panel.assigned_count }}</div>
+                        <div
+                            style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                            <div
+                                style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 400; word-wrap: break-word">
+                                {{ panel.assigned_count }}</div>
                         </div>
-                        <div style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                            <div style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 400; word-wrap: break-word">{{ panel.reviewed_count }}</div>
+                        <div
+                            style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                            <div
+                                style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 400; word-wrap: break-word">
+                                {{ panel.reviewed_count }}</div>
                         </div>
-                        <div style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                            <div style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 500; word-wrap: break-word">{{ panel.end_date|date:"d-m-Y" }}</div>
+                        <div
+                            style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                            <div
+                                style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 500; word-wrap: break-word">
+                                {{ panel.end_date|date:"d-m-Y" }}</div>
                         </div>
                     </div>
                     {% empty %}
-                    <div style="padding: 20px; color: #4A453D; font-family: Poppins; font-size: 14px;">No evaluators assigned for Round 1</div>
+                    <div style="padding: 20px; color: #4A453D; font-family: Poppins; font-size: 14px;">No evaluators
+                        assigned for Round 1</div>
                     {% endfor %}
                 </div>
             </div>
 
             <!-- Round 2 Content -->
-            <div id="content-round2" class="round-content {% if round1_panels or not round2_panels %}hidden{% endif %}" style="align-self: stretch; min-height: 400px; padding: 24px 32px; background: white; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 24px; display: flex">
-                <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                    <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                        <div style="align-self: stretch; height: 34px; justify-content: flex-start; align-items: center; display: inline-flex">
-                            <div style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                                <div style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">Evaluator</div>
+            <div id="content-round2" class="round-content {% if round1_panels or not round2_panels %}hidden{% endif %}"
+                style="align-self: stretch; min-height: 400px; padding: 24px 32px; background: white; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 24px; display: flex">
+                <div
+                    style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                    <div
+                        style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                        <div
+                            style="align-self: stretch; height: 34px; justify-content: flex-start; align-items: center; display: inline-flex">
+                            <div
+                                style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                                <div
+                                    style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">
+                                    Evaluator</div>
                             </div>
-                            <div style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                                <div style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">Assigned Evaluations Ideas</div>
+                            <div
+                                style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                                <div
+                                    style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">
+                                    Assigned Evaluations Ideas</div>
                             </div>
-                            <div style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                                <div style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">Reviewed Ideas</div>
+                            <div
+                                style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                                <div
+                                    style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">
+                                    Reviewed Ideas</div>
                             </div>
-                            <div style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                                <div style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">Review End Date</div>
+                            <div
+                                style="width: 25%; height: 34px; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                                <div
+                                    style="color: #4A453D; font-size: 11px; font-family: Poppins; font-weight: 400; line-height: 16px; word-wrap: break-word">
+                                    Review End Date</div>
                             </div>
                         </div>
                     </div>
-                    <div style="width: 100%; height: 0px; outline: 1px rgba(229, 223, 211, 0.60) solid; outline-offset: -0.50px"></div>
-                    
+                    <div
+                        style="width: 100%; height: 0px; outline: 1px rgba(229, 223, 211, 0.60) solid; outline-offset: -0.50px">
+                    </div>
+
                     {% for panel in round2_panels %}
-                    <div style="align-self: stretch; height: 44px; justify-content: flex-start; align-items: center; display: inline-flex; border-bottom: 1px solid rgba(229, 223, 211, 0.3);">
-                        <div style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                            <div style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 400; word-wrap: break-word">{{ panel.panel_name }}</div>
+                    <div
+                        style="align-self: stretch; height: 44px; justify-content: flex-start; align-items: center; display: inline-flex; border-bottom: 1px solid rgba(229, 223, 211, 0.3);">
+                        <div
+                            style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                            <div
+                                style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 400; word-wrap: break-word">
+                                {{ panel.panel_name }}</div>
                         </div>
-                        <div style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                            <div style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 400; word-wrap: break-word">{{ panel.assigned_count }}</div>
+                        <div
+                            style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                            <div
+                                style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 400; word-wrap: break-word">
+                                {{ panel.assigned_count }}</div>
                         </div>
-                        <div style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                            <div style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 400; word-wrap: break-word">{{ panel.reviewed_count }}</div>
+                        <div
+                            style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                            <div
+                                style="color: #4A453D; font-size: 14px; font-family: Poppins; font-weight: 400; word-wrap: break-word">
+                                {{ panel.reviewed_count }}</div>
                         </div>
-                        <div style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-                            <div style="color: #C90016; font-size: 14px; font-family: Poppins; font-weight: 500; word-wrap: break-word">{{ panel.end_date|date:"d-m-Y" }}</div>
+                        <div
+                            style="width: 25%; padding: 10px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+                            <div
+                                style="color: #C90016; font-size: 14px; font-family: Poppins; font-weight: 500; word-wrap: break-word">
+                                {{ panel.end_date|date:"d-m-Y" }}</div>
                         </div>
                     </div>
                     {% empty %}
-                    <div style="padding: 20px; color: #4A453D; font-family: Poppins; font-size: 14px;">No evaluators assigned for Round 2</div>
+                    <div style="padding: 20px; color: #4A453D; font-family: Poppins; font-size: 14px;">No evaluators
+                        assigned for Round 2</div>
                     {% endfor %}
                 </div>
             </div>
 
             <div style="align-self: stretch; padding: 24px 32px; background: white;">
-                <div style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 12px; display: flex">
-                    <div style="align-self: stretch; height: 48px; padding: 16px; background: #F6F2EA; box-shadow: 0px 0px 0px 1px #BEDBFF; border-radius: 6px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                <div
+                    style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 12px; display: flex">
+                    <div
+                        style="align-self: stretch; height: 48px; padding: 16px; background: #F6F2EA; box-shadow: 0px 0px 0px 1px #BEDBFF; border-radius: 6px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
                         <div style="align-self: stretch; height: 40px; position: relative">
-                            <div style="width: 100%; left: 28px; top: -1px; position: absolute; color: rgba(74, 69, 61, 0.90); font-size: 14px; font-family: Poppins; font-weight: 400; line-height: 20px; word-wrap: break-word">Last edit : {{ challenge.updated_at|timesince }} Ago</div>
-                            <div style="width: 16px; height: 16px; left: -0.29px; top: 2px; position: absolute; overflow: hidden">
-                                <div style="width: 13.33px; height: 13.33px; left: 1.33px; top: 1.33px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px"></div>
-                                <div style="width: 8px; height: 8px; left: 4px; top: 4px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px"></div>
-                                <div style="width: 2.67px; height: 2.67px; left: 6.67px; top: 6.67px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px"></div>
+                            <div
+                                style="width: 100%; left: 28px; top: -1px; position: absolute; color: rgba(74, 69, 61, 0.90); font-size: 14px; font-family: Poppins; font-weight: 400; line-height: 20px; word-wrap: break-word">
+                                Last edit : {{ challenge.updated_at|timesince }} Ago</div>
+                            <div
+                                style="width: 16px; height: 16px; left: -0.29px; top: 2px; position: absolute; overflow: hidden">
+                                <div
+                                    style="width: 13.33px; height: 13.33px; left: 1.33px; top: 1.33px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px">
+                                </div>
+                                <div
+                                    style="width: 8px; height: 8px; left: 4px; top: 4px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px">
+                                </div>
+                                <div
+                                    style="width: 2.67px; height: 2.67px; left: 6.67px; top: 6.67px; position: absolute; outline: 1.33px #4D4D4F solid; outline-offset: -0.67px">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div style="align-self: stretch; height: 106px; padding-top: 25px; padding-left: 32px; padding-right: 32px; background: white; border-top: 1px #E5E7EB solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
-                <div style="align-self: stretch; height: 52px; justify-content: flex-start; align-items: flex-start; gap: 12px; display: inline-flex">
-                    <div style="width: 138px; height: 52px; position: relative; outline: 2px #E31837 solid; outline-offset: -2px; cursor: pointer;">
-                        <div style="left: 62.36px; top: 14px; position: absolute; text-align: center; color: #29251D; font-size: 15px; font-family: Poppins; font-weight: 500; line-height: 24px; word-wrap: break-word">Edit</div>
-                        <div style="width: 16px; height: 16px; left: 24.71px; top: 18px; position: absolute; overflow: hidden">
-                            <div style="width: 13.33px; height: 3.33px; left: 1.33px; top: 2px; position: absolute; outline: 1.33px #4A453D solid; outline-offset: -0.67px"></div>
-                            <div style="width: 10.67px; height: 8.67px; left: 2.67px; top: 5.33px; position: absolute; outline: 1.33px #4A453D solid; outline-offset: -0.67px"></div>
-                        </div>
-                    </div>
-                    <div onclick="window.location.href='{% url 'admin_dashboard' %}'" style="width: 129.88px; height: 52px; position: relative; background: #E31837; cursor: pointer;">
-                        <div style="left: 41.89px; top: 13.53px; position: absolute; text-align: center; color: white; font-size: 15px; font-family: Poppins; font-weight: 500; line-height: 24px; word-wrap: break-word">Close</div>
+            <div
+                style="align-self: stretch; height: 106px; padding-top: 25px; padding-left: 32px; padding-right: 32px; background: white; border-top: 1px #E5E7EB solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
+                <div
+                    style="align-self: stretch; height: 52px; justify-content: flex-start; align-items: flex-start; gap: 12px; display: inline-flex">
+
+                    <div onclick="window.location.href='{% url 'admin_dashboard' %}'"
+                        style="width: 129.88px; height: 52px; position: relative; background: #E31837; cursor: pointer;">
+                        <div
+                            style="left: 41.89px; top: 13.53px; position: absolute; text-align: center; color: white; font-size: 15px; font-family: Poppins; font-weight: 500; line-height: 24px; word-wrap: break-word">
+                            Close</div>
                     </div>
                 </div>
             </div>
@@ -181,15 +289,15 @@
 </div>
 
 <script>
-function showRound(roundNumber) {
-    // Hide all contents
-    document.querySelectorAll('.round-content').forEach(el => el.classList.add('hidden'));
-    // Show selected round content
-    document.getElementById('content-round' + roundNumber).classList.remove('hidden');
-    
-    // Update tabs
-    document.querySelectorAll('.round-tab').forEach(el => el.classList.remove('active'));
-    document.getElementById('tab-round' + roundNumber).classList.add('active');
-}
+    function showRound(roundNumber) {
+        // Hide all contents
+        document.querySelectorAll('.round-content').forEach(el => el.classList.add('hidden'));
+        // Show selected round content
+        document.getElementById('content-round' + roundNumber).classList.remove('hidden');
+
+        // Update tabs
+        document.querySelectorAll('.round-tab').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-round' + roundNumber).classList.add('active');
+    }
 </script>
 {% endblock %}

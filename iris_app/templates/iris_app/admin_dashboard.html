@@ -56,10 +56,8 @@
         <!-- Total Challenges -->
         <div class="admin-stat-card">
             <div class="stat-icon-box">
-                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="3" y="7" width="22" height="14" rx="1" stroke="#5F0229" stroke-width="2.4" />
-                    <rect x="9" y="7" width="12" height="7" rx="0.5" stroke="#5F0229" stroke-width="2.4" />
-                </svg>
+                <img src="{% static 'iris_app/images/totalChallenge.png' %}" alt="Total Challenges" width="28"
+                    height="28">
             </div>
             <div class="stat-info">
                 <div class="stat-label">Total Challenges</div>
@@ -70,14 +68,10 @@
         <!-- Reviewed (LIVE / Active) -->
         <div class="admin-stat-card">
             <div class="stat-icon-box">
-                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="14" cy="14" r="10" stroke="#5F0229" stroke-width="2.4" />
-                    <path d="M10 14l3 3 5-5" stroke="#5F0229" stroke-width="2.4" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
+                <img src="{% static 'iris_app/images/reviewed.png' %}" alt="Active Challenges" width="28" height="28">
             </div>
             <div class="stat-info">
-                <div class="stat-label">Active / Live</div>
+                <div class="stat-label">Reviewed</div>
                 <div class="stat-value" id="statActive">{{ active_challenges_count }}</div>
             </div>
         </div>
@@ -85,10 +79,8 @@
         <!-- Pending Review (Draft) -->
         <div class="admin-stat-card">
             <div class="stat-icon-box">
-                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="6" y="4" width="16" height="20" rx="1" stroke="#5F0229" stroke-width="2.4" />
-                    <path d="M10 10h8M10 14h8M10 18h5" stroke="#5F0229" stroke-width="2.4" stroke-linecap="round" />
-                </svg>
+                <img src="{% static 'iris_app/images/pendingReviewed.png' %}" alt="Pending Challenges" width="28"
+                    height="28">
             </div>
             <div class="stat-info">
                 <div class="stat-label">Pending Review</div>
@@ -99,10 +91,8 @@
         <!-- Completed -->
         <div class="admin-stat-card">
             <div class="stat-icon-box">
-                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 4l2.7 6.5L24 11.3l-5 4.9 1.2 7L14 20l-6.2 3.2 1.2-7-5-4.9 7.3-.8L14 4z"
-                        stroke="#5F0229" stroke-width="2.4" stroke-linejoin="round" />
-                </svg>
+                <img src="{% static 'iris_app/images/successrate.png' %}" alt="Completed Challenges" width="28"
+                    height="28">
             </div>
             <div class="stat-info">
                 <div class="stat-label">Success Rate</div>
@@ -119,30 +109,22 @@
             <div class="admin-tabs-wrapper">
                 <!-- All Challenges -->
                 <button class="admin-tab-item active" id="tabAll" data-tab="all" onclick="switchAdminTab(event,'all')">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <rect x="2" y="3" width="12" height="10" rx="1" stroke="currentColor" stroke-width="1.33" />
-                    </svg>
+                    <img src="{% static 'iris_app/images/allChallenge.png' %}" alt="All Challenges" width="18"
+                        height="18">
                     All Challenges
                 </button>
 
                 <!-- Active -->
                 <button class="admin-tab-item" id="tabActive" data-tab="active"
                     onclick="switchAdminTab(event,'active')">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <rect x="1.33" y="1.33" width="13.33" height="13.33" rx="1" stroke="currentColor"
-                            stroke-width="1.33" />
-                        <path d="M8 5v2M8 11v-2M8 9v-.01" stroke="currentColor" stroke-width="1.33"
-                            stroke-linecap="round" />
-                    </svg>
+                    <img src="{% static 'iris_app/images/active.png' %}" alt="Active" width="18" height="18">
                     Active
                 </button>
 
                 <!-- Upcoming -->
                 <button class="admin-tab-item" id="tabUpcoming" data-tab="upcoming"
                     onclick="switchAdminTab(event,'upcoming')">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.33" />
-                    </svg>
+                    <img src="{% static 'iris_app/images/upcoming.png' %}" alt="Upcoming" width="18" height="18">
                     Upcoming
                 </button>
             </div>
@@ -181,7 +163,7 @@
                 <a href="{% url 'post_challenge' %}" class="btn-post-challenge-grey" id="btnPostChallengeTable">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <rect x="1" y="1" width="14" height="14" rx="1" stroke="#4A453D" stroke-width="1.5" />
-                        <path d="M8 5v6M5 8h6" stroke="#4A453D" stroke-width="1.5" stroke-linecap="round" />
+                P      <path d="M8 5v6M5 8h6" stroke="#4A453D" stroke-width="1.5" stroke-linecap="round" />
                     </svg>
                     Post New Challenges
                 </a>
@@ -373,11 +355,7 @@
 
         </div><!-- /challenges-table-section -->
 
-        <!-- Load More -->
-        <div class="load-more-section" id="loadMoreBtn">
-            <span class="load-more-text">Load More</span>
-            <div class="load-more-icon"></div>
-        </div>
+
 
     </div><!-- /admin-main-content -->
 
