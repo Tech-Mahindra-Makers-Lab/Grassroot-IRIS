@@ -231,36 +231,38 @@
 /* ===== Stats ribbon ===== */
 .admin-stats-section {
     width: 100%;
-    background: #5F0229;
-    padding: 16px 60px;
+    background-color: #5F0229;
+    background-image:
+        repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(235, 24, 55, 0.4) 19px, rgba(235, 24, 55, 0.4) 20px);
+    background-repeat: repeat-x;
+    background-position: left top;
+    background-size: 20px 100%;
+    padding: 30px 60px;
     display: flex;
-    gap: 0;
+    justify-content: center;
+    gap: 60px;
+    position: relative;
+    overflow: hidden;
 }
 
 .admin-stat-card {
-    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 10px;
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 18px 20px;
-    border-radius: 16px;
-    /* transparent against the maroon ribbon */
-    background: transparent;
+    gap: 20px;
+    box-shadow: none;
 }
 
 .stat-icon-box {
-    width: 58px;
-    height: 58px;
-    min-width: 58px;
+    width: 65px;
+    height: 65px;
     background: #F8B4A3;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.stat-icon-box svg {
-    color: #5F0229;
-    stroke: #5F0229;
+    flex-shrink: 0;
 }
 
 .stat-info {
@@ -271,21 +273,19 @@
 
 .stat-label {
     color: #F8B4A3;
-    font-family: 'Poppins', sans-serif;
     font-size: 11px;
-    font-weight: 400;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    line-height: 18px;
+    letter-spacing: 1.5px;
+    font-family: 'Poppins', sans-serif;
 }
 
 .stat-value {
-    color: #F6F2EA;
+    color: white;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
     font-family: 'Poppins', sans-serif;
-    font-size: 28px;
-    font-weight: 600;
-    line-height: 38px;
-    letter-spacing: 0.08px;
 }
 
 /* ===== Challenges Table Section ===== */

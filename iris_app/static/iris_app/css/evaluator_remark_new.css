@@ -1435,30 +1435,34 @@ body {
 }
 
 .rd-v2-stats-container {
-    background: #5F0229;
-    padding: 24px 80px;
+    background-color: #5F0229;
+    background-image:
+        repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(235, 24, 55, 0.4) 19px, rgba(235, 24, 55, 0.4) 20px);
+    background-repeat: repeat-x;
+    background-position: left top;
+    background-size: 20px 100%;
+    padding: 30px 80px;
     display: flex;
-    gap: 40px;
+    justify-content: center;
+    gap: 60px;
+    position: relative;
+    overflow: hidden;
 }
 
 .rd-v2-stat-card {
-    flex: 1;
-    max-width: 310px;
     background: transparent;
-    border: 1.2px solid #E5E7EB;
-    border-radius: 16px;
-    padding: 24px;
+    border: none;
+    padding: 10px;
     display: flex;
     align-items: center;
-    gap: 16px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    gap: 20px;
+    box-shadow: none;
 }
 
 .rd-v2-stat-icon-wrapper {
-    width: 58px;
-    height: 58px;
+    width: 65px;
+    height: 65px;
     background: #F8B4A3;
-    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
